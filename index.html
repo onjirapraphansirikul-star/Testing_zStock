@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>รายงานการตรวจนับสินค้าระหว่างผลิตสุกรพันธุ์</title>
+  <style>
+    :root {
+      --primary: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #15803d;
+      --danger: #b91c1c;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+
+    * { box-sizing: border-box; font-family: "Sarabun", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { margin: 0; padding: 8px; background: var(--bg); color: var(--text); font-size: 14px; padding-bottom: 40px; }
+    .app-container { max-width: 1150px; margin: 0 auto; }
+
+    .top-bar {
+      background: #0f172a; color: #fff; padding: 10px 12px; border-radius: 12px;
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; position: sticky; top: 4px; z-index: 60; box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    }
+    .top-title { font-weight: 700; font-size: 0.95rem; }
+    .save-badge { font-size: 0.75rem; color: #86efac; display: block; }
+    .top-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    .btn {
+      padding: 8px 11px; border: none; border-radius: 8px; font-weight: 700; font-size: 0.8rem;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 4px; touch-action: manipulation;
+    }
+    .btn:disabled { opacity: 0.6; cursor: wait; }
+    .btn-save-new { background: #16a34a; color: #fff; }
+    .btn-print { background: #2563eb; color: #fff; }
+    .btn-clear { background: #dc2626; color: #fff; }
+    .btn-excel { background: #0f766e; color: #fff; }
+
+    .nav-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+    .nav-tab {
+      padding: 10px 4px; background: #fff; border: 1px solid var(--border); border-radius: 10px;
+      font-weight: 700; color: var(--muted); cursor: pointer; font-size: 0.78rem; text-align: center; touch-action: manipulation;
+    }
+    .nav-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .card {
+      background: var(--card); border-radius: 12px; padding: 12px; border: 1px solid var(--border);
+      margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .section-title {
+      font-size: 0.98rem; font-weight: 700; margin: 0 0 10px 0; color: var(--primary);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+    }
+
+    .header-grid { display: grid; grid-template-columns: 165px minmax(240px, 1.5fr) minmax(170px, 1fr); gap: 8px; }
+    @media screen and (max-width: 768px) {
+      .header-grid { grid-template-columns: 1fr; }
+    }
+    .field label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
+    .field input[type="text"], .field input[type="date"], select {
+      width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: #fff;
+    }
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding-top: 4px; }
+    .checkbox-group label { display: flex; align-items: center; gap: 5px; font-weight: 700; color: var(--text); cursor: pointer; margin: 0; font-size: 0.9rem; }
+    .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; }
+
+    /* Searchable Dropdown (ส่งเสริม / ฟาร์ม) */
+    .combo-wrap { position: relative; }
+    .combo-wrap input[type="text"] { padding-right: 60px; }
+    .combo-clear, .combo-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      border: none; background: transparent; cursor: pointer;
+      color: var(--muted); font-weight: 700; padding: 6px; line-height: 1; touch-action: manipulation;
+    }
+    .combo-clear { right: 28px; font-size: 0.85rem; display: none; }
+    .combo-clear.visible { display: inline-flex; }
+    .combo-arrow { right: 4px; font-size: 0.85rem; }
+    .combo-list {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: #fff; border: 1px solid #94a3b8; border-radius: 10px;
+      max-height: 270px; overflow-y: auto; z-index: 80;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18); display: none;
+    }
+    .combo-list.open { display: block; }
+    .combo-item {
+      padding: 10px 12px; cursor: pointer; font-size: 0.92rem;
+      border-bottom: 1px solid #f1f5f9; text-align: left;
+    }
+    .combo-item:last-child { border-bottom: none; }
+    .combo-item:hover, .combo-item.active { background: #eff6ff; color: var(--primary); font-weight: 700; }
+    .combo-item.selected { background: #dbeafe; font-weight: 700; }
+    .combo-empty { padding: 12px; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+    table.form-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    table.form-table th, table.form-table td { border: 1px solid #94a3b8; padding: 4px 5px; text-align: center; vertical-align: middle; }
+    table.form-table th { background: #e2e8f0; font-weight: 700; font-size: 0.8rem; }
+    table.form-table td.left { text-align: left; font-weight: 700; padding-left: 8px; }
+    table.form-table tr.sum-row td { background: #eff6ff; color: var(--primary); font-weight: 700; font-size: 0.92rem; }
+
+    .cell-input { width: 100%; border: 1px solid #e2e8f0; background: #f8fafc; padding: 7px 4px; text-align: center; border-radius: 6px; font-size: 0.95rem; font-weight: 700; }
+    .cell-input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 2px #bfdbfe; }
+    .cell-input.text-left { text-align: left; font-weight: 400; font-size: 0.88rem; }
+    .cell-input.doc-input { font-weight: 500; font-size: 0.85rem; }
+    .cell-input.synced-piglet { background: #dbeafe; color: #1e40af; }
+    .cell-input.synced-sow { background: #fce7f3; color: #9d174d; }
+
+    .diff-cell { font-weight: 700; font-family: monospace; font-size: 1rem; }
+    .diff-zero { color: var(--success); }
+    .diff-nonzero { color: var(--danger); background: #fef2f2; }
+
+    @media screen and (max-width: 768px) {
+      table.mobile-cards thead { display: none; }
+      table.mobile-cards, table.mobile-cards tbody { display: block; width: 100%; }
+      table.mobile-cards tr {
+        display: grid; grid-template-columns: 1fr 1fr 0.7fr; gap: 6px; background: #fff;
+        border: 1px solid var(--border); border-radius: 10px; padding: 9px; margin-bottom: 8px;
+      }
+      table.mobile-cards tr.sum-row { background: #eff6ff; border-color: #93c5fd; }
+      table.mobile-cards td { border: none !important; padding: 2px !important; text-align: left; background: transparent !important; }
+      table.mobile-cards td.col-name {
+        grid-column: 1 / -1; font-size: 0.95rem; color: #0f172a;
+        border-bottom: 1px dashed #e2e8f0 !important; padding-bottom: 5px !important; margin-bottom: 2px;
+      }
+      table.mobile-cards td.col-name:empty { display: none; }
+      table.mobile-cards td.col-num::before,
+      table.mobile-cards td.col-diff::before,
+      table.mobile-cards td.col-cause::before {
+        content: attr(data-label); display: block; font-size: 0.72rem; font-weight: 700; color: var(--muted); margin-bottom: 2px;
+      }
+      table.mobile-cards td.col-diff {
+        display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 8px; padding: 4px !important;
+      }
+      table.mobile-cards td.col-diff.diff-nonzero { background: #fef2f2 !important; }
+      table.mobile-cards td.col-diff.diff-zero { background: #f0fdf4 !important; }
+      table.mobile-cards td.col-cause { grid-column: 1 / -1; }
+      table.mobile-cards td.col-empty-mobile { display: none; }
+      table.mobile-cards tr.sum-row td.col-name { grid-column: 1 / -1; }
+      table.mobile-cards tr.sum-row td.col-num,
+      table.mobile-cards tr.sum-row td.col-diff { text-align: center; font-size: 1rem; }
+    }
+
+    .pen-summary-banner {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px;
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px 12px; margin-bottom: 10px; font-weight: 700; font-size: 0.9rem;
+    }
+    .pen-row-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
+    .pen-row-btn { padding: 8px 2px; border: 1px solid var(--border); background: #f8fafc; border-radius: 8px; font-weight: 700; font-size: 0.82rem; cursor: pointer; text-align: center; }
+    .pen-row-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .pen-row-sum-badge { display: block; font-size: 0.68rem; font-weight: 600; opacity: 0.92; margin-top: 2px; }
+
+    .mobile-pen-item {
+      display: grid; grid-template-columns: 52px auto 1fr; gap: 8px; align-items: center;
+      padding: 6px 8px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; background: #fff;
+    }
+    .mobile-pen-no { font-weight: 800; font-size: 0.95rem; color: #334155; }
+    .sow-check-label {
+      display: inline-flex; align-items: center; gap: 5px; padding: 8px 11px;
+      border: 2px solid #cbd5e1; border-radius: 8px; background: #f8fafc;
+      font-weight: 700; font-size: 0.88rem; cursor: pointer; user-select: none; touch-action: manipulation;
+    }
+    .sow-check-label.checked {
+      background: #fdf2f8; border-color: #db2777; color: #9d174d;
+    }
+    .sow-check-label input[type="checkbox"] {
+      width: 19px; height: 19px; accent-color: #db2777; cursor: pointer; margin: 0;
+    }
+    .mobile-pen-input {
+      width: 100%; padding: 9px 6px; font-size: 1.1rem; font-weight: 800; text-align: center;
+      border: 2px solid #cbd5e1; border-radius: 8px; background: #f8fafc;
+    }
+    .mobile-pen-input:focus { border-color: var(--primary); background: #fff; outline: none; }
+
+    table.grid-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    table.grid-table th, table.grid-table td { border: 1px solid #94a3b8; padding: 3px; text-align: center; vertical-align: middle; }
+    table.grid-table th { background: #e2e8f0; padding: 6px 3px; font-size: 0.78rem; }
+    table.grid-table td.pen-no { background: #f1f5f9; font-weight: 700; width: 26px; color: #475569; }
+    table.grid-table td.sow-cell { width: 32px; background: #fff; }
+    table.grid-table td.sow-cell.checked { background: #fdf2f8; }
+    table.grid-table input.sow-chk { width: 17px; height: 17px; accent-color: #db2777; cursor: pointer; vertical-align: middle; margin: 0; }
+    table.grid-table input.pen-input { width: 100%; min-width: 36px; border: none; padding: 6px 2px; text-align: center; font-size: 0.92rem; font-weight: 700; background: transparent; }
+    table.grid-table input.pen-input:focus { background: #eff6ff; outline: 2px solid var(--primary); }
+    table.grid-table tr.total-foot td { background: #dbeafe; font-weight: 700; font-size: 0.82rem; padding: 5px 2px; color: var(--primary); line-height: 1.25; }
+    table.grid-table tr.total-foot td.sow-total-cell { color: #9d174d; background: #fce7f3; }
+
+    .note-box { width: 100%; margin-top: 8px; padding: 9px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
+
+    .gsheet-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    .gsheet-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .gsheet-row input { flex: 1; min-width: 200px; padding: 8px 10px; border: 1px solid #86efac; border-radius: 8px; font-size: 0.85rem; }
+
+    .saved-card-item {
+      border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 8px;
+      background: #f8fafc; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .saved-card-item.editing { border: 2px solid var(--primary); background: #eff6ff; }
+    .badge-synced { display: inline-block; background: #dcfce7; color: #166534; padding: 2px 7px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; margin-top: 4px; }
+    .badge-pending { display: inline-block; background: #fef3c7; color: #92400e; padding: 2px 7px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; margin-top: 4px; }
+
+    .export-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .log-list { max-height: 360px; overflow-y: auto; }
+    table.log-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    table.log-table th, table.log-table td { border-bottom: 1px solid var(--border); padding: 8px 6px; text-align: left; }
+    table.log-table th { background: #f8fafc; position: sticky; top: 0; }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .print-only-header { display: none; }
+    @media print {
+      @page { size: A4 portrait; margin: 7mm; }
+      body { background: #fff; padding: 0; font-size: 10px; color: #000; }
+      .top-bar, .nav-tabs, .no-print, #tabSaved, #tabLogs, #mobilePenContainer, .pen-row-tabs { display: none !important; }
+      .tab-pane { display: block !important; }
+      #fullPenTableWrap { display: block !important; }
+      .card { border: none; box-shadow: none; padding: 0; margin: 0 0 6px 0; }
+      .print-only-header { display: block; margin-bottom: 6px; }
+      .print-only-header h2 { margin: 0; font-size: 14px; }
+      .print-only-header h3 { margin: 2px 0 6px 0; font-size: 12px; font-weight: 600; }
+      .screen-only-title { display: none !important; }
+
+      .print-2col { display: grid !important; grid-template-columns: 1.1fr 1.3fr; gap: 6px; align-items: start; }
+      table.mobile-cards, table.mobile-cards thead, table.mobile-cards tbody, table.mobile-cards tr, table.mobile-cards td {
+        display: revert !important; border: 1px solid #000 !important; padding: 2px 3px !important; margin: 0 !important; background: transparent !important;
+      }
+      table.mobile-cards td::before { display: none !important; }
+      table.form-table { font-size: 9px; }
+      table.form-table th { background: #f3f4f6 !important; -webkit-print-color-adjust: exact; border: 1px solid #000; font-size: 8.5px; }
+      table.form-table tr.sum-row td { background: #f3f4f6 !important; color: #000; }
+      .cell-input, select { border: none; background: transparent !important; padding: 1px; font-size: 9px; color: #000 !important; appearance: none; }
+      .diff-nonzero { background: transparent !important; color: #000; }
+      .pen-summary-banner { border: 1px solid #000; padding: 3px 6px; font-size: 9px; margin-bottom: 4px; background: #fff; }
+      table.grid-table { font-size: 7.5px; }
+      table.grid-table th, table.grid-table td { border: 1px solid #000; padding: 0.5px 1px; }
+      table.grid-table td.pen-no { width: 16px; }
+      table.grid-table td.sow-cell { width: 15px; background: transparent !important; }
+      table.grid-table input.sow-chk { width: 9px; height: 9px; }
+      table.grid-table input.pen-input { padding: 0; font-size: 7.5px; min-width: 18px; }
+      table.grid-table tr.total-foot td,
+      table.grid-table tr.total-foot td.sow-total-cell { background: #f3f4f6 !important; color: #000; font-size: 7.5px; }
+      .header-grid { display: flex; flex-wrap: wrap; gap: 10px; font-size: 10px; margin-bottom: 6px; }
+      .field label { display: inline; font-weight: 700; color: #000; margin-right: 4px; }
+      .field input { border: none; border-bottom: 1px dotted #000; border-radius: 0; padding: 1px 4px; width: auto; font-size: 10px; }
+      .combo-wrap { display: inline-block; }
+      .combo-wrap input[type="text"] { padding-right: 4px; }
+      .note-box { border: none; border-bottom: 1px dotted #000; border-radius: 0; padding: 2px 0; font-size: 9.5px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="top-bar no-print">
+    <div>
+      <span class="top-title">🐷 ตรวจนับสต๊อกสุกร & อาหาร</span>
+      <span class="save-badge" id="saveStatus">● พร้อมใช้งาน</span>
+    </div>
+    <div class="top-actions">
+      <button class="btn btn-save-new" id="btnSaveNew" onclick="saveAndNewReport()">💾 บันทึก & สร้างใบใหม่</button>
+      <button class="btn btn-print" onclick="window.print()">🖨️ พิมพ์ A4</button>
+      <button class="btn btn-clear" onclick="clearCurrentDraft()">🗑️ ล้างใบนี้</button>
+    </div>
+  </div>
+
+  <div class="nav-tabs no-print">
+    <button class="nav-tab active" id="navBtn_pigs" onclick="switchTab('pigs', this)">🐷 1. สุกร</button>
+    <button class="nav-tab" id="navBtn_pens" onclick="switchTab('pens', this)">🔢 2. คอก A-D</button>
+    <button class="nav-tab" id="navBtn_feed" onclick="switchTab('feed', this)">🌾 3. อาหาร</button>
+    <button class="nav-tab" id="navBtn_logs" onclick="switchTab('logs', this)">📁 4. คลัง & Sheet (<span id="savedCountBadge">0</span>)</button>
+  </div>
+
+  <div class="print-only-header">
+    <h2>บริษัท ซีพีเอฟ (ประเทศไทย) จำกัด (มหาชน)</h2>
+    <h3>รายงานการตรวจนับสินค้าระหว่างผลิตสุกรพันธุ์</h3>
+  </div>
+
+  <div class="card" id="tabHeader">
+    <div class="section-title screen-only-title">
+      <span>ข้อมูลทั่วไปของใบตรวจนับ</span>
+      <span id="editingBadge" style="font-size:0.78rem; color:#15803d;"></span>
+    </div>
+    <div class="header-grid">
+      <div class="field">
+        <label>วันที่:</label>
+        <input type="date" id="hdr_date" onchange="updateHeader('date', this.value)" />
+      </div>
+      <div class="field">
+        <label>ส่งเสริม / ฟาร์ม:</label>
+        <div class="combo-wrap" id="promoteFarmCombo">
+          <input type="text" id="hdr_promoteFarm" autocomplete="off"
+            placeholder="พิมพ์ค้นหา หรือกดเลือก ส่งเสริม / ฟาร์ม..."
+            onfocus="openPromoteFarmList(true)"
+            oninput="onPromoteFarmInput(this.value)"
+            onkeydown="onPromoteFarmKey(event)" />
+          <button type="button" class="combo-clear no-print" id="btnClearPF" title="ล้าง" onclick="clearPromoteFarm()">✕</button>
+          <button type="button" class="combo-arrow no-print" title="แสดงรายการทั้งหมด" onclick="togglePromoteFarmList()">▼</button>
+          <div class="combo-list no-print" id="promoteFarmList"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>ชื่อเล้า:</label>
+        <input type="text" id="hdr_barnName" placeholder="ระบุชื่อเล้า (เช่น เล้าคลอด 1)" onchange="updateHeader('barnName', this.value)" />
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>ประเภทเล้า:</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="hdr_typeF" onchange="updateBarnType('typeF', this.checked)" /> เล้าคลอด (F)</label>
+          <label><input type="checkbox" id="hdr_typeM" onchange="updateBarnType('typeM', this.checked)" /> เล้าพักผสม (M)</label>
+          <label><input type="checkbox" id="hdr_typeRI" onchange="updateBarnType('typeRI', this.checked)" /> เล้าเตรียมทดแทน (R/I)</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="print-2col">
+    <div>
+      <!-- 1. สุกร -->
+      <div class="card tab-pane active" id="tabPigs">
+        <div class="section-title"><span>สรุปการตรวจนับสุกรคงเหลือ</span></div>
+
+        <table class="form-table mobile-cards" id="pigSummaryTable">
+          <thead>
+            <tr>
+              <th style="width:28%;">ชนิด</th>
+              <th style="width:16%;">รายงาน<br>PigPro</th>
+              <th style="width:16%;">ตรวจ<br>นับได้</th>
+              <th style="width:14%;">ผลต่าง</th>
+              <th style="width:26%;">สาเหตุ</th>
+            </tr>
+          </thead>
+          <tbody id="pigTbody"></tbody>
+        </table>
+        <input type="text" class="note-box" id="pigNote" placeholder="หมายเหตุ (สุกร): ระบุเพิ่มเติม..." onchange="updateNote('pigNote', this.value)" />
+      </div>
+
+      <!-- 3. อาหาร -->
+      <div class="card tab-pane" id="tabFeed">
+        <div class="section-title"><span>การตรวจนับอาหารคงเหลือ</span></div>
+
+        <table class="form-table mobile-cards" id="feedTable">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width:18%;">เบอร์</th>
+              <th rowspan="2" style="width:16%;">รายงาน</th>
+              <th rowspan="2" style="width:16%;">นับได้</th>
+              <th rowspan="2" style="width:14%;">ผลต่าง</th>
+              <th colspan="2" style="width:36%;">สาเหตุผลต่าง</th>
+            </tr>
+            <tr>
+              <th style="width:18%;">รับเข้า</th>
+              <th style="width:18%;">ใช้ไป</th>
+            </tr>
+          </thead>
+          <tbody id="feedTbody"></tbody>
+        </table>
+        <input type="text" class="note-box" id="feedNote" placeholder="หมายเหตุ (อาหาร): ระบุเพิ่มเติม..." onchange="updateNote('feedNote', this.value)" />
+      </div>
+    </div>
+
+    <!-- 2. คอก A-D (1-72) -->
+    <div class="card tab-pane" id="tabPens">
+      <div class="section-title"><span>แม่พันธุ์เล้าเตรียมทดแทน / ลูกเล้าคลอด</span></div>
+
+      <div class="pen-summary-banner">
+        <span>📊 รวมทั้งหมด (A-D)</span>
+        <span>
+          รวมแม่: <strong id="totalAllSows" style="color:#be185d;">0</strong> ตัว &nbsp;|&nbsp;
+          รวมลูก: <strong id="totalAllPiglets" style="color:#1d4ed8;">0</strong> ตัว
+        </span>
+      </div>
+
+      <div class="pen-row-tabs no-print">
+        <button class="pen-row-btn active" onclick="switchPenView('A', this)">แถว A <span class="pen-row-sum-badge" id="badgeSumA">แม่ 0 | ลูก 0</span></button>
+        <button class="pen-row-btn" onclick="switchPenView('B', this)">แถว B <span class="pen-row-sum-badge" id="badgeSumB">แม่ 0 | ลูก 0</span></button>
+        <button class="pen-row-btn" onclick="switchPenView('C', this)">แถว C <span class="pen-row-sum-badge" id="badgeSumC">แม่ 0 | ลูก 0</span></button>
+        <button class="pen-row-btn" onclick="switchPenView('D', this)">แถว D <span class="pen-row-sum-badge" id="badgeSumD">แม่ 0 | ลูก 0</span></button>
+        <button class="pen-row-btn" onclick="switchPenView('ALL', this)">ดู 4 แถว <span class="pen-row-sum-badge">รวมแม่/ลูก</span></button>
+      </div>
+
+      <div id="mobilePenContainer" class="no-print"></div>
+
+      <div id="fullPenTableWrap" style="display:none;">
+        <table class="grid-table">
+          <thead>
+            <tr>
+              <th>A</th><th>แม่</th><th>จ.น.ลูก</th>
+              <th>B</th><th>แม่</th><th>จ.น.ลูก</th>
+              <th>C</th><th>แม่</th><th>จ.น.ลูก</th>
+              <th>D</th><th>แม่</th><th>จ.น.ลูก</th>
+            </tr>
+          </thead>
+          <tbody id="penGridBody"></tbody>
+          <tfoot>
+            <tr class="total-foot">
+              <td>รวม</td>
+              <td class="sow-total-cell">แม่<br><span id="sumSowA">0</span></td>
+              <td>ลูก<br><span id="sumPenA">0</span></td>
+              <td>รวม</td>
+              <td class="sow-total-cell">แม่<br><span id="sumSowB">0</span></td>
+              <td>ลูก<br><span id="sumPenB">0</span></td>
+              <td>รวม</td>
+              <td class="sow-total-cell">แม่<br><span id="sumSowC">0</span></td>
+              <td>ลูก<br><span id="sumPenC">0</span></td>
+              <td>รวม</td>
+              <td class="sow-total-cell">แม่<br><span id="sumSowD">0</span></td>
+              <td>ลูก<br><span id="sumPenD">0</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 4A: Google Sheet Connect, Saved Reports & CSV -->
+  <div class="card tab-pane" id="tabSaved">
+    <div class="gsheet-box">
+      <div style="font-weight:700; color:#166534; font-size:0.95rem;">☁️ เชื่อมต่อ Google Sheet (กดบันทึก 1 ครั้ง = สร้าง 1 ชีตใหม่ + Log รวม)</div>
+      <div style="font-size:0.78rem; color:#15803d;">วางลิงก์ Google Apps Script Web App URL (ลงท้ายด้วย /exec) ด้านล่างนี้:</div>
+      <div class="gsheet-row">
+        <input type="text" id="gsheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveGSheetUrl(this.value)" />
+        <button class="btn btn-save-new" onclick="saveGSheetUrl(document.getElementById('gsheetUrlInput').value, true)">บันทึกลิงก์</button>
+      </div>
+    </div>
+
+    <div class="section-title"><span>📊 สำรองข้อมูลไฟล์ CSV</span></div>
+    <div class="export-grid">
+      <button class="btn btn-excel" style="padding:10px; justify-content:center;" onclick="exportExcelDB('stock')">⬇️ DB_Stock (สุกร & อาหาร)</button>
+      <button class="btn btn-excel" style="padding:10px; justify-content:center;" onclick="exportExcelDB('pens')">⬇️ DB_Pens (รายคอก A-D)</button>
+      <button class="btn btn-excel" style="padding:10px; justify-content:center; background:#0369a1;" onclick="exportExcelDB('logs')">⬇️ DB_Logs (เวลาที่คีย์)</button>
+    </div>
+
+    <div class="section-title" style="margin-top:8px;">
+      <span>📁 คลังใบรายงานที่บันทึกไว้ (<span id="savedListCount">0</span> ใบ)</span>
+      <button class="btn btn-clear" style="font-size:0.75rem; padding:5px 9px;" onclick="clearAllSavedReports()">ล้างคลังทั้งหมด</button>
+    </div>
+    <div id="savedReportsList"></div>
+  </div>
+
+  <!-- Tab 4B: Timestamp Logs -->
+  <div class="card tab-pane" id="tabLogs">
+    <div class="section-title">
+      <span>🕒 ประวัติเวลาที่คีย์ในใบปัจจุบัน (<span id="logCountBadge">0</span>)</span>
+      <button class="btn" style="background:#f1f5f9; color:#334155;" onclick="clearLogsOnly()">ล้าง Log ใบนี้</button>
+    </div>
+    <div class="log-list">
+      <table class="log-table">
+        <thead>
+          <tr><th>วัน-เวลา</th><th>รายการ / จุดที่คีย์</th><th>จำนวน</th></tr>
+        </thead>
+        <tbody id="logTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // หากต้องการให้ทุกเครื่องเชื่อมต่ออัตโนมัติ ให้วางลิงก์ /exec ในเครื่องหมายคำพูดด้านล่างนี้ได้เลยครับ
+  const DEFAULT_GSHEET_URL = 'https://script.google.com/macros/s/AKfycbxc4CXnGK0kbNoq8F3P-nPFSR_54bShs7VoTjeTgCw1rczByKaQKkBnv9ov8Y6YCDQbvw/exec';
+
+  const GSHEET_URL_KEY = 'cpf_pig_gsheet_url_v1';
+  const CURRENT_KEY = 'cpf_pig_stock_current_v4';
+  const SAVED_KEY = 'cpf_pig_stock_saved_v4';
+  const PEN_COUNT = 72;
+
+  const PROMOTE_FARM_LIST = [
+    'สส.FAT-พิบูลมังสาหาร',
+    'ฟ-FAT-ชัยภูมิ-BOI',
+    'ฟ-BRD-น้ำใส2-ชย',
+    'ฟ-BG-สกลนคร',
+    'สส.FAT-โชคชัย',
+    'สส-FAT-ชุมแพ-ขก',
+    'ฟ-BG-ชุมพวง-นม',
+    'ฟ-BG-จัตุรัส-ชย',
+    'สส-BRD-วารินชำราบ-อบ',
+    'สส-FAT-อำนาจเจริญ',
+    'สส-FAT-กาฬสินธุ์',
+    'ฟ-BG-อุดรธานี',
+    'ฟ-BG-ศรีมงคล-อด',
+    'สส-BG-อุดรธานี',
+    'สส-BG-หนองคาย',
+    'สส-FAT-อุดรธานี',
+    'สส-FAT-หนองคาย',
+    'สส-FAT-เลย',
+    'สส-FAT-ร้อยเอ็ด (I)',
+    'สส-BG-ยโสธร',
+    'สส-FAT-ยโสธร',
+    'สส-BG-ขอนแก่น',
+    'สส-FAT-ขอนแก่น',
+    'สส-FAT-มหาสารคาม',
+    'สส-BG-นครราชสีมา',
+    'สส-FAT-นครราชสีมา',
+    'ฟ-BG-ร้อยเอ็ด-รอ AI',
+    'ฟ-FAT-สีคิ้ว-นม',
+    'สส-FAT-ชัยภูมิ',
+    'ฟ-BG-นครราชสีมา',
+    'ฟ-BG-โชคชัย-นม',
+    'ฟ-BG-บุรีรัมย์',
+    'สส-FAT-สีสุราช-มค',
+    'สส-FAT-มุกดาหาร',
+    'สส-FAT-บึงกาฬ',
+    'สส.FAT-สกลนคร',
+    'สส-FAT-สุรินทร์',
+    'สส-FAT-หนองบัวลำภู',
+    'ฟ-BRD-คอนสวรรค์-BOI',
+    'ฟ-BG-อุบลราชธานี',
+    'สส-FAT-บุรีรัมย์',
+    'สส-FAT-ศรีสะเกษ',
+    'ฟ-BG-สุรินทร์',
+    'ฟ-BG-ยโสธร',
+    'ฟ-BG-ขอนแก่น',
+    'ฟ-BG-บ้านเขว้า-ชย',
+    'ฟ-BG-ภูแลนคา-ชย',
+    'ฟ-BG-ท่าจะหลุง',
+    'ฟ-BG-พระยืน',
+    'สส-FAT-โพนพิสัย-นค',
+    'ฟ-BG-หนองคาย',
+    'ฟ-BG-ช่อผกา',
+    'ฟ-BG-อำนาจเจริญ',
+    'ฟ-FAT-เขาพริก',
+    'สส.สุกรขุนวานรนิวาส',
+    'สส.สุกรขุนบ้านผือ',
+    'สส.สุกรขุนหนองสองห้อง',
+    'ฟาร์มน้ำยืน',
+    'ฟาร์มบ้านม่วง',
+    'ฟาร์มบุณฑริก',
+    'สส.สุกรขุนศรีเมืองใหม่',
+    'สส.สุกรขุนกันทรลักษ์',
+    'สส.สุกรขุนโนนคูณ',
+    'สส.สุกรขุนพิมาย',
+    'สส.สุกรขุนระเว',
+    'สส.สุกรพันธุ์เลิงนกทา',
+    'สส.สุกรพันธุ์ขอนแก่นคัดทิ้ง',
+    'ฟ-BG-ศรีมงคล-อด AI',
+    'สส.สุกรขุนแก้งคร้อ'
+  ];
+
+  const DEFAULT_PIG_ROWS = [
+    { key: 'pigletA', label: 'ลูกสุกร แถว A', causeFixed: '', docFixed: '', group: 'piglet' },
+    { key: 'pigletB', label: 'ลูกสุกร แถว B', causeFixed: '', docFixed: '', group: 'piglet' },
+    { key: 'pigletC', label: 'ลูกสุกร แถว C', causeFixed: '', docFixed: '', group: 'piglet' },
+    { key: 'pigletD', label: 'ลูกสุกร แถว D', causeFixed: '', docFixed: '', group: 'piglet' },
+    { key: 'pigletSum', label: 'รวมลูกสุกร', isSum: 'piglet' },
+
+    { key: 'boar', label: 'พ่อพันธุ์', causeFixed: '', docFixed: '', group: 'boar' },
+    { key: 'boar2', label: '', logLabel: '', causeFixed: '', docFixed: '', group: 'boar' },
+    { key: 'boar3', label: '', logLabel: '', causeFixed: '', docFixed: '', group: 'boar' },
+    { key: 'boar4', label: '', logLabel: '', causeFixed: '', docFixed: '', group: 'boar' },
+    { key: 'boarSum', label: 'รวมพ่อพันธุ์', isSum: 'boar' },
+
+    { key: 'sow1', label: 'แม่ซองยืน แถว 1', causeFixed: '', docFixed: '', group: 'sow' },
+    { key: 'sow2', label: 'แม่ซองยืน แถว 2', causeFixed: '', docFixed: '', group: 'sow' },
+    { key: 'sow3', label: 'แม่ซองยืน แถว 3', causeFixed: '', docFixed: '', group: 'sow' },
+    { key: 'sow4', label: 'แม่ซองยืน แถว 4', causeFixed: '', docFixed: '', group: 'sow' },
+    { key: 'sowFarrow', label: 'แม่ซองคลอด', causeFixed: '', docFixed: '', group: 'sow' },
+    { key: 'sowSum', label: 'รวมแม่พันธุ์', isSum: 'sow' }
+  ];
+
+  const PIGLET_SYNC_MAP = { A: 'pigletA', B: 'pigletB', C: 'pigletC', D: 'pigletD' };
+  const FEED_ROW_COUNT = 4;
+
+  function padArray(arr, targetLen, fillVal) {
+    const res = Array.isArray(arr) ? arr.slice(0, targetLen) : [];
+    while (res.length < targetLen) res.push(fillVal);
+    return res;
+  }
+
+  function getPromoteFarmDisplay(h) {
+    if (!h) return '';
+    if (h.promoteFarm) return h.promoteFarm;
+    if (h.promote && h.farm && h.promote !== h.farm) return `${h.promote} / ${h.farm}`;
+    return h.farm || h.promote || '';
+  }
+
+  function applyPromoteFarmToHeader(val) {
+    const clean = String(val || '').trim();
+    state.header.promoteFarm = clean;
+    if (!clean) {
+      state.header.promote = '';
+      state.header.farm = '';
+    } else if (clean.startsWith('สส')) {
+      state.header.promote = clean;
+      state.header.farm = '';
+    } else {
+      state.header.promote = '';
+      state.header.farm = clean;
+    }
+  }
+
+  function createInitialState(keepHeader = null) {
+    const today = new Date().toISOString().slice(0, 10);
+    const pigData = {};
+    DEFAULT_PIG_ROWS.forEach(r => {
+      if (!r.isSum) {
+        pigData[r.key] = { pigpro: '', counted: '', cause: r.causeFixed || '', docName: '', docNo: '', docDate: '' };
+      }
+    });
+    const feedData = Array.from({ length: FEED_ROW_COUNT }, () => ({
+      code: '', report: '', counted: '', causeIn: '', causeOut: '', causeType: '', docName: '', docNo: '', docDate: ''
+    }));
+    const keepPF = keepHeader ? getPromoteFarmDisplay(keepHeader) : '';
+    return {
+      reportId: null,
+      savedAt: null,
+      syncedToSheet: false,
+      sheetName: '',
+      header: {
+        date: keepHeader ? keepHeader.date : today,
+        barnName: '',
+        typeF: true, typeM: false, typeRI: false,
+        promoteFarm: keepPF,
+        promote: keepHeader ? (keepHeader.promote || '') : '',
+        farm: keepHeader ? (keepHeader.farm || '') : ''
+      },
+      grid: { A: Array(PEN_COUNT).fill(''), B: Array(PEN_COUNT).fill(''), C: Array(PEN_COUNT).fill(''), D: Array(PEN_COUNT).fill('') },
+      sows: { A: Array(PEN_COUNT).fill(false), B: Array(PEN_COUNT).fill(false), C: Array(PEN_COUNT).fill(false), D: Array(PEN_COUNT).fill(false) },
+      pigData,
+      pigNote: '',
+      feedData,
+      feedNote: '',
+      logs: []
+    };
+  }
+
+  function normalizeState(obj) {
+    const base = Object.assign(createInitialState(), obj || {});
+    if (!base.header.promoteFarm) {
+      base.header.promoteFarm = getPromoteFarmDisplay(base.header);
+    }
+    if (!base.grid) base.grid = {};
+    if (!base.sows) base.sows = {};
+    ['A','B','C','D'].forEach(c => {
+      base.grid[c] = padArray(base.grid[c], PEN_COUNT, '');
+      base.sows[c] = padArray(base.sows[c], PEN_COUNT, false);
+    });
+    if (!Array.isArray(base.feedData)) {
+      base.feedData = createInitialState().feedData;
+    } else {
+      base.feedData = base.feedData.map(f => Object.assign({
+        code: '', report: '', counted: '', causeIn: '', causeOut: '', causeType: '', docName: '', docNo: '', docDate: ''
+      }, f || {}));
+    }
+    return base;
+  }
+
+  let state = loadCurrent();
+  let savedReports = loadSavedReports();
+  let currentPenCol = 'A';
+  let comboActiveIdx = -1;
+  let comboFiltered = [];
+
+  function getGSheetUrl() {
+    return (localStorage.getItem(GSHEET_URL_KEY) || DEFAULT_GSHEET_URL || '').trim();
+  }
+
+  function saveGSheetUrl(val, showAlert = false) {
+    const clean = val.trim();
+    localStorage.setItem(GSHEET_URL_KEY, clean);
+    document.getElementById('gsheetUrlInput').value = clean;
+    if (showAlert) alert(clean ? '✅ บันทึกลิงก์ Google Sheet เรียบร้อย!' : 'ล้างลิงก์แล้ว');
+  }
+
+  function loadCurrent() {
+    try {
+      const raw = localStorage.getItem(CURRENT_KEY);
+      if (!raw) return createInitialState();
+      return normalizeState(JSON.parse(raw));
+    } catch { return createInitialState(); }
+  }
+
+  function loadSavedReports() {
+    try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'); } catch { return []; }
+  }
+
+  function saveState(msg = 'บันทึกอัตโนมัติ') {
+    localStorage.setItem(CURRENT_KEY, JSON.stringify(state));
+    document.getElementById('saveStatus').textContent = `● ${msg} (${new Date().toTimeString().slice(0, 8)})`;
+  }
+
+  function persistSavedReports() {
+    localStorage.setItem(SAVED_KEY, JSON.stringify(savedReports));
+    renderSavedReports();
+  }
+
+  function makeReportId(h) {
+    const dt = (h.date || new Date().toISOString().slice(0,10)).replace(/-/g, '');
+    const t = new Date().toTimeString().slice(0,8).replace(/:/g, '');
+    const barn = (h.barnName || 'ไม่มีชื่อเล้า').trim().replace(/\s+/g, '_');
+    return `${dt}-${t}-${barn}`;
+  }
+
+  function hasAnyData(s) {
+    if (s.header.barnName.trim() !== '') return true;
+    if (Object.values(s.pigData).some(p => p.pigpro !== '' || p.counted !== '')) return true;
+    if (s.feedData.some(f => f.code !== '' || f.report !== '' || f.counted !== '' || f.causeIn || f.causeOut)) return true;
+    if (['A','B','C','D'].some(c => s.grid[c].some(v => v !== ''))) return true;
+    if (s.sows && ['A','B','C','D'].some(c => s.sows[c].some(Boolean))) return true;
+    return false;
+  }
+
+  function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+  // รองรับทั้ง Android/PC และ iPhone Safari (fallback no-cors + ตรวจยืนยันผ่าน GET)
+  async function postReportToGoogleSheet(reportObj) {
+    const url = getGSheetUrl();
+    if (!url) return { ok: false, noUrl: true };
+
+    const syncNonce = String(Date.now()) + '_' + Math.random().toString(36).slice(2, 6);
+    reportObj.syncNonce = syncNonce;
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(reportObj)
+      });
+      const json = await res.json();
+      if (json && json.status === 'ok') {
+        return { ok: true, sheetName: json.sheetName };
+      }
+      return { ok: false, error: json?.message || 'ไม่สามารถสร้างชีตได้' };
+    } catch (err) {
+      // Fallback สำหรับ iPhone Safari ที่ติด Load failed ตอน 302 Redirect
+      try {
+        const ping = await fetch(url);
+        const pingJson = await ping.json();
+        if (pingJson.status !== 'running') {
+          return { ok: false, error: 'ลิงก์ Apps Script ไม่ตอบสนอง' };
+        }
+      } catch (pingErr) {
+        return { ok: false, error: 'iPhone เข้าถึงลิงก์ไม่ได้ (ให้เช็กว่าตั้ง Deploy เป็น "ทุกคน (Anyone)" และใช้ @gmail.com ส่วนตัว)' };
+      }
+
+      try {
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(reportObj)
+        });
+        await sleep(700);
+        let verifyRes = await fetch(url + '?checkId=' + encodeURIComponent(syncNonce));
+        let verifyJson = await verifyRes.json();
+        if (verifyJson && verifyJson.status === 'ok') {
+          return { ok: true, sheetName: verifyJson.sheetName };
+        }
+        await sleep(1200);
+        verifyRes = await fetch(url + '?checkId=' + encodeURIComponent(syncNonce));
+        verifyJson = await verifyRes.json();
+        if (verifyJson && verifyJson.status === 'ok') {
+          return { ok: true, sheetName: verifyJson.sheetName };
+        }
+        return { ok: false, error: 'ส่งคำขอแล้วแต่ยังไม่ได้รับการยืนยัน (กรุณาลองกดดูใน Google Sheet)' };
+      } catch (err2) {
+        return { ok: false, error: err2.message };
+      }
+    }
+  }
+
+  async function saveAndNewReport() {
+    if (!hasAnyData(state)) {
+      alert('ใบปัจจุบันยังไม่มีข้อมูลให้บันทึกครับ');
+      return;
+    }
+    if (!state.header.barnName.trim()) {
+      const name = prompt('กรุณาระบุ "ชื่อเล้า" ก่อนบันทึกใบนี้:', 'เล้า 1');
+      if (name === null) return;
+      state.header.barnName = name.trim() || 'เล้าทั่วไป';
+    }
+
+    const btn = document.getElementById('btnSaveNew');
+    const origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳ กำลังบันทึก...';
+
+    const snapshot = JSON.parse(JSON.stringify(state));
+    if (!snapshot.reportId) snapshot.reportId = makeReportId(snapshot.header);
+    snapshot.savedAt = formatNowThai();
+
+    let sheetMsg = '';
+    const gUrl = getGSheetUrl();
+    if (gUrl) {
+      btn.textContent = '☁️ กำลังส่งเข้า Sheet...';
+      const result = await postReportToGoogleSheet(snapshot);
+      if (result.ok) {
+        snapshot.syncedToSheet = true;
+        snapshot.sheetName = result.sheetName;
+        sheetMsg = `\n☁️ สร้างชีตใหม่ใน Google Sheet ชื่อ:\n"${result.sheetName}" เรียบร้อย!`;
+      } else {
+        snapshot.syncedToSheet = false;
+        sheetMsg = `\n⚠️ ยังส่งเข้า Google Sheet ไม่สำเร็จ (${result.error})\nแต่บันทึกเก็บไว้ในเครื่องแล้ว สามารถกดส่งซ้ำในแท็บ 4 ได้ครับ`;
+      }
+    } else {
+      snapshot.syncedToSheet = false;
+      sheetMsg = '\n(บันทึกเก็บในเครื่องเรียบร้อย - หากต้องการส่งเข้า Google Sheet ให้ใส่ลิงก์ในแท็บ 4)';
+    }
+
+    const existingIdx = savedReports.findIndex(r => r.reportId === snapshot.reportId);
+    if (existingIdx >= 0) savedReports[existingIdx] = snapshot;
+    else savedReports.unshift(snapshot);
+    persistSavedReports();
+
+    const keep = {
+      date: state.header.date,
+      promoteFarm: state.header.promoteFarm,
+      farm: state.header.farm,
+      promote: state.header.promote
+    };
+    state = createInitialState(keep);
+    initRender();
+    saveState('บันทึก & สร้างใบใหม่แล้ว');
+
+    btn.disabled = false;
+    btn.textContent = origText;
+    switchTab('pigs', document.getElementById('navBtn_pigs'));
+    alert(`✅ บันทึก "${snapshot.header.barnName}" แล้ว!${sheetMsg}`);
+  }
+
+  async function retrySyncReport(reportId) {
+    if (!getGSheetUrl()) {
+      alert('กรุณาวางลิงก์ Google Apps Script Web App URL ด้านบนก่อนครับ');
+      return;
+    }
+    const idx = savedReports.findIndex(r => r.reportId === reportId);
+    if (idx < 0) return;
+    const target = savedReports[idx];
+    document.getElementById('saveStatus').textContent = '⏳ กำลังส่งเข้า Google Sheet...';
+    const result = await postReportToGoogleSheet(target);
+    if (result.ok) {
+      savedReports[idx].syncedToSheet = true;
+      savedReports[idx].sheetName = result.sheetName;
+      persistSavedReports();
+      saveState(`ส่งชีต "${result.sheetName}" สำเร็จ`);
+      alert(`✅ สร้างชีตใหม่ "${result.sheetName}" ใน Google Sheet สำเร็จ!`);
+    } else {
+      saveState('ส่งไม่สำเร็จ');
+      alert(`❌ ส่งไม่สำเร็จ: ${result.error}`);
+    }
+  }
+
+  function loadReportForEdit(reportId) {
+    const target = savedReports.find(r => r.reportId === reportId);
+    if (!target) return;
+    if (hasAnyData(state) && state.reportId !== reportId) {
+      if (!confirm('ใบที่กำลังเปิดอยู่มีข้อมูลที่ยังไม่กดบันทึก ต้องการเปิดใบที่เลือกทับเลยไหม?')) return;
+    }
+    state = normalizeState(JSON.parse(JSON.stringify(target)));
+    initRender();
+    saveState(`เปิดแก้ไข: ${state.header.barnName}`);
+    switchTab('pigs', document.getElementById('navBtn_pigs'));
+  }
+
+  function deleteSavedReport(reportId) {
+    if (!confirm('ต้องการลบใบงานนี้ออกจากคลังใช่ไหม?')) return;
+    savedReports = savedReports.filter(r => r.reportId !== reportId);
+    if (state.reportId === reportId) state.reportId = null;
+    persistSavedReports();
+    renderHeader();
+  }
+
+  function clearAllSavedReports() {
+    if (savedReports.length === 0) return;
+    if (!confirm('ยืนยันล้างใบงานในคลังเครื่องทั้งหมด?')) return;
+    savedReports = [];
+    state.reportId = null;
+    persistSavedReports();
+    renderHeader();
+  }
+
+  function clearCurrentDraft() {
+    if (!confirm('ล้างข้อมูลในใบปัจจุบันเพื่อกรอกใหม่?')) return;
+    const keep = {
+      date: state.header.date,
+      promoteFarm: state.header.promoteFarm,
+      farm: state.header.farm,
+      promote: state.header.promote
+    };
+    state = createInitialState(keep);
+    initRender();
+    saveState('ล้างใบปัจจุบันแล้ว');
+  }
+
+  function formatNowThai() {
+    const now = new Date();
+    return `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${now.toTimeString().slice(0,8)}`;
+  }
+
+  function addLog(section, value) {
+    const now = new Date();
+    const timeStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')} ${now.toTimeString().slice(0,8)}`;
+    state.logs.unshift({ time: timeStr, section, value: String(value) });
+    if (state.logs.length > 500) state.logs.pop();
+    renderLogs();
+  }
+
+  function sanitizeInt(val) { return String(val ?? '').replace(/[^0-9]/g, ''); }
+  function sanitizeDecimal(val) { return String(val ?? '').replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'); }
+
+  // Searchable Dropdown: ส่งเสริม / ฟาร์ม
+  function renderPromoteFarmList(filterText = '') {
+    const listEl = document.getElementById('promoteFarmList');
+    const q = String(filterText || '').trim().toLowerCase();
+    comboFiltered = q
+      ? PROMOTE_FARM_LIST.filter(item => item.toLowerCase().includes(q))
+      : [...PROMOTE_FARM_LIST];
+
+    const currentVal = state.header.promoteFarm || '';
+    if (comboFiltered.length === 0) {
+      listEl.innerHTML = `<div class="combo-empty">ไม่พบ "${escapeHtml(filterText)}" (พิมพ์ใช้ชื่อนี้ได้เลย)</div>`;
+      comboActiveIdx = -1;
+      return;
+    }
+
+    listEl.innerHTML = comboFiltered.map((item, idx) => {
+      const cls = [
+        'combo-item',
+        item === currentVal ? 'selected' : '',
+        idx === comboActiveIdx ? 'active' : ''
+      ].filter(Boolean).join(' ');
+      return `<div class="${cls}" onclick="selectPromoteFarm(${idx})">${escapeHtml(item)}</div>`;
+    }).join('');
+  }
+
+  function openPromoteFarmList(showAll = false) {
+    const val = document.getElementById('hdr_promoteFarm').value;
+    comboActiveIdx = -1;
+    renderPromoteFarmList(showAll ? '' : val);
+    document.getElementById('promoteFarmList').classList.add('open');
+  }
+
+  function closePromoteFarmList() {
+    document.getElementById('promoteFarmList').classList.remove('open');
+    comboActiveIdx = -1;
+  }
+
+  function togglePromoteFarmList() {
+    const listEl = document.getElementById('promoteFarmList');
+    if (listEl.classList.contains('open')) {
+      closePromoteFarmList();
+    } else {
+      openPromoteFarmList(true);
+      document.getElementById('hdr_promoteFarm').focus();
+    }
+  }
+
+  function updateClearPFButton() {
+    const val = document.getElementById('hdr_promoteFarm').value;
+    document.getElementById('btnClearPF').classList.toggle('visible', val.length > 0);
+  }
+
+  function onPromoteFarmInput(val) {
+    applyPromoteFarmToHeader(val);
+    updateClearPFButton();
+    comboActiveIdx = -1;
+    renderPromoteFarmList(val);
+    document.getElementById('promoteFarmList').classList.add('open');
+    saveState();
+  }
+
+  function selectPromoteFarm(idx) {
+    const val = comboFiltered[idx];
+    if (val === undefined) return;
+    document.getElementById('hdr_promoteFarm').value = val;
+    applyPromoteFarmToHeader(val);
+    updateClearPFButton();
+    closePromoteFarmList();
+    saveState();
+  }
+
+  function clearPromoteFarm() {
+    const inp = document.getElementById('hdr_promoteFarm');
+    inp.value = '';
+    applyPromoteFarmToHeader('');
+    updateClearPFButton();
+    openPromoteFarmList(true);
+    inp.focus();
+    saveState();
+  }
+
+  function onPromoteFarmKey(e) {
+    const listEl = document.getElementById('promoteFarmList');
+    if (!listEl.classList.contains('open') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      openPromoteFarmList(false);
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (comboFiltered.length > 0) {
+        comboActiveIdx = (comboActiveIdx + 1) % comboFiltered.length;
+        renderPromoteFarmList(document.getElementById('hdr_promoteFarm').value);
+        listEl.children[comboActiveIdx]?.scrollIntoView({ block: 'nearest' });
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (comboFiltered.length > 0) {
+        comboActiveIdx = comboActiveIdx <= 0 ? comboFiltered.length - 1 : comboActiveIdx - 1;
+        renderPromoteFarmList(document.getElementById('hdr_promoteFarm').value);
+        listEl.children[comboActiveIdx]?.scrollIntoView({ block: 'nearest' });
+      }
+    } else if (e.key === 'Enter') {
+      if (listEl.classList.contains('open') && comboActiveIdx >= 0 && comboFiltered[comboActiveIdx]) {
+        e.preventDefault();
+        selectPromoteFarm(comboActiveIdx);
+      } else {
+        closePromoteFarmList();
+      }
+    } else if (e.key === 'Escape') {
+      closePromoteFarmList();
+    }
+  }
+
+  document.addEventListener('click', function (e) {
+    const combo = document.getElementById('promoteFarmCombo');
+    if (combo && !combo.contains(e.target)) {
+      closePromoteFarmList();
+    }
+  });
+
+  function renderHeader() {
+    document.getElementById('hdr_date').value = state.header.date || '';
+    document.getElementById('hdr_promoteFarm').value = getPromoteFarmDisplay(state.header);
+    updateClearPFButton();
+    document.getElementById('hdr_barnName').value = state.header.barnName || '';
+    document.getElementById('hdr_typeF').checked = !!state.header.typeF;
+    document.getElementById('hdr_typeM').checked = !!state.header.typeM;
+    document.getElementById('hdr_typeRI').checked = !!state.header.typeRI;
+    document.getElementById('pigNote').value = state.pigNote || '';
+    document.getElementById('feedNote').value = state.feedNote || '';
+    document.getElementById('gsheetUrlInput').value = getGSheetUrl();
+    document.getElementById('editingBadge').textContent = state.reportId ? `✏️ แก้ไขใบ: ${state.reportId}` : '🆕 ใบงานใหม่';
+  }
+
+  function renderPigTable() {
+    const tbody = document.getElementById('pigTbody');
+    tbody.innerHTML = '';
+    DEFAULT_PIG_ROWS.forEach(row => {
+      const tr = document.createElement('tr');
+      if (row.isSum) {
+        tr.className = 'sum-row';
+        tr.innerHTML = `
+          <td class="left col-name">${row.label}</td>
+          <td class="col-num" data-label="รวม PigPro" id="pig_sum_pro_${row.isSum}"></td>
+          <td class="col-num" data-label="รวมนับได้" id="pig_sum_cnt_${row.isSum}"></td>
+          <td class="diff-cell col-diff" data-label="รวมผลต่าง" id="pig_sum_diff_${row.isSum}"></td>
+          <td class="col-empty-mobile"></td>
+        `;
+      } else {
+        const d = state.pigData[row.key] || { pigpro: '', counted: '', cause: '' };
+        const displayLabel = row.logLabel || row.label || row.key;
+        const isPigletSync = ['pigletA','pigletB','pigletC','pigletD'].includes(row.key);
+        const isSowSync = row.key === 'sowFarrow';
+        const syncClass = isPigletSync ? 'synced-piglet' : (isSowSync ? 'synced-sow' : '');
+        tr.innerHTML = `
+          <td class="left col-name">${row.label}</td>
+          <td class="col-num" data-label="รายงาน PigPro">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" class="cell-input" id="pig_in_${row.key}_pigpro" data-prev="${escapeHtml(d.pigpro)}" value="${escapeHtml(d.pigpro)}"
+              oninput="onPigLiveInput('${row.key}','pigpro',this)"
+              onchange="onPigCommit('${row.key}','pigpro',this,'${displayLabel} (PigPro)')" />
+          </td>
+          <td class="col-num" data-label="ตรวจนับได้">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" class="cell-input ${syncClass}" id="pig_in_${row.key}_counted" data-prev="${escapeHtml(d.counted)}" value="${escapeHtml(d.counted)}"
+              oninput="onPigLiveInput('${row.key}','counted',this)"
+              onchange="onPigCommit('${row.key}','counted',this,'${displayLabel} (นับได้)')" />
+          </td>
+          <td class="diff-cell col-diff" data-label="ผลต่าง" id="pig_diff_${row.key}"></td>
+          <td class="col-cause" data-label="สาเหตุ"><input type="text" class="cell-input doc-input" value="${escapeHtml(d.cause || '')}" onchange="onPigText('${row.key}','cause',this.value)" /></td>
+        `;
+      }
+      tbody.appendChild(tr);
+    });
+    recalcPigDiffAndSums();
+  }
+
+  function recalcPigDiffAndSums() {
+    DEFAULT_PIG_ROWS.forEach(row => {
+      if (row.isSum) {
+        const groupRows = DEFAULT_PIG_ROWS.filter(r => r.group === row.isSum);
+        let sumPro = 0, sumCnt = 0, hasPro = false, hasCnt = false;
+        groupRows.forEach(gr => {
+          const d = state.pigData[gr.key] || {};
+          if (d.pigpro !== '') { sumPro += Number(d.pigpro) || 0; hasPro = true; }
+          if (d.counted !== '') { sumCnt += Number(d.counted) || 0; hasCnt = true; }
+        });
+        const diff = (hasPro || hasCnt) ? (sumPro - sumCnt) : '';
+        document.getElementById(`pig_sum_pro_${row.isSum}`).textContent = hasPro ? sumPro : '';
+        document.getElementById(`pig_sum_cnt_${row.isSum}`).textContent = hasCnt ? sumCnt : '';
+        const diffEl = document.getElementById(`pig_sum_diff_${row.isSum}`);
+        diffEl.textContent = diff === '' ? '' : (diff > 0 ? '+' + diff : diff);
+        diffEl.className = 'diff-cell col-diff ' + (diff === '' ? '' : (diff === 0 ? 'diff-zero' : 'diff-nonzero'));
+      } else {
+        const d = state.pigData[row.key] || {};
+        const proVal = d.pigpro === '' ? null : Number(d.pigpro);
+        const cntVal = d.counted === '' ? null : Number(d.counted);
+        const diff = (proVal !== null || cntVal !== null) ? ((proVal || 0) - (cntVal || 0)) : '';
+        const diffEl = document.getElementById(`pig_diff_${row.key}`);
+        if (diffEl) {
+          diffEl.textContent = diff === '' ? '' : (diff > 0 ? '+' + diff : diff);
+          diffEl.className = 'diff-cell col-diff ' + (diff === '' ? '' : (diff === 0 ? 'diff-zero' : 'diff-nonzero'));
+        }
+      }
+    });
+  }
+
+  function renderFeedTable() {
+    const tbody = document.getElementById('feedTbody');
+    tbody.innerHTML = '';
+    state.feedData.forEach((f, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="col-name" style="font-weight:700;">
+          <span class="no-print" style="font-size:0.78rem;color:#64748b;margin-right:6px;">รายการอาหาร #${idx+1} เบอร์:</span>
+          <input type="text" class="cell-input" style="width:90px;display:inline-block;" value="${escapeHtml(f.code || '')}" placeholder="เบอร์" onchange="onFeedText(${idx},'code',this.value)" />
+        </td>
+        <td class="col-num" data-label="รายงาน">
+          <input type="text" inputmode="decimal" class="cell-input" id="feed_in_${idx}_report" data-prev="${escapeHtml(f.report || '')}" value="${escapeHtml(f.report || '')}"
+            oninput="onFeedLiveInput(${idx},'report',this)"
+            onchange="onFeedCommit(${idx},'report',this)" />
+        </td>
+        <td class="col-num" data-label="นับได้">
+          <input type="text" inputmode="decimal" class="cell-input" id="feed_in_${idx}_counted" data-prev="${escapeHtml(f.counted || '')}" value="${escapeHtml(f.counted || '')}"
+            oninput="onFeedLiveInput(${idx},'counted',this)"
+            onchange="onFeedCommit(${idx},'counted',this)" />
+        </td>
+        <td class="diff-cell col-diff" data-label="ผลต่าง" id="feed_diff_${idx}"></td>
+        <td class="col-num" data-label="รับเข้า">
+          <input type="text" inputmode="decimal" class="cell-input doc-input" value="${escapeHtml(f.causeIn || '')}" placeholder="รับเข้า"
+            onchange="onFeedCauseCommit(${idx},'causeIn',this.value)" />
+        </td>
+        <td class="col-num" data-label="ใช้ไป">
+          <input type="text" inputmode="decimal" class="cell-input doc-input" value="${escapeHtml(f.causeOut || '')}" placeholder="ใช้ไป"
+            onchange="onFeedCauseCommit(${idx},'causeOut',this.value)" />
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    recalcFeedDiffs();
+  }
+
+  function recalcFeedDiffs() {
+    state.feedData.forEach((f, idx) => {
+      const rep = f.report === '' ? null : Number(f.report);
+      const cnt = f.counted === '' ? null : Number(f.counted);
+      const diff = (rep !== null || cnt !== null) ? Math.round(((rep || 0) - (cnt || 0)) * 10000) / 10000 : '';
+      const diffEl = document.getElementById(`feed_diff_${idx}`);
+      if (diffEl) {
+        diffEl.textContent = diff === '' ? '' : (diff > 0 ? '+' + diff : diff);
+        diffEl.className = 'diff-cell col-diff ' + (diff === '' ? '' : (diff === 0 ? 'diff-zero' : 'diff-nonzero'));
+      }
+    });
+  }
+
+  function renderMobilePenList() {
+    const wrap = document.getElementById('mobilePenContainer');
+    if (currentPenCol === 'ALL') {
+      wrap.style.display = 'none';
+      document.getElementById('fullPenTableWrap').style.display = 'block';
+      return;
+    }
+    wrap.style.display = 'block';
+    document.getElementById('fullPenTableWrap').style.display = 'none';
+    wrap.innerHTML = '';
+
+    for (let i = 0; i < PEN_COUNT; i++) {
+      const val = state.grid[currentPenCol][i];
+      const hasSow = !!(state.sows && state.sows[currentPenCol] && state.sows[currentPenCol][i]);
+      const div = document.createElement('div');
+      div.className = 'mobile-pen-item';
+      div.innerHTML = `
+        <div class="mobile-pen-no">${currentPenCol}${i + 1}</div>
+        <label class="sow-check-label ${hasSow ? 'checked' : ''}" id="msow_lbl_${currentPenCol}_${i}">
+          <input type="checkbox" id="msow_${currentPenCol}_${i}" ${hasSow ? 'checked' : ''}
+            onchange="onSowToggle('${currentPenCol}',${i},this.checked)" />
+          แม่
+        </label>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" class="mobile-pen-input" id="mpen_${currentPenCol}_${i}" data-prev="${val}" value="${val}"
+          placeholder="จำนวนลูก"
+          oninput="onPenLiveInput('${currentPenCol}',${i},this)"
+          onchange="onPenCommit('${currentPenCol}',${i},this)"
+          onkeydown="onPenEnter(event,'${currentPenCol}',${i},'mpen')" />
+      `;
+      wrap.appendChild(div);
+    }
+  }
+
+  function renderFullPenTable() {
+    const tbody = document.getElementById('penGridBody');
+    tbody.innerHTML = '';
+    const cols = ['A', 'B', 'C', 'D'];
+    for (let i = 0; i < PEN_COUNT; i++) {
+      const tr = document.createElement('tr');
+      cols.forEach(c => {
+        const val = state.grid[c][i];
+        const hasSow = !!(state.sows && state.sows[c] && state.sows[c][i]);
+        tr.innerHTML += `
+          <td class="pen-no">${i + 1}</td>
+          <td class="sow-cell ${hasSow ? 'checked' : ''}" id="fsow_cell_${c}_${i}">
+            <input type="checkbox" class="sow-chk" id="fsow_${c}_${i}" ${hasSow ? 'checked' : ''}
+              onchange="onSowToggle('${c}',${i},this.checked)" />
+          </td>
+          <td><input type="text" inputmode="numeric" pattern="[0-9]*" class="pen-input" id="fpen_${c}_${i}" data-prev="${val}" value="${val}"
+            oninput="onPenLiveInput('${c}',${i},this)"
+            onchange="onPenCommit('${c}',${i},this)"
+            onkeydown="onPenEnter(event,'${c}',${i},'fpen')" /></td>
+        `;
+      });
+      tbody.appendChild(tr);
+    }
+  }
+
+  function updatePenSums(opts = {}) {
+    const { sowTouched = false, touchedCol = null } = opts;
+    if (!state.sows) {
+      state.sows = { A: Array(PEN_COUNT).fill(false), B: Array(PEN_COUNT).fill(false), C: Array(PEN_COUNT).fill(false), D: Array(PEN_COUNT).fill(false) };
+    }
+    let totalAllSows = 0;
+    let totalAllPiglets = 0;
+
+    ['A','B','C','D'].forEach(c => {
+      let pTotal = 0;
+      let sTotal = 0;
+      let hasAnyPiglet = false;
+      for (let i = 0; i < PEN_COUNT; i++) {
+        if (state.grid[c][i] !== '') {
+          pTotal += Number(state.grid[c][i]) || 0;
+          hasAnyPiglet = true;
+        }
+        if (state.sows[c][i]) sTotal += 1;
+      }
+      totalAllPiglets += pTotal;
+      totalAllSows += sTotal;
+
+      document.getElementById('sumPen' + c).textContent = pTotal;
+      document.getElementById('sumSow' + c).textContent = sTotal;
+      document.getElementById('badgeSum' + c).textContent = `แม่ ${sTotal} | ลูก ${pTotal}`;
+
+      // ดึงยอดรวมลูกของแต่ละแถว (A, B, C, D) ไปใส่ช่อง ตรวจนับได้ ของ ลูกสุกร แถว A, B, C, D
+      const rowKey = PIGLET_SYNC_MAP[c];
+      if (rowKey && state.pigData[rowKey] && (hasAnyPiglet || touchedCol === c)) {
+        const newPigletVal = hasAnyPiglet ? String(pTotal) : '';
+        state.pigData[rowKey].counted = newPigletVal;
+        const inp = document.getElementById(`pig_in_${rowKey}_counted`);
+        if (inp) { inp.value = newPigletVal; inp.dataset.prev = newPigletVal; }
+      }
+    });
+
+    document.getElementById('totalAllSows').textContent = totalAllSows;
+    document.getElementById('totalAllPiglets').textContent = totalAllPiglets;
+
+    // ดึงยอดรวมแม่ทั้งหมดที่ติ๊ก ไปใส่ช่อง ตรวจนับได้ ของ แม่ซองคลอด
+    if (state.pigData['sowFarrow'] && (totalAllSows > 0 || sowTouched)) {
+      const sowVal = totalAllSows > 0 ? String(totalAllSows) : '';
+      state.pigData['sowFarrow'].counted = sowVal;
+      const sowInp = document.getElementById('pig_in_sowFarrow_counted');
+      if (sowInp) { sowInp.value = sowVal; sowInp.dataset.prev = sowVal; }
+    }
+
+    recalcPigDiffAndSums();
+  }
+
+  function renderSavedReports() {
+    document.getElementById('savedCountBadge').textContent = savedReports.length;
+    document.getElementById('savedListCount').textContent = savedReports.length;
+    const list = document.getElementById('savedReportsList');
+    list.innerHTML = '';
+
+    if (savedReports.length === 0) {
+      list.innerHTML = '<div style="text-align:center;color:#64748b;padding:16px;background:#f8fafc;border-radius:8px;">ยังไม่มีใบงานในคลัง (กดปุ่มสีเขียว "💾 บันทึก & สร้างใบใหม่" ด้านบนเพื่อเก็บใบงานและส่งเข้า Google Sheet)</div>';
+      return;
+    }
+
+    savedReports.forEach(r => {
+      const pigletSum = ['pigletA','pigletB','pigletC','pigletD'].reduce((a,k) => a + (Number(r.pigData[k]?.counted)||0), 0);
+      const boarSum = ['boar','boar2','boar3','boar4'].reduce((a,k) => a + (Number(r.pigData[k]?.counted)||0), 0);
+      const sowSum = ['sow1','sow2','sow3','sow4','sowFarrow'].reduce((a,k) => a + (Number(r.pigData[k]?.counted)||0), 0);
+      const isEditing = state.reportId === r.reportId;
+      const pfName = getPromoteFarmDisplay(r.header);
+
+      const statusBadge = r.syncedToSheet
+        ? `<span class="badge-synced">✅ ส่ง Google Sheet แล้ว (${escapeHtml(r.sheetName || '')})</span>`
+        : `<span class="badge-pending">⏳ ยังไม่ได้ส่งเข้า Google Sheet</span>`;
+
+      const div = document.createElement('div');
+      div.className = 'saved-card-item' + (isEditing ? ' editing' : '');
+      div.innerHTML = `
+        <div>
+          <div style="font-weight:700;font-size:0.95rem;">🏠 ${escapeHtml(r.header.barnName || 'ไม่ระบุเล้า')} <span style="font-size:0.75rem;color:#64748b;">(${pfName ? escapeHtml(pfName) + ' · ' : ''}${r.header.date})</span></div>
+          <div style="font-size:0.8rem;color:#475569;">ลูกสุกร: <b>${pigletSum}</b> | พ่อพันธุ์: <b>${boarSum}</b> | แม่พันธุ์: <b>${sowSum}</b> | บันทึก: ${r.savedAt || '-'}</div>
+          ${statusBadge}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${!r.syncedToSheet ? `<button class="btn" style="background:#16a34a;color:#fff;" onclick="retrySyncReport('${r.reportId}')">☁️ ส่งเข้า Sheet</button>` : ''}
+          <button class="btn" style="background:#2563eb;color:#fff;" onclick="loadReportForEdit('${r.reportId}')">📂 เปิด/แก้ไข</button>
+          <button class="btn" style="background:#fee2e2;color:#b91c1c;" onclick="deleteSavedReport('${r.reportId}')">🗑️</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function renderLogs() {
+    document.getElementById('logCountBadge').textContent = state.logs.length;
+    const tbody = document.getElementById('logTbody');
+    tbody.innerHTML = '';
+    if (state.logs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#64748b;padding:20px;">ยังไม่มีประวัติการคีย์ในใบนี้</td></tr>';
+      return;
+    }
+    state.logs.forEach(l => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="white-space:nowrap;color:#64748b;">${l.time}</td>
+        <td><strong>${escapeHtml(l.section)}</strong></td>
+        <td style="font-weight:700;color:var(--primary);">${escapeHtml(l.value)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function switchPenView(col, btn) {
+    currentPenCol = col;
+    document.querySelectorAll('.pen-row-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMobilePenList();
+  }
+
+  function onPigLiveInput(rowKey, field, el) {
+    const clean = sanitizeInt(el.value);
+    if (el.value !== clean) el.value = clean;
+    state.pigData[rowKey][field] = clean;
+    recalcPigDiffAndSums();
+  }
+  function onPigCommit(rowKey, field, el, label) {
+    if (el.dataset.prev !== el.value && el.value !== '') addLog(label, el.value);
+    el.dataset.prev = el.value;
+    saveState();
+  }
+  function onPigText(rowKey, field, val) { state.pigData[rowKey][field] = val; saveState(); }
+
+  function onFeedLiveInput(idx, field, el) {
+    const clean = sanitizeDecimal(el.value);
+    if (el.value !== clean) el.value = clean;
+    state.feedData[idx][field] = clean;
+    recalcFeedDiffs();
+  }
+  function onFeedCommit(idx, field, el) {
+    if (el.dataset.prev !== el.value && el.value !== '') {
+      const code = state.feedData[idx].code || `แถว ${idx+1}`;
+      addLog(`อาหาร เบอร์ ${code} (${field === 'report' ? 'รายงาน' : 'นับได้'})`, el.value);
+    }
+    el.dataset.prev = el.value;
+    saveState();
+  }
+  function onFeedText(idx, field, val) { state.feedData[idx][field] = val; saveState(); }
+  function onFeedCauseCommit(idx, field, val) {
+    state.feedData[idx][field] = val;
+    if (val.trim() !== '') {
+      const code = state.feedData[idx].code || `แถว ${idx+1}`;
+      addLog(`อาหาร เบอร์ ${code} (${field === 'causeIn' ? 'รับเข้า' : 'ใช้ไป'})`, val);
+    }
+    saveState();
+  }
+
+  function onSowToggle(col, idx, checked) {
+    if (!state.sows) state.sows = { A: Array(PEN_COUNT).fill(false), B: Array(PEN_COUNT).fill(false), C: Array(PEN_COUNT).fill(false), D: Array(PEN_COUNT).fill(false) };
+    state.sows[col][idx] = !!checked;
+
+    const mChk = document.getElementById(`msow_${col}_${idx}`);
+    const mLbl = document.getElementById(`msow_lbl_${col}_${idx}`);
+    const fChk = document.getElementById(`fsow_${col}_${idx}`);
+    const fCell = document.getElementById(`fsow_cell_${col}_${idx}`);
+    if (mChk) mChk.checked = !!checked;
+    if (mLbl) mLbl.classList.toggle('checked', !!checked);
+    if (fChk) fChk.checked = !!checked;
+    if (fCell) fCell.classList.toggle('checked', !!checked);
+
+    updatePenSums({ sowTouched: true });
+    addLog(`คอก ${col}${idx + 1} (แม่)`, checked ? 'มีแม่ (1)' : 'ไม่มีแม่ (0)');
+    saveState();
+  }
+
+  function onPenLiveInput(col, idx, el) {
+    const clean = sanitizeInt(el.value);
+    if (el.value !== clean) el.value = clean;
+    state.grid[col][idx] = clean;
+    const mEl = document.getElementById(`mpen_${col}_${idx}`);
+    const fEl = document.getElementById(`fpen_${col}_${idx}`);
+    if (mEl && mEl !== el) mEl.value = clean;
+    if (fEl && fEl !== el) fEl.value = clean;
+    updatePenSums({ touchedCol: col });
+  }
+  function onPenCommit(col, idx, el) {
+    if (el.dataset.prev !== el.value && el.value !== '') addLog(`คอก ${col}${idx + 1} (ลูก)`, el.value);
+    el.dataset.prev = el.value;
+    const mEl = document.getElementById(`mpen_${col}_${idx}`);
+    const fEl = document.getElementById(`fpen_${col}_${idx}`);
+    if (mEl) mEl.dataset.prev = el.value;
+    if (fEl) fEl.dataset.prev = el.value;
+    saveState();
+  }
+  function onPenEnter(e, col, idx, prefix) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (idx < PEN_COUNT - 1) document.getElementById(`${prefix}_${col}_${idx + 1}`)?.focus();
+    }
+  }
+
+  function updateHeader(field, val) { state.header[field] = val; saveState(); }
+  function updateBarnType(field, checked) { state.header[field] = checked; saveState(); }
+  function updateNote(key, val) { state[key] = val; saveState(); }
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    if (tab === 'pigs') {
+      document.getElementById('tabPigs').classList.add('active');
+    } else if (tab === 'pens') {
+      document.getElementById('tabPens').classList.add('active');
+    } else if (tab === 'feed') {
+      document.getElementById('tabFeed').classList.add('active');
+    } else if (tab === 'logs') {
+      document.getElementById('tabSaved').classList.add('active');
+      document.getElementById('tabLogs').classList.add('active');
+    }
+  }
+
+  function clearLogsOnly() {
+    if (!confirm('ล้าง Log เวลาของใบปัจจุบันใช่หรือไม่?')) return;
+    state.logs = [];
+    renderLogs();
+    saveState('ล้าง Log แล้ว');
+  }
+
+  function getAllReportsForExport() {
+    const list = [...savedReports];
+    if (hasAnyData(state)) {
+      const liveCopy = JSON.parse(JSON.stringify(state));
+      if (!liveCopy.reportId) liveCopy.reportId = makeReportId(liveCopy.header) + '-ร่าง';
+      if (!liveCopy.savedAt) liveCopy.savedAt = formatNowThai();
+      const idx = list.findIndex(r => r.reportId === liveCopy.reportId);
+      if (idx >= 0) list[idx] = liveCopy;
+      else list.unshift(liveCopy);
+    }
+    return list;
+  }
+
+  function csvCell(v) { return `"${String(v ?? '').replace(/"/g, '""')}"`; }
+  function downloadCSV(rows, filename) {
+    const content = '\uFEFF' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  function exportExcelDB(type) {
+    const reports = getAllReportsForExport();
+    if (reports.length === 0) return alert('ยังไม่มีข้อมูลสำหรับส่งออกครับ');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    if (type === 'stock') {
+      const rows = [[
+        'Report_ID', 'วันที่', 'ฟาร์ม', 'ส่งเสริม', 'ชื่อเล้า', 'ประเภทเล้า',
+        'หมวด', 'รายการ', 'รายงาน_PigPro', 'ตรวจนับได้', 'ผลต่าง',
+        'สาเหตุผลต่าง', 'ชื่อเอกสาร', 'เลขที่เอกสาร', 'วันที่เอกสาร', 'หมายเหตุ', 'เวลาบันทึก'
+      ]];
+      reports.forEach(rep => {
+        const h = rep.header;
+        const bTypes = [h.typeF?'F':'', h.typeM?'M':'', h.typeRI?'R/I':''].filter(Boolean).join('/');
+        const pfDisplay = getPromoteFarmDisplay(h);
+        const farmCol = h.farm || pfDisplay;
+        const promoteCol = h.promote || '';
+        DEFAULT_PIG_ROWS.filter(r => !r.isSum).forEach(r => {
+          const d = rep.pigData[r.key] || {};
+          const pro = d.pigpro === '' ? '' : Number(d.pigpro);
+          const cnt = d.counted === '' ? '' : Number(d.counted);
+          const diff = (pro !== '' || cnt !== '') ? ((Number(pro)||0) - (Number(cnt)||0)) : '';
+          rows.push([
+            rep.reportId, h.date, farmCol, promoteCol, h.barnName, bTypes,
+            'สุกร', r.logLabel || r.label || r.key, pro, cnt, diff, d.cause, d.docName, d.docNo, d.docDate, rep.pigNote, rep.savedAt
+          ]);
+        });
+        rep.feedData.forEach((f, i) => {
+          if (!f.code && f.report === '' && f.counted === '' && !f.causeIn && !f.causeOut && !f.docNo) return;
+          const rVal = f.report === '' ? '' : Number(f.report);
+          const cVal = f.counted === '' ? '' : Number(f.counted);
+          const diff = (rVal !== '' || cVal !== '') ? Math.round(((Number(rVal)||0) - (Number(cVal)||0))*10000)/10000 : '';
+          const causeStr = [
+            f.causeIn ? `รับเข้า: ${f.causeIn}` : '',
+            f.causeOut ? `ใช้ไป: ${f.causeOut}` : '',
+            (!f.causeIn && !f.causeOut && f.causeType) ? f.causeType : ''
+          ].filter(Boolean).join(' / ');
+          rows.push([
+            rep.reportId, h.date, farmCol, promoteCol, h.barnName, bTypes,
+            'อาหาร', f.code || `อาหาร_${i+1}`, rVal, cVal, diff, causeStr, f.docName, f.docNo, f.docDate, rep.feedNote, rep.savedAt
+          ]);
+        });
+      });
+      downloadCSV(rows, `DB_Stock_${dateStamp}.csv`);
+    } else if (type === 'pens') {
+      const rows = [['Report_ID', 'วันที่', 'ส่งเสริม/ฟาร์ม', 'ชื่อเล้า', 'แถว', 'คอกที่', 'แม่พันธุ์', 'จำนวนลูก', 'Key_Lookup']];
+      reports.forEach(rep => {
+        const h = rep.header;
+        const pfDisplay = getPromoteFarmDisplay(h);
+        ['A','B','C','D'].forEach(col => {
+          for (let i = 0; i < PEN_COUNT; i++) {
+            const sowVal = (rep.sows && rep.sows[col] && rep.sows[col][i]) ? 1 : 0;
+            const rawGrid = (rep.grid && rep.grid[col] && rep.grid[col][i] !== undefined) ? rep.grid[col][i] : '';
+            const val = rawGrid === '' ? 0 : Number(rawGrid);
+            rows.push([rep.reportId, h.date, pfDisplay, h.barnName, col, i + 1, sowVal, val, `${rep.reportId}-${col}${i+1}`]);
+          }
+        });
+      });
+      downloadCSV(rows, `DB_Pens_${dateStamp}.csv`);
+    } else if (type === 'logs') {
+      const rows = [['Report_ID', 'ชื่อเล้า', 'วัน-เวลาที่คีย์', 'จุดที่คีย์', 'จำนวน']];
+      reports.forEach(rep => {
+        [...(rep.logs || [])].reverse().forEach(l => {
+          rows.push([rep.reportId, rep.header.barnName, l.time, l.section, l.value]);
+        });
+      });
+      downloadCSV(rows, `DB_Logs_${dateStamp}.csv`);
+    }
+  }
+
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  function initRender() {
+    renderHeader();
+    renderPigTable();
+    renderFeedTable();
+    renderFullPenTable();
+    renderMobilePenList();
+    updatePenSums();
+    renderSavedReports();
+    renderLogs();
+  }
+
+  initRender();
+</script>
+</body>
+</html>
