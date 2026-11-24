@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ตรวจนับสุกร" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
   <title>รายงานการตรวจนับสินค้าระหว่างผลิตสุกรพันธุ์</title>
   <style>
     :root {
@@ -28,6 +34,7 @@
     }
     .top-title { font-weight: 700; font-size: 0.95rem; }
     .save-badge { font-size: 0.75rem; color: #86efac; display: block; }
+    .net-badge { font-size: 0.75rem; font-weight: 700; display: block; margin-top: 2px; cursor: pointer; }
     .top-actions { display: flex; flex-wrap: wrap; gap: 6px; }
     .btn {
       padding: 8px 11px; border: none; border-radius: 8px; font-weight: 700; font-size: 0.8rem;
@@ -267,6 +274,7 @@
     <div>
       <span class="top-title">🐷 ตรวจนับสต๊อกสุกร & อาหาร</span>
       <span class="save-badge" id="saveStatus">● พร้อมใช้งาน</span>
+      <span class="net-badge" id="netStatusBadge" onclick="switchTab('logs', document.getElementById('navBtn_logs'))">● กำลังตรวจสถานะเน็ต...</span>
     </div>
     <div class="top-actions">
       <button class="btn btn-save-new" id="btnSaveNew" onclick="saveAndNewReport()">💾 บันทึก & สร้างใบใหม่</button>
@@ -370,7 +378,7 @@
       </div>
     </div>
 
-    <!-- 2. คอก A-D (1-72) -->
+    <!-- 2. คอก A-D (1-38) -->
     <div class="card tab-pane" id="tabPens">
       <div class="section-title"><span>แม่พันธุ์เล้าเตรียมทดแทน / ลูกเล้าคลอด</span></div>
 
@@ -469,6 +477,9 @@
         <input type="text" id="gsheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveGSheetUrl(this.value)" />
         <button class="btn btn-save-new" onclick="saveGSheetUrl(document.getElementById('gsheetUrlInput').value, true)">บันทึกลิงก์</button>
       </div>
+      <button class="btn btn-save-new" id="btnSyncAll" style="display:none; width:100%; justify-content:center; padding:11px; margin-top:10px; font-size:0.92rem;" onclick="syncAllPendingReports()">
+        ☁️ ส่งที่รอทั้งหมดเข้า Sheet (0 ใบ)
+      </button>
     </div>
 
     <div class="section-title"><span>📊 สำรองข้อมูลไฟล์ CSV</span></div>
@@ -503,7 +514,6 @@
 </div>
 
 <script>
-  // หากต้องการให้ทุกเครื่องเชื่อมต่ออัตโนมัติ ให้วางลิงก์ /exec ในเครื่องหมายคำพูดด้านล่างนี้ได้เลยครับ
   const DEFAULT_GSHEET_URL = 'https://script.google.com/macros/s/AKfycbxc4CXnGK0kbNoq8F3P-nPFSR_54bShs7VoTjeTgCw1rczByKaQKkBnv9ov8Y6YCDQbvw/exec';
 
   const GSHEET_URL_KEY = 'cpf_pig_gsheet_url_v1';
@@ -728,6 +738,23 @@
   function persistSavedReports() {
     localStorage.setItem(SAVED_KEY, JSON.stringify(savedReports));
     renderSavedReports();
+    updateNetworkUI();
+  }
+
+  function updateNetworkUI() {
+    const pendingCount = savedReports.filter(r => !r.syncedToSheet).length;
+    const online = navigator.onLine;
+    const badge = document.getElementById('netStatusBadge');
+    if (badge) {
+      badge.textContent = (online ? '🟢 ออนไลน์' : '🔴 ออฟไลน์ (เก็บข้อมูลในเครื่อง)') +
+        (pendingCount > 0 ? ` · ⏳ รอส่ง Sheet ${pendingCount} ใบ` : '');
+      badge.style.color = online ? (pendingCount > 0 ? '#fde047' : '#86efac') : '#fca5a5';
+    }
+    const btnAll = document.getElementById('btnSyncAll');
+    if (btnAll) {
+      btnAll.textContent = `☁️ ส่งที่รอทั้งหมดเข้า Sheet (${pendingCount} ใบ)`;
+      btnAll.style.display = pendingCount > 0 ? 'inline-flex' : 'none';
+    }
   }
 
   function makeReportId(h) {
@@ -748,7 +775,6 @@
 
   function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-  // รองรับทั้ง Android/PC และ iPhone Safari (fallback no-cors + ตรวจยืนยันผ่าน GET)
   async function postReportToGoogleSheet(reportObj) {
     const url = getGSheetUrl();
     if (!url) return { ok: false, noUrl: true };
@@ -768,7 +794,6 @@
       }
       return { ok: false, error: json?.message || 'ไม่สามารถสร้างชีตได้' };
     } catch (err) {
-      // Fallback สำหรับ iPhone Safari ที่ติด Load failed ตอน 302 Redirect
       try {
         const ping = await fetch(url);
         const pingJson = await ping.json();
@@ -776,7 +801,7 @@
           return { ok: false, error: 'ลิงก์ Apps Script ไม่ตอบสนอง' };
         }
       } catch (pingErr) {
-        return { ok: false, error: 'iPhone เข้าถึงลิงก์ไม่ได้ (ให้เช็กว่าตั้ง Deploy เป็น "ทุกคน (Anyone)" และใช้ @gmail.com ส่วนตัว)' };
+        return { ok: false, error: 'เข้าถึงลิงก์ไม่ได้ (ตรวจสอบเน็ต หรือตั้ง Deploy เป็น "ทุกคน (Anyone)")' };
       }
 
       try {
@@ -827,7 +852,7 @@
 
     let sheetMsg = '';
     const gUrl = getGSheetUrl();
-    if (gUrl) {
+    if (gUrl && navigator.onLine) {
       btn.textContent = '☁️ กำลังส่งเข้า Sheet...';
       const result = await postReportToGoogleSheet(snapshot);
       if (result.ok) {
@@ -838,6 +863,9 @@
         snapshot.syncedToSheet = false;
         sheetMsg = `\n⚠️ ยังส่งเข้า Google Sheet ไม่สำเร็จ (${result.error})\nแต่บันทึกเก็บไว้ในเครื่องแล้ว สามารถกดส่งซ้ำในแท็บ 4 ได้ครับ`;
       }
+    } else if (gUrl && !navigator.onLine) {
+      snapshot.syncedToSheet = false;
+      sheetMsg = '\n📴 ตอนนี้ไม่มีอินเทอร์เน็ต — บันทึกเก็บไว้ในเครื่องแบบ Offline แล้ว!\n(เมื่อมีเน็ต ให้เข้าไปกดปุ่ม "ส่งที่รอทั้งหมดเข้า Sheet" ในแท็บ 4 ครับ)';
     } else {
       snapshot.syncedToSheet = false;
       sheetMsg = '\n(บันทึกเก็บในเครื่องเรียบร้อย - หากต้องการส่งเข้า Google Sheet ให้ใส่ลิงก์ในแท็บ 4)';
@@ -864,7 +892,66 @@
     alert(`✅ บันทึก "${snapshot.header.barnName}" แล้ว!${sheetMsg}`);
   }
 
+  async function syncAllPendingReports() {
+    if (!navigator.onLine) {
+      alert('📴 ยังไม่มีอินเทอร์เน็ต กรุณาเชื่อมต่อเน็ตก่อนกดส่งครับ');
+      return;
+    }
+    if (!getGSheetUrl()) {
+      alert('กรุณาวางลิงก์ Google Apps Script Web App URL ด้านบนก่อนครับ');
+      return;
+    }
+    const pendingList = savedReports.filter(r => !r.syncedToSheet);
+    if (pendingList.length === 0) {
+      alert('✅ ส่งข้อมูลเข้า Google Sheet ครบทุกใบแล้วครับ');
+      return;
+    }
+
+    const btn = document.getElementById('btnSyncAll');
+    const origText = btn ? btn.textContent : '';
+    if (btn) btn.disabled = true;
+
+    let okCount = 0;
+    let failCount = 0;
+    let lastError = '';
+
+    for (let i = 0; i < savedReports.length; i++) {
+      if (savedReports[i].syncedToSheet) continue;
+      if (btn) btn.textContent = `⏳ กำลังส่ง (${okCount + failCount + 1}/${pendingList.length})...`;
+      document.getElementById('saveStatus').textContent = `⏳ กำลังส่ง ${savedReports[i].header.barnName || ''}...`;
+
+      const result = await postReportToGoogleSheet(savedReports[i]);
+      if (result.ok) {
+        savedReports[i].syncedToSheet = true;
+        savedReports[i].sheetName = result.sheetName;
+        okCount++;
+        persistSavedReports();
+      } else {
+        failCount++;
+        lastError = result.error || 'ส่งไม่สำเร็จ';
+      }
+    }
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = origText;
+    }
+    updateNetworkUI();
+
+    if (failCount === 0) {
+      saveState(`ส่งเข้า Sheet สำเร็จทั้งหมด ${okCount} ใบ`);
+      alert(`✅ ส่งเข้า Google Sheet สำเร็จทั้งหมด ${okCount} ใบแล้ว!`);
+    } else {
+      saveState(`ส่งสำเร็จ ${okCount} ใบ / ค้าง ${failCount} ใบ`);
+      alert(`ส่งสำเร็จ ${okCount} ใบ\n⚠️ ส่งไม่สำเร็จ ${failCount} ใบ (${lastError})`);
+    }
+  }
+
   async function retrySyncReport(reportId) {
+    if (!navigator.onLine) {
+      alert('📴 ยังไม่มีอินเทอร์เน็ต กรุณาเชื่อมต่อเน็ตก่อนกดส่งครับ');
+      return;
+    }
     if (!getGSheetUrl()) {
       alert('กรุณาวางลิงก์ Google Apps Script Web App URL ด้านบนก่อนครับ');
       return;
@@ -944,7 +1031,6 @@
   function sanitizeInt(val) { return String(val ?? '').replace(/[^0-9]/g, ''); }
   function sanitizeDecimal(val) { return String(val ?? '').replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'); }
 
-  // Searchable Dropdown: ส่งเสริม / ฟาร์ม
   function renderPromoteFarmList(filterText = '') {
     const listEl = document.getElementById('promoteFarmList');
     const q = String(filterText || '').trim().toLowerCase();
@@ -1338,7 +1424,6 @@
       document.getElementById('sumSow' + c).textContent = sTotal;
       document.getElementById('badgeSum' + c).textContent = `แม่ ${sTotal} | ลูก ${pTotal}`;
 
-      // ดึงยอดรวมลูกของแต่ละแถว (A, B, C, D) ไปใส่ช่อง ตรวจนับได้ ของ ลูกสุกร แถว A, B, C, D
       const rowKey = PIGLET_SYNC_MAP[c];
       if (rowKey && state.pigData[rowKey] && (hasAnyPiglet || touchedCol === c)) {
         const newPigletVal = hasAnyPiglet ? String(pTotal) : '';
@@ -1351,7 +1436,6 @@
     document.getElementById('totalAllSows').textContent = totalAllSows;
     document.getElementById('totalAllPiglets').textContent = totalAllPiglets;
 
-    // ดึงยอดรวมแม่ทั้งหมดที่ติ๊ก ไปใส่ช่อง ตรวจนับได้ ของ แม่ซองคลอด
     if (state.pigData['sowFarrow'] && (totalAllSows > 0 || sowTouched)) {
       const sowVal = totalAllSows > 0 ? String(totalAllSows) : '';
       state.pigData['sowFarrow'].counted = sowVal;
@@ -1371,6 +1455,7 @@
 
     if (savedReports.length === 0) {
       list.innerHTML = '<div style="text-align:center;color:#64748b;padding:16px;background:#f8fafc;border-radius:8px;">ยังไม่มีใบงานในคลัง (กดปุ่มสีเขียว "💾 บันทึก & สร้างใบใหม่" ด้านบนเพื่อเก็บใบงานและส่งเข้า Google Sheet)</div>';
+      updateNetworkUI();
       return;
     }
 
@@ -1401,6 +1486,7 @@
       `;
       list.appendChild(div);
     });
+    updateNetworkUI();
   }
 
   function renderLogs() {
@@ -1642,6 +1728,18 @@
     updatePenSums();
     renderSavedReports();
     renderLogs();
+    updateNetworkUI();
+  }
+
+  window.addEventListener('online', updateNetworkUI);
+  window.addEventListener('offline', updateNetworkUI);
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('PWA Offline Ready'))
+        .catch(err => console.warn('SW register failed:', err));
+    });
   }
 
   initRender();
