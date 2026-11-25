@@ -1,54 +1,42 @@
-const CACHE_NAME = 'pig-stock-pwa-v1';
-const CORE_ASSETS = [
+const CACHE_NAME = 'pig-stock-cache-v2'; // เปลี่ยนเลขเวอร์ชันทุกครั้งที่มีการอัปเดตใหญ่
+const ASSETS = [
   './',
   './index.html',
-  './manifest.json'
-];
-const OPTIONAL_ASSETS = [
-  './icon-192.png',
-  './icon-512.png'
+  './manifest.json',
+  './icon-192.png'
 ];
 
+// ติดตั้งและข้ามการรอคอยทันที
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      await cache.addAll(CORE_ASSETS);
-      // แคชไอคอนแบบไม่ให้พังแม้ยังไม่ได้อัปโหลดรูปไอคอน
-      await Promise.allSettled(OPTIONAL_ASSETS.map((url) => cache.add(url)));
-    })
-  );
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
 });
 
+// ลบ Cache เวอร์ชันเก่าทิ้งทั้งหมดเมื่อตัวใหม่ทำงาน
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+// แบบ Network-First: มีเน็ตให้ดึงตัวใหม่ล่าสุดและอัปเดต Cache / ไม่มีเน็ตค่อยใช้ Cache
 self.addEventListener('fetch', (event) => {
-  // คำขอไปยัง Google Apps Script (ส่งข้อมูล / เช็กสถานะ) ให้วิ่งตรงผ่านเน็ต ไม่ต้องแคช
-  if (event.request.method !== 'GET' || event.request.url.includes('script.google.com')) {
-    return;
-  }
+  if (event.request.method !== 'GET') return;
+
+  // ไม่ต้องแคชคำขอที่ยิงไป Google Apps Script
+  if (event.request.url.includes('script.google.com')) return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request).then((networkResponse) => {
-        if (event.request.url.startsWith('http') && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-        }
-        return networkResponse;
-      });
-    }).catch(() => {
-      if (event.request.mode === 'navigate') {
-        return caches.match('./index.html');
-      }
-    })
+    fetch(event.request)
+      .then((res) => {
+        const resClone = res.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+        return res;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
