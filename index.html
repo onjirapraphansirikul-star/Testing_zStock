@@ -1258,37 +1258,6 @@
           </table>
         </div>
       </div>
-
-      <!-- เก็บเอกสาร / CUT OFF / มาตรฐานเล้าไว้ในแถบพับสำหรับพิมพ์ A4 -->
-      <details class="fat-extra-details no-print">
-        <summary>
-          <span>📄 ข้อมูลเพิ่มเติมสำหรับพิมพ์ A4 (เอกสาร / CUT OFF / เกษตรกร / มาตรฐานเล้า)</span>
-          <span style="font-size:0.78rem; color:#64748b;">กดเพื่อเปิด/ปิด ▼</span>
-        </summary>
-        <div class="fat-doc-grid">
-          <div style="border:1px solid #e2e8f0; border-radius:10px; padding:10px;">
-            <div style="font-weight:800; color:#0f766e; margin-bottom:8px;">เอกสารที่จัดทำ</div>
-            <div id="fatDocsMadeContainer"></div>
-            <div class="field" style="margin-top:10px;">
-              <label>เกษตรกร (ชื่อ / ลงชื่อ):</label>
-              <input type="text" id="fat_farmer" placeholder="ระบุชื่อเกษตรกร" onchange="fatUpdateField('farmer', this.value)" />
-            </div>
-          </div>
-
-          <div style="border:1px solid #e2e8f0; border-radius:10px; padding:10px;">
-            <div style="font-weight:800; color:#0f766e; margin-bottom:8px;">เอกสาร CUT OFF (เลขที่ / วัน เดือน ปี)</div>
-            <div id="fatDocsCutoffContainer"></div>
-            <div class="field" style="margin-top:10px;">
-              <label>ข้อคิดเห็น:</label>
-              <textarea class="field-textarea" id="fat_comments" rows="3" placeholder="ระบุข้อคิดเห็นเพิ่มเติม..." onchange="fatUpdateField('comments', this.value)"></textarea>
-            </div>
-          </div>
-        </div>
-        <div style="margin-top:10px;">
-          <div style="font-weight:800; color:#0f766e; margin-bottom:8px;">ข้อมูลอุปกรณ์และมาตรฐานเล้า (มี / ไม่มี)</div>
-          <div class="infra-grid" id="fatInfraGrid"></div>
-        </div>
-      </details>
     </div>
 
     <!-- Tab 2: นับอาหาร (แบบหมูพันธุ์) -->
@@ -2950,8 +2919,6 @@
     document.getElementById('fat_hdr_houseNo').value = fatState.header.houseNo || '';
     document.getElementById('fat_pigDiffCause').value = fatState.pigDiffCause || '';
     document.getElementById('fat_feedDiffCause').value = fatState.feedDiffCause || '';
-    document.getElementById('fat_farmer').value = fatState.farmer || '';
-    document.getElementById('fat_comments').value = fatState.comments || '';
     document.getElementById('fat_gsheetUrlInput').value = fatGetGSheetUrl();
     document.getElementById('fat_editingBadge').textContent = fatState.reportId ? `✏️ แก้ไขใบ: ${fatState.reportId}` : '🆕 ใบงานใหม่';
   }
@@ -3760,7 +3727,6 @@ function fatSwitchTab(tab, btn) {
     renderFatSinglePenTable();
     renderFatFeedTable();
     updateFatPenSums(false);
-    renderFatDocsAndInfra();
     renderFatSavedReports();
     renderFatLogs();
     updateNetworkUI();
