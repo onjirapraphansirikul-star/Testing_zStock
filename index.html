@@ -849,7 +849,7 @@
 <!-- ==================== หน้าแรก: เลือกระบบตรวจนับ ==================== -->
 <div id="homeScreen" class="home-screen">
   <div class="home-hero">
-    <h1>🐷 ระบบตรวจนับสต๊อกสุกร &amp; อาหาร</h1>
+    <h1>🐷 PigCount &amp; อาหาร</h1>
     <p>กรุณาเลือกประเภทแบบฟอร์มที่ต้องการบันทึกข้อมูล</p>
     <div class="home-net-pill" id="homeNetBadge">● กำลังตรวจสอบสถานะ...</div>
   </div>
@@ -858,26 +858,20 @@
     <!-- เมนู 1: หมูขุน -->
     <button type="button" class="mode-card fat" onclick="enterMode('fat')">
       <div class="mode-icon">🐖</div>
-      <div class="mode-title">นับหมูขุน (สุกรขุน)</div>
-      <div class="mode-desc">
-        ชื่อเล้า / C.V. / หลังที่, สรุปผลตรวจนับสุกร, นับคอก 1–30 (แถวเดียว 30 คอก), นับอาหารคงเหลือ (รับเข้า/ใช้ไป) และพิมพ์ A4 ตามแบบฟอร์ม
-      </div>
+      <div class="mode-title">ตรวจนับสุกรขุน</div>
       <div class="mode-meta">
         <span id="homeFatMeta" style="color:#0f766e;">คลัง: 0 ใบ</span>
-        <span class="mode-cta" style="background:#0f766e;">เข้าแบบฟอร์มหมูขุน →</span>
+        <span class="mode-cta" style="background:#0f766e;">เข้าแบบฟอร์มสุกรขุน →</span>
       </div>
     </button>
 
     <!-- เมนู 2: หมูพันธุ์ -->
     <button type="button" class="mode-card breed" onclick="enterMode('breed')">
       <div class="mode-icon">🐷</div>
-      <div class="mode-title">นับหมูพันธุ์ (สุกรพันธุ์)</div>
-      <div class="mode-desc">
-        รายงานการตรวจนับสินค้าระหว่างผลิตสุกรพันธุ์, เล้าคลอด (F) / พักผสม (M) / เตรียมทดแทน (R/I), นับแม่/ลูก คอก A–D (1–38), อาหารคงเหลือ และส่งเข้า Google Sheet
-      </div>
+      <div class="mode-title">ตรวจนับสุกรพันธุ์</div>
       <div class="mode-meta">
         <span id="homeBreedMeta" style="color:#1d4ed8;">คลัง: 0 ใบ</span>
-        <span class="mode-cta" style="background:#1d4ed8;">เข้าแบบฟอร์มหมูพันธุ์ →</span>
+        <span class="mode-cta" style="background:#1d4ed8;">เข้าแบบฟอร์มสุกรพันธุ์ →</span>
       </div>
     </button>
   </div>
@@ -1212,11 +1206,11 @@
           <tbody>
             <tr>
               <td class="left col-name">สุกรขุนคงเหลือรวม</td>
-              <td class="col-num" data-label="บัญชี">
+              <td class="col-num" data-label="รายงาน PigPro">
                 <input type="text" inputmode="numeric" pattern="[0-9]*" class="cell-input" id="fat_pig_book"
                   oninput="fatOnPigSummaryInput('book', this)" onchange="fatOnPigSummaryCommit('book', this)" />
               </td>
-              <td class="col-num" data-label="ตามตรวจนับ (ซิงค์จากคอก 1-30)">
+              <td class="col-num" data-label="ตรวจนับได้">
                 <input type="text" inputmode="numeric" pattern="[0-9]*" class="cell-input synced-fat" id="fat_pig_counted"
                   oninput="fatOnPigSummaryInput('counted', this)" onchange="fatOnPigSummaryCommit('counted', this)" />
               </td>
@@ -1468,7 +1462,7 @@
     const hNet = document.getElementById('homeNetBadge');
     if (hNet) {
       const online = navigator.onLine;
-      hNet.textContent = online ? '🟢 ออนไลน์ — พร้อมใช้งาน & ซิงค์ Sheet' : '🔴 ออฟไลน์ — บันทึกในเครื่องได้ตามปกติ';
+      hNet.textContent = online ? '🟢 ออนไลน์ — พร้อมใช้งาน' : '🔴 ออฟไลน์ — บันทึกในเครื่องได้ตามปกติ';
       hNet.style.color = online ? '#86efac' : '#fca5a5';
     }
   }
