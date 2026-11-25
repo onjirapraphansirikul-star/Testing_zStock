@@ -2639,11 +2639,8 @@
     updateNetworkUI();
   }
 
-    /* =====================================================================
-     ส่วนที่ 2: ระบบหมูขุน (สร้างใหม่ตามแบบฟอร์มในภาพ)
-     ===================================================================== */
 /* =====================================================================
-     ส่วนที่ 2: ระบบหมูขุน (คอกแถวเดียว 1-30 + นับอาหารแบบรับเข้า/ใช้ไป)
+     ส่วนที่ 2: ระบบหมูขุน (สร้างใหม่ตามแบบฟอร์มในภาพ)
      ===================================================================== */
   const FAT_DOCS_MADE_DEFAULT = [
     { key: 'catchScale', label: 'บิลจับและใบชั่งฯ', fixed: true },
@@ -2672,7 +2669,7 @@
     { key: 'siloAutoFeed', label: 'ไซโล+Auto Feed' }
   ];
 
-  const FAT_FEED_ROW_COUNT = 4;
+  const FAT_FEED_ROW_COUNT = 3;
 
   function createFatInitialState(keepHeader = null) {
     const today = new Date().toISOString().slice(0, 10);
@@ -2702,7 +2699,7 @@
       pigDiffCause: '',
       pens: Array(FAT_PEN_COUNT).fill(''),
       feeds: Array.from({ length: FAT_FEED_ROW_COUNT }, () => ({
-        code: '', book: '', counted: '', causeIn: '', causeOut: ''
+        code: '', book: '', counted: ''
       })),
       feedDiffCause: '',
       docsMade: FAT_DOCS_MADE_DEFAULT.map(d => ({ key: d.key, label: d.label, fixed: d.fixed, docNo: '' })),
@@ -2723,9 +2720,7 @@
     if (!Array.isArray(base.feeds) || base.feeds.length === 0) {
       base.feeds = createFatInitialState().feeds;
     } else {
-      base.feeds = padArray(base.feeds, FAT_FEED_ROW_COUNT, null).map(f =>
-        Object.assign({ code: '', book: '', counted: '', causeIn: '', causeOut: '' }, f || {})
-      );
+      base.feeds = padArray(base.feeds, FAT_FEED_ROW_COUNT, null).map(f => Object.assign({ code: '', book: '', counted: '' }, f || {}));
     }
     if (!Array.isArray(base.docsMade) || base.docsMade.length < FAT_DOCS_MADE_DEFAULT.length) {
       base.docsMade = FAT_DOCS_MADE_DEFAULT.map((d, i) => Object.assign({ key: d.key, label: d.label, fixed: d.fixed, docNo: '' }, (base.docsMade && base.docsMade[i]) || {}));
@@ -2740,6 +2735,7 @@
 
   let fatState = loadFatCurrent();
   let fatSavedReports = loadFatSavedReports();
+  let fatCurrentPenView = '1';
   let fatComboActiveIdx = -1;
   let fatComboFiltered = [];
 
@@ -2782,7 +2778,7 @@
     if (s.header.barnName.trim() !== '' || s.header.cv.trim() !== '' || s.header.houseNo.trim() !== '') return true;
     if (s.pigSummary.book !== '' || s.pigSummary.counted !== '') return true;
     if (s.pens.some(v => v !== '')) return true;
-    if (s.feeds.some(f => f.code !== '' || f.book !== '' || f.counted !== '' || f.causeIn || f.causeOut)) return true;
+    if (s.feeds.some(f => f.code !== '' || f.book !== '' || f.counted !== '')) return true;
     if (s.pigDiffCause.trim() !== '' || s.feedDiffCause.trim() !== '' || s.farmer.trim() !== '' || s.comments.trim() !== '') return true;
     if (s.docsMade.some(d => d.docNo.trim() !== '' || (!d.fixed && d.label.trim() !== ''))) return true;
     if (s.docsCutoff.some(d => d.docInfo.trim() !== '')) return true;
@@ -2962,7 +2958,6 @@
     fatSaveState();
   }
 
-  /* ตารางนับอาหารหมูขุน (มีเหตุผล รับเข้า / ใช้ไป เหมือนหมูพันธุ์) */
   function renderFatFeedTable() {
     const tbody = document.getElementById('fatFeedTbody');
     tbody.innerHTML = '';
@@ -2970,8 +2965,8 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td class="col-name" style="font-weight:700;">
-          <span class="no-print" style="font-size:0.78rem;color:#64748b;margin-right:6px;">รายการอาหาร #${idx+1} เบอร์:</span>
-          <input type="text" class="cell-input" style="width:90px;display:inline-block;" value="${escapeHtml(f.code || '')}" placeholder="เบอร์"
+          <span class="no-print" style="font-size:0.78rem;color:#64748b;margin-right:6px;">#${idx+1} เบอร์:</span>
+          <input type="text" class="cell-input" style="width:95px;display:inline-block;" value="${escapeHtml(f.code || '')}" placeholder="เบอร์อาหาร"
             onchange="fatOnFeedText(${idx},'code',this.value)" />
         </td>
         <td class="col-num" data-label="บัญชี">
@@ -2983,14 +2978,6 @@
             oninput="fatOnFeedInput(${idx},'counted',this)" onchange="fatOnFeedCommit(${idx},'counted',this)" />
         </td>
         <td class="diff-cell col-diff" data-label="ผลต่าง" id="fat_feed_diff_${idx}"></td>
-        <td class="col-num" data-label="รับเข้า">
-          <input type="text" inputmode="decimal" class="cell-input doc-input" value="${escapeHtml(f.causeIn || '')}" placeholder="รับเข้า"
-            onchange="fatOnFeedCauseCommit(${idx},'causeIn',this.value)" />
-        </td>
-        <td class="col-num" data-label="ใช้ไป">
-          <input type="text" inputmode="decimal" class="cell-input doc-input" value="${escapeHtml(f.causeOut || '')}" placeholder="ใช้ไป"
-            onchange="fatOnFeedCauseCommit(${idx},'causeOut',this.value)" />
-        </td>
       `;
       tbody.appendChild(tr);
     });
@@ -3031,31 +3018,55 @@
     fatSaveState();
   }
 
-  function fatOnFeedCauseCommit(idx, field, val) {
-    fatState.feeds[idx][field] = val;
-    if (val.trim() !== '') {
-      const code = fatState.feeds[idx].code || `แถว ${idx + 1}`;
-      fatAddLog(`อาหาร เบอร์ ${code} (${field === 'causeIn' ? 'รับเข้า' : 'ใช้ไป'})`, val);
+  /* Pens 1-30 (1-15 & 16-30) */
+  function renderFatMobilePenList() {
+    const wrap = document.getElementById('fatMobilePenContainer');
+    const pairWrap = document.getElementById('fatPairPenWrap');
+    if (fatCurrentPenView === 'ALL') {
+      wrap.style.display = 'none';
+      pairWrap.style.display = 'block';
+      return;
     }
-    fatSaveState();
+    wrap.style.display = 'block';
+    pairWrap.style.display = 'none';
+    wrap.innerHTML = '';
+
+    const start = fatCurrentPenView === '1' ? 0 : 15;
+    const end = start + 15;
+    for (let i = start; i < end; i++) {
+      const val = fatState.pens[i] || '';
+      const div = document.createElement('div');
+      div.className = 'fat-mobile-pen-item';
+      div.innerHTML = `
+        <div class="mobile-pen-no">คอก ${i + 1}</div>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" class="mobile-pen-input" id="fat_mpen_${i}" data-prev="${val}" value="${val}"
+          placeholder="จ.น.ตัว"
+          oninput="fatOnPenInput(${i}, this)"
+          onchange="fatOnPenCommit(${i}, this)"
+          onkeydown="fatOnPenEnter(event, ${i}, 'fat_mpen', ${end - 1})" />
+      `;
+      wrap.appendChild(div);
+    }
   }
 
-  /* คอก 1-30 แถวเดียว (ไม่แยก 2 คอลัมน์) */
-  function renderFatSinglePenTable() {
-    const tbody = document.getElementById('fatSinglePenBody');
+  function renderFatPairPenTable() {
+    const tbody = document.getElementById('fatPenPairBody');
     tbody.innerHTML = '';
-    for (let i = 0; i < FAT_PEN_COUNT; i++) {
-      const val = fatState.pens[i] || '';
+    for (let i = 0; i < 15; i++) {
+      const idx1 = i;
+      const idx2 = i + 15;
+      const v1 = fatState.pens[idx1] || '';
+      const v2 = fatState.pens[idx2] || '';
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class="pen-no-col">คอกที่ ${i + 1}</td>
-        <td>
-          <input type="text" inputmode="numeric" pattern="[0-9]*" class="fat-single-input" id="fat_spen_${i}" data-prev="${val}" value="${val}"
-            placeholder="ระบุ จ.น.ตัว"
-            oninput="fatOnPenInput(${i}, this)"
-            onchange="fatOnPenCommit(${i}, this)"
-            onkeydown="fatOnPenEnter(event, ${i})" />
-        </td>
+        <td class="pen-no">${idx1 + 1}</td>
+        <td><input type="text" inputmode="numeric" pattern="[0-9]*" class="pen-input" id="fat_ppen_${idx1}" data-prev="${v1}" value="${v1}"
+          oninput="fatOnPenInput(${idx1}, this)" onchange="fatOnPenCommit(${idx1}, this)"
+          onkeydown="fatOnPenEnter(event, ${idx1}, 'fat_ppen', 29)" /></td>
+        <td class="pen-no">${idx2 + 1}</td>
+        <td><input type="text" inputmode="numeric" pattern="[0-9]*" class="pen-input" id="fat_ppen_${idx2}" data-prev="${v2}" value="${v2}"
+          oninput="fatOnPenInput(${idx2}, this)" onchange="fatOnPenCommit(${idx2}, this)"
+          onkeydown="fatOnPenEnter(event, ${idx2}, 'fat_ppen', 29)" /></td>
       `;
       tbody.appendChild(tr);
     }
@@ -3074,7 +3085,10 @@
     document.getElementById('fatSum1_15_banner').textContent = sum1;
     document.getElementById('fatSum16_30_banner').textContent = sum2;
     document.getElementById('fatTotalAll_banner').textContent = total;
-    document.getElementById('fatSingleSumAll').textContent = total;
+    document.getElementById('fatBadge1').textContent = `รวม ${sum1} ตัว`;
+    document.getElementById('fatBadge2').textContent = `รวม ${sum2} ตัว`;
+    document.getElementById('fatPairSum1').textContent = sum1;
+    document.getElementById('fatPairSum2').textContent = sum2;
 
     if (hasAny || fromPenEdit) {
       const newVal = hasAny ? String(total) : '';
@@ -3085,10 +3099,21 @@
     }
   }
 
+  function fatSwitchPenView(view, btn) {
+    fatCurrentPenView = view;
+    document.querySelectorAll('#fatTabPens .pen-row-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderFatMobilePenList();
+  }
+
   function fatOnPenInput(idx, el) {
     const clean = sanitizeInt(el.value);
     if (el.value !== clean) el.value = clean;
     fatState.pens[idx] = clean;
+    const mEl = document.getElementById(`fat_mpen_${idx}`);
+    const pEl = document.getElementById(`fat_ppen_${idx}`);
+    if (mEl && mEl !== el) mEl.value = clean;
+    if (pEl && pEl !== el) pEl.value = clean;
     updateFatPenSums(true);
   }
 
@@ -3097,13 +3122,17 @@
       fatAddLog(`คอกที่ ${idx + 1}`, el.value);
     }
     el.dataset.prev = el.value;
+    const mEl = document.getElementById(`fat_mpen_${idx}`);
+    const pEl = document.getElementById(`fat_ppen_${idx}`);
+    if (mEl) mEl.dataset.prev = el.value;
+    if (pEl) pEl.dataset.prev = el.value;
     fatSaveState();
   }
 
-  function fatOnPenEnter(e, idx) {
+  function fatOnPenEnter(e, idx, prefix, maxIdx) {
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (idx < FAT_PEN_COUNT - 1) document.getElementById(`fat_spen_${idx + 1}`)?.focus();
+      if (idx < maxIdx) document.getElementById(`${prefix}_${idx + 1}`)?.focus();
     }
   }
 
@@ -3192,7 +3221,8 @@
     btn.classList.add('active');
     document.querySelectorAll('#fatApp .fat-tab-pane').forEach(p => p.classList.remove('active'));
     if (tab === 'summary') document.getElementById('fatTabSummary').classList.add('active');
-    else if (tab === 'feed') document.getElementById('fatTabFeed').classList.add('active');
+    else if (tab === 'pens') document.getElementById('fatTabPens').classList.add('active');
+    else if (tab === 'docs') document.getElementById('fatTabDocs').classList.add('active');
     else if (tab === 'logs') document.getElementById('fatTabLogs').classList.add('active');
   }
 
@@ -3443,44 +3473,27 @@
     if (type === 'stock') {
       const rows = [[
         'Report_ID', 'วันที่', 'ส่งเสริม/ฟาร์ม', 'ชื่อเล้า', 'C.V.', 'หลังที่',
-        'หมวด', 'รายการ', 'บัญชี', 'ตรวจนับ', 'ผลต่าง', 'สาเหตุผลต่าง',
-        'เกษตรกร', 'ข้อคิดเห็น',
+        'บัญชี_สุกร', 'ตรวจนับ_สุกร', 'ผลต่าง_สุกร', 'สาเหตุผลต่างพันธุ์สัตว์',
+        'อาหาร_รายการ', 'อาหาร_ผลต่างสาเหตุ', 'เกษตรกร', 'ข้อคิดเห็น',
         'โรงสเปรย์รถยนต์', 'ห้องสเปรย์/อาบน้ำ', 'รั้ว_มตฐ_ปศุสัตว์', 'บ่อแก๊สชีวภาพ', 'ถังอาหาร+น้ำเล้า', 'ไซโล+AutoFeed',
         'เวลาบันทึก'
       ]];
       reports.forEach(rep => {
         const h = rep.header || {};
         const pf = getPromoteFarmDisplay(h);
-        const inf = rep.infra || {};
         const b = rep.pigSummary?.book === '' ? '' : Number(rep.pigSummary?.book);
         const c = rep.pigSummary?.counted === '' ? '' : Number(rep.pigSummary?.counted);
         const diff = (b !== '' || c !== '') ? ((Number(b) || 0) - (Number(c) || 0)) : '';
-
+        const feedSummary = (rep.feeds || []).filter(f => f.code || f.book !== '' || f.counted !== '')
+          .map(f => `[${f.code || '-'}] บัญชี:${f.book || 0}/นับ:${f.counted || 0}`).join(' ; ');
+        const inf = rep.infra || {};
         rows.push([
           rep.reportId, h.date, pf, h.barnName, h.cv, h.houseNo,
-          'สุกรขุน', 'สุกรขุนคงเหลือรวม', b, c, diff, rep.pigDiffCause || '',
-          rep.farmer, rep.comments,
+          b, c, diff, rep.pigDiffCause,
+          feedSummary, rep.feedDiffCause, rep.farmer, rep.comments,
           inf.carSpray, inf.showerSpray, inf.livestockFence, inf.biogas, inf.feedWaterTank, inf.siloAutoFeed,
           rep.savedAt
         ]);
-
-        (rep.feeds || []).forEach((f, i) => {
-          if (!f.code && f.book === '' && f.counted === '' && !f.causeIn && !f.causeOut) return;
-          const fb = f.book === '' ? '' : Number(f.book);
-          const fc = f.counted === '' ? '' : Number(f.counted);
-          const fDiff = (fb !== '' || fc !== '') ? Math.round(((Number(fb) || 0) - (Number(fc) || 0)) * 10000) / 10000 : '';
-          const causeStr = [
-            f.causeIn ? `รับเข้า: ${f.causeIn}` : '',
-            f.causeOut ? `ใช้ไป: ${f.causeOut}` : ''
-          ].filter(Boolean).join(' / ');
-          rows.push([
-            rep.reportId, h.date, pf, h.barnName, h.cv, h.houseNo,
-            'อาหาร', f.code || `อาหาร_${i + 1}`, fb, fc, fDiff, causeStr || rep.feedDiffCause || '',
-            rep.farmer, rep.comments,
-            inf.carSpray, inf.showerSpray, inf.livestockFence, inf.biogas, inf.feedWaterTank, inf.siloAutoFeed,
-            rep.savedAt
-          ]);
-        });
       });
       downloadCSV(rows, `DB_Fat_Stock_${dateStamp}.csv`);
     } else if (type === 'pens') {
@@ -3505,7 +3518,7 @@
     }
   }
 
-  /* Render Fattening A4 Print Sheet (ตรงตามภาพแบบฟอร์ม) */
+  /* Render Fattening A4 Print Sheet (ตรงตามภาพแบบฟอร์ม 100%) */
   function renderFatPrintSheet() {
     const h = fatState.header;
     const pf = getPromoteFarmDisplay(h);
@@ -3549,11 +3562,9 @@
         </tr>`;
     }
 
-    const printFeedCount = (fatState.feeds[3] && (fatState.feeds[3].code || fatState.feeds[3].book !== '' || fatState.feeds[3].counted !== '')) ? 4 : 3;
     let feedRowsHtml = '';
-    const autoFeedCauseLines = [];
-    for (let i = 0; i < printFeedCount; i++) {
-      const f = fatState.feeds[i] || { code: '', book: '', counted: '', causeIn: '', causeOut: '' };
+    for (let i = 0; i < FAT_FEED_ROW_COUNT; i++) {
+      const f = fatState.feeds[i] || { code: '', book: '', counted: '' };
       const fb = f.book === '' ? '' : Number(f.book);
       const fc = f.counted === '' ? '' : Number(f.counted);
       const fDiff = (fb !== '' || fc !== '') ? Math.round(((Number(fb) || 0) - (Number(fc) || 0)) * 10000) / 10000 : '';
@@ -3564,21 +3575,12 @@
           <td class="fp-center">${fc}</td>
           <td class="fp-center">${fDiff === '' ? '' : (fDiff > 0 ? '+' + fDiff : fDiff)}</td>
         </tr>`;
-      if (f.causeIn || f.causeOut) {
-        const parts = [
-          f.causeIn ? `รับเข้า: ${f.causeIn}` : '',
-          f.causeOut ? `ใช้ไป: ${f.causeOut}` : ''
-        ].filter(Boolean).join(', ');
-        autoFeedCauseLines.push(`${f.code ? 'เบอร์ ' + f.code : '#' + (i + 1)}: ${parts}`);
-      }
-    }
-    if (fatState.feedDiffCause && fatState.feedDiffCause.trim() !== '') {
-      autoFeedCauseLines.push(fatState.feedDiffCause.trim());
     }
 
+    const feedCauseLines = String(fatState.feedDiffCause || '').split('\n');
     let feedCauseRowsHtml = '';
     for (let i = 0; i < 4; i++) {
-      feedCauseRowsHtml += `<tr><td style="height:17px;">${escapeHtml(autoFeedCauseLines[i] || '')}</td></tr>`;
+      feedCauseRowsHtml += `<tr><td style="height:17px;">${escapeHtml(feedCauseLines[i] || '')}</td></tr>`;
     }
 
     let cutoffRowsHtml = '';
@@ -3720,8 +3722,9 @@
   function initFatRender() {
     renderFatHeader();
     renderFatPigSummary();
-    renderFatSinglePenTable();
     renderFatFeedTable();
+    renderFatPairPenTable();
+    renderFatMobilePenList();
     updateFatPenSums(false);
     renderFatDocsAndInfra();
     renderFatSavedReports();
