@@ -1227,7 +1227,7 @@
 
       <!-- คอกที่ 1-30 รวมเป็นแถวเดียว 30 แถว -->
       <div class="card">
-        <div class="section-title fat-section-title"><span>ตรวจนับจำนวนตัวรายคอก (คอก 1–30)</span></div>
+        <div class="section-title fat-section-title"><span>ตรวจนับจำนวนตัวรายคอก</span></div>
 
         <div class="pen-summary-banner" style="background:linear-gradient(to right, #f8fafc, #f0fdfa); border-color:#99f6e4;">
           <span>📊 รวมทั้งหมด </span>
@@ -3039,7 +3039,7 @@
       const val = fatState.pens[i] || '';
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class="pen-no-col">คอกที่ ${i + 1}</td>
+        <td class="pen-no-col"> ${i + 1}</td>
         <td>
           <input type="text" inputmode="numeric" pattern="[0-9]*" class="fat-single-input" id="fat_spen_${i}" data-prev="${escapeHtml(val)}" value="${escapeHtml(val)}"
             placeholder="ระบุ จ.น.ตัว"
