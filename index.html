@@ -274,7 +274,7 @@
     }
     .fat-header-grid {
       display: grid;
-      grid-template-columns: 160px minmax(220px, 1.5fr) minmax(160px, 1fr) 120px 120px;
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
     }
     @media screen and (max-width: 900px) {
@@ -590,7 +590,6 @@
     table.grid-table input.pen-input:focus { background: #eff6ff; outline: 2px solid var(--primary); }
 
     /* ตารางคอก 1-30 แถวเดียว (หมูขุน) */
-/* ตารางคอก 1-30 แถวเดียว (หมูขุน) */
     table.fat-single-pen-table {
       width: 100%;
       border-collapse: collapse;
@@ -643,7 +642,6 @@
       padding: 8px;
     }
 
-    
     @media screen and (max-width: 768px) {
       .card { padding: 10px; }
       table.grid-table { font-size: 0.74rem; }
@@ -930,9 +928,17 @@
           <div class="combo-list no-print" id="promoteFarmList"></div>
         </div>
       </div>
-      <div class="field">
+      <div class="field" id="breedFarmerWrap">
         <label>ชื่อเกษตรกร:</label>
-        <input type="text" id="hdr_barnName" placeholder="ระบุชื่อเล้า (เช่น เล้าคลอด 1)" onchange="updateHeader('barnName', this.value)" />
+        <input type="text" id="hdr_farmerName" placeholder="ระบุชื่อเกษตรกร" onchange="updateHeader('farmerName', this.value)" />
+      </div>
+      <div class="field" id="breedCvWrap">
+        <label>C.V.:</label>
+        <input type="text" id="hdr_cv" placeholder="ระบุ C.V." onchange="updateHeader('cv', this.value)" />
+      </div>
+      <div class="field">
+        <label>เล้าที่:</label>
+        <input type="text" id="hdr_barnName" placeholder="ระบุเล้าที่ (เช่น 1 หรือ เล้าคลอด 1)" onchange="updateHeader('barnName', this.value)" />
       </div>
       <div class="field" style="grid-column: 1 / -1;">
         <label>ประเภทเล้า:</label>
@@ -1125,7 +1131,7 @@
   </div>
 </div>
 
-<!-- ==================== ระบบที่ 2: หมูขุน ==================== -->
+  <!-- ==================== ระบบที่ 2: หมูขุน ==================== -->
 <div id="fatApp" class="app-container" style="display:none;">
   <div id="fatScreenUI">
     <div class="top-bar fat-theme no-print">
@@ -1174,6 +1180,10 @@
             <button type="button" class="combo-arrow no-print" title="แสดงรายการทั้งหมด" onclick="fatTogglePFList()">▼</button>
             <div class="combo-list no-print" id="fatPromoteFarmList"></div>
           </div>
+        </div>
+        <div class="field" id="fatFarmerWrap">
+          <label>ชื่อเกษตรกร:</label>
+          <input type="text" id="fat_hdr_farmerName" placeholder="ระบุชื่อเกษตรกร" onchange="fatUpdateHeader('farmerName', this.value)" />
         </div>
         <div class="field">
           <label>ชื่อเล้า:</label>
@@ -1329,7 +1339,7 @@
   <div id="fatPrintSheet"></div>
 </div>
 
-  <script>
+<script>
   const DEFAULT_GSHEET_URL = 'https://script.google.com/macros/s/AKfycbxc4CXnGK0kbNoq8F3P-nPFSR_54bShs7VoTjeTgCw1rczByKaQKkBnv9ov8Y6YCDQbvw/exec';
 
   const GSHEET_URL_KEY = 'cpf_pig_gsheet_url_v1';
@@ -1416,6 +1426,42 @@
     'สส.สุกรขุนแก้งคร้อ'
   ];
 
+  /* ================= เช็กฟาร์ม ================= */
+  function isFarmSelected(pf) {
+    return /^(ฟ-|ฟ\.|ฟาร์ม)/i.test(String(pf || '').trim());
+  }
+
+  function syncFarmModeFields(mode) {
+    if (mode === 'breed') {
+      const isFarm = isFarmSelected(state.header.promoteFarm);
+      const fWrap = document.getElementById('breedFarmerWrap');
+      const cWrap = document.getElementById('breedCvWrap');
+      if (fWrap) fWrap.style.display = isFarm ? 'none' : '';
+      if (cWrap) cWrap.style.display = isFarm ? 'none' : '';
+      if (isFarm) {
+        state.header.farmerName = '';
+        state.header.cv = '';
+        const fEl = document.getElementById('hdr_farmerName');
+        const cEl = document.getElementById('hdr_cv');
+        if (fEl) fEl.value = '';
+        if (cEl) cEl.value = '';
+      }
+    } else {
+      const isFarm = isFarmSelected(fatState.header.promoteFarm);
+      const fWrap = document.getElementById('fatFarmerWrap');
+      const cvEl = document.getElementById('fat_hdr_cv');
+      if (fWrap) fWrap.style.display = isFarm ? 'none' : '';
+      if (cvEl && cvEl.parentElement) cvEl.parentElement.style.display = isFarm ? 'none' : '';
+      if (isFarm) {
+        fatState.header.farmerName = '';
+        fatState.header.cv = '';
+        const fEl = document.getElementById('fat_hdr_farmerName');
+        if (fEl) fEl.value = '';
+        if (cvEl) cvEl.value = '';
+      }
+    }
+  }
+
   /* ================= MODE NAVIGATION ================= */
   function enterMode(mode) {
     activeMode = mode;
@@ -1468,7 +1514,7 @@
   }
 
   /* =====================================================================
-     ส่วนที่ 1: ระบบหมูพันธุ์ (คงโครงสร้างและฟีเจอร์ตามโค้ดล่าสุดทั้งหมด)
+     ส่วนที่ 1: ระบบหมูพันธุ์
      ===================================================================== */
   const DEFAULT_PIG_ROWS = [
     { key: 'pigletA', label: 'ลูกสุกร แถว A', causeFixed: '', docFixed: '', group: 'piglet' },
@@ -1521,6 +1567,7 @@
 
   function applyPromoteFarmToHeader(val) {
     applyPromoteFarmToHeaderObj(state.header, val);
+    syncFarmModeFields('breed');
   }
 
   function createInitialState(keepHeader = null) {
@@ -1542,6 +1589,8 @@
       sheetName: '',
       header: {
         date: keepHeader ? keepHeader.date : today,
+        farmerName: keepHeader ? (keepHeader.farmerName || '') : '',
+        cv: keepHeader ? (keepHeader.cv || '') : '',
         barnName: '',
         typeF: true, typeM: false, typeRI: false,
         promoteFarm: keepPF,
@@ -1658,7 +1707,7 @@
   }
 
   function hasAnyData(s) {
-    if (s.header.barnName.trim() !== '') return true;
+    if (s.header.barnName.trim() !== '' || (s.header.farmerName || '').trim() !== '') return true;
     if (Object.values(s.pigData).some(p => p.pigpro !== '' || p.counted !== '')) return true;
     if (s.feedData.some(f => f.code !== '' || f.report !== '' || f.counted !== '' || f.causeIn || f.causeOut)) return true;
     if (['A','B','C','D'].some(c => s.grid[c].some(v => v !== ''))) return true;
@@ -1729,7 +1778,7 @@
       return;
     }
     if (!state.header.barnName.trim()) {
-      const name = prompt('กรุณาระบุ "ชื่อเล้า" ก่อนบันทึกใบนี้:', 'เล้า 1');
+      const name = prompt('กรุณาระบุ "เล้าที่" ก่อนบันทึกใบนี้:', 'เล้า 1');
       if (name === null) return;
       state.header.barnName = name.trim() || 'เล้าทั่วไป';
     }
@@ -1751,7 +1800,7 @@
       if (result.ok) {
         snapshot.syncedToSheet = true;
         snapshot.sheetName = result.sheetName;
-        sheetMsg = `\n☁️ สร้างชีตใหม่ใน Google Sheet ชื่อ:\n"${result.sheetName}" เรียบร้อย!`;
+        sheetMsg = `\n☁️ บันทึกลง Google Sheet (${result.sheetName}) เรียบร้อย!`;
       } else {
         snapshot.syncedToSheet = false;
         sheetMsg = `\n⚠️ ยังส่งเข้า Google Sheet ไม่สำเร็จ (${result.error})\nแต่บันทึกเก็บไว้ในเครื่องแล้ว สามารถกดส่งซ้ำในแท็บ 4 ได้ครับ`;
@@ -1773,7 +1822,9 @@
       date: state.header.date,
       promoteFarm: state.header.promoteFarm,
       farm: state.header.farm,
-      promote: state.header.promote
+      promote: state.header.promote,
+      farmerName: state.header.farmerName,
+      cv: state.header.cv
     };
     state = createInitialState(keep);
     initRender();
@@ -1859,7 +1910,7 @@
       savedReports[idx].sheetName = result.sheetName;
       persistSavedReports();
       saveState(`ส่งชีต "${result.sheetName}" สำเร็จ`);
-      alert(`✅ สร้างชีตใหม่ "${result.sheetName}" ใน Google Sheet สำเร็จ!`);
+      alert(`✅ บันทึกลงชีต "${result.sheetName}" ใน Google Sheet สำเร็จ!`);
     } else {
       saveState('ส่งไม่สำเร็จ');
       alert(`❌ ส่งไม่สำเร็จ: ${result.error}`);
@@ -1901,7 +1952,9 @@
       date: state.header.date,
       promoteFarm: state.header.promoteFarm,
       farm: state.header.farm,
-      promote: state.header.promote
+      promote: state.header.promote,
+      farmerName: state.header.farmerName,
+      cv: state.header.cv
     };
     state = createInitialState(keep);
     initRender();
@@ -2050,6 +2103,8 @@
     document.getElementById('hdr_date').value = state.header.date || '';
     document.getElementById('hdr_promoteFarm').value = getPromoteFarmDisplay(state.header);
     updateClearPFButton();
+    document.getElementById('hdr_farmerName').value = state.header.farmerName || '';
+    document.getElementById('hdr_cv').value = state.header.cv || '';
     document.getElementById('hdr_barnName').value = state.header.barnName || '';
     document.getElementById('hdr_typeF').checked = !!state.header.typeF;
     document.getElementById('hdr_typeM').checked = !!state.header.typeM;
@@ -2058,6 +2113,7 @@
     document.getElementById('feedNote').value = state.feedNote || '';
     document.getElementById('gsheetUrlInput').value = getGSheetUrl();
     document.getElementById('editingBadge').textContent = state.reportId ? `✏️ แก้ไขใบ: ${state.reportId}` : '🆕 ใบงานใหม่';
+    syncFarmModeFields('breed');
   }
 
   function renderPigTable() {
@@ -2551,7 +2607,7 @@
 
     if (type === 'stock') {
       const rows = [[
-        'Report_ID', 'วันที่', 'ฟาร์ม', 'ส่งเสริม', 'ชื่อเล้า', 'ประเภทเล้า',
+        'Report_ID', 'วันที่', 'ฟาร์ม', 'ส่งเสริม', 'ชื่อเกษตรกร', 'C.V.', 'เล้าที่', 'ประเภทเล้า',
         'หมวด', 'รายการ', 'รายงาน_PigPro', 'ตรวจนับได้', 'ผลต่าง',
         'สาเหตุผลต่าง', 'ชื่อเอกสาร', 'เลขที่เอกสาร', 'วันที่เอกสาร', 'หมายเหตุ', 'เวลาบันทึก'
       ]];
@@ -2567,7 +2623,7 @@
           const cnt = d.counted === '' ? '' : Number(d.counted);
           const diff = (pro !== '' || cnt !== '') ? ((Number(pro)||0) - (Number(cnt)||0)) : '';
           rows.push([
-            rep.reportId, h.date, farmCol, promoteCol, h.barnName, bTypes,
+            rep.reportId, h.date, farmCol, promoteCol, h.farmerName || '', h.cv || '', h.barnName, bTypes,
             'สุกร', r.logLabel || r.label || r.key, pro, cnt, diff, d.cause, d.docName, d.docNo, d.docDate, rep.pigNote, rep.savedAt
           ]);
         });
@@ -2582,7 +2638,7 @@
             (!f.causeIn && !f.causeOut && f.causeType) ? f.causeType : ''
           ].filter(Boolean).join(' / ');
           rows.push([
-            rep.reportId, h.date, farmCol, promoteCol, h.barnName, bTypes,
+            rep.reportId, h.date, farmCol, promoteCol, h.farmerName || '', h.cv || '', h.barnName, bTypes,
             'อาหาร', f.code || `อาหาร_${i+1}`, rVal, cVal, diff, causeStr, f.docName, f.docNo, f.docDate, rep.feedNote, rep.savedAt
           ]);
         });
@@ -2628,10 +2684,7 @@
     updateNetworkUI();
   }
 
-/* =====================================================================
-     ส่วนที่ 2: ระบบหมูขุน (สร้างใหม่ตามแบบฟอร์มในภาพ)
-     ===================================================================== */
-/* =====================================================================
+  /* =====================================================================
      ส่วนที่ 2: ระบบหมูขุน (คอกแถวเดียว 1-30 + นับอาหารแบบรับเข้า/ใช้ไป)
      ===================================================================== */
   const FAT_DOCS_MADE_DEFAULT = [
@@ -2680,8 +2733,9 @@
         promoteFarm: keepPF,
         promote: keepHeader ? (keepHeader.promote || '') : '',
         farm: keepHeader ? (keepHeader.farm || '') : '',
+        farmerName: keepHeader ? (keepHeader.farmerName || '') : '',
         barnName: '',
-        cv: '',
+        cv: keepHeader ? (keepHeader.cv || '') : '',
         houseNo: ''
       },
       pigSummary: {
@@ -2709,7 +2763,6 @@
       base.header.promoteFarm = getPromoteFarmDisplay(base.header);
     }
     base.pens = padArray(base.pens, FAT_PEN_COUNT, '');
-    // ใน normalizeFatState
     if (!Array.isArray(base.feeds) || base.feeds.length === 0) {
       base.feeds = createFatInitialState().feeds;
     } else {
@@ -2769,7 +2822,7 @@
   }
 
   function fatHasAnyData(s) {
-    if (s.header.barnName.trim() !== '' || s.header.cv.trim() !== '' || s.header.houseNo.trim() !== '') return true;
+    if (s.header.barnName.trim() !== '' || (s.header.farmerName || '').trim() !== '' || s.header.cv.trim() !== '' || s.header.houseNo.trim() !== '') return true;
     if (s.pigSummary.book !== '' || s.pigSummary.counted !== '') return true;
     if (s.pens.some(v => v !== '')) return true;
     if (s.feeds.some(f => f.code !== '' || f.book !== '' || f.counted !== '' || f.causeIn || f.causeOut)) return true;
@@ -2846,6 +2899,7 @@
     fatComboActiveIdx = -1;
     fatRenderPFList(val);
     document.getElementById('fatPromoteFarmList').classList.add('open');
+    syncFarmModeFields('fat');
     fatSaveState();
   }
 
@@ -2856,6 +2910,7 @@
     applyPromoteFarmToHeaderObj(fatState.header, val);
     fatUpdateClearPFBtn();
     fatClosePFList();
+    syncFarmModeFields('fat');
     fatSaveState();
   }
 
@@ -2866,6 +2921,7 @@
     fatUpdateClearPFBtn();
     fatOpenPFList(true);
     inp.focus();
+    syncFarmModeFields('fat');
     fatSaveState();
   }
 
@@ -2905,6 +2961,8 @@
     document.getElementById('fat_hdr_date').value = fatState.header.date || '';
     document.getElementById('fat_hdr_promoteFarm').value = getPromoteFarmDisplay(fatState.header);
     fatUpdateClearPFBtn();
+    const fNameEl = document.getElementById('fat_hdr_farmerName');
+    if (fNameEl) fNameEl.value = fatState.header.farmerName || '';
     document.getElementById('fat_hdr_barnName').value = fatState.header.barnName || '';
     document.getElementById('fat_hdr_cv').value = fatState.header.cv || '';
     document.getElementById('fat_hdr_houseNo').value = fatState.header.houseNo || '';
@@ -2912,6 +2970,7 @@
     document.getElementById('fat_feedDiffCause').value = fatState.feedDiffCause || '';
     document.getElementById('fat_gsheetUrlInput').value = fatGetGSheetUrl();
     document.getElementById('fat_editingBadge').textContent = fatState.reportId ? `✏️ แก้ไขใบ: ${fatState.reportId}` : '🆕 ใบงานใหม่';
+    syncFarmModeFields('fat');
   }
 
   function renderFatPigSummary() {
@@ -2949,7 +3008,6 @@
     el.dataset.prev = el.value;
     fatSaveState();
   }
-
 
   /* ตารางนับอาหารหมูขุน (มีเหตุผล รับเข้า / ใช้ไป เหมือนหมูพันธุ์) */
   function renderFatFeedTable() {
@@ -3039,7 +3097,7 @@
       const val = fatState.pens[i] || '';
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class="pen-no-col"> ${i + 1}</td>
+        <td class="pen-no-col">${i + 1}</td>
         <td>
           <input type="text" inputmode="numeric" pattern="[0-9]*" class="fat-single-input" id="fat_spen_${i}" data-prev="${escapeHtml(val)}" value="${escapeHtml(val)}"
             placeholder="ระบุ จ.น.ตัว"
@@ -3105,6 +3163,7 @@
   /* Docs & Infra */
   function renderFatDocsAndInfra() {
     const madeWrap = document.getElementById('fatDocsMadeContainer');
+    if (!madeWrap) return;
     madeWrap.innerHTML = '';
     fatState.docsMade.forEach((d, idx) => {
       const row = document.createElement('div');
@@ -3127,33 +3186,37 @@
     });
 
     const cutWrap = document.getElementById('fatDocsCutoffContainer');
-    cutWrap.innerHTML = '';
-    fatState.docsCutoff.forEach((d, idx) => {
-      const row = document.createElement('div');
-      row.className = 'fat-doc-row';
-      row.innerHTML = `
-        <div class="fat-doc-label">${escapeHtml(d.label)}</div>
-        <input type="text" class="cell-input text-left" value="${escapeHtml(d.docInfo || '')}" placeholder="เลขที่ / วัน เดือน ปี"
-          onchange="fatUpdateDocCutoff(${idx}, this.value)" />
-      `;
-      cutWrap.appendChild(row);
-    });
+    if (cutWrap) {
+      cutWrap.innerHTML = '';
+      fatState.docsCutoff.forEach((d, idx) => {
+        const row = document.createElement('div');
+        row.className = 'fat-doc-row';
+        row.innerHTML = `
+          <div class="fat-doc-label">${escapeHtml(d.label)}</div>
+          <input type="text" class="cell-input text-left" value="${escapeHtml(d.docInfo || '')}" placeholder="เลขที่ / วัน เดือน ปี"
+            onchange="fatUpdateDocCutoff(${idx}, this.value)" />
+        `;
+        cutWrap.appendChild(row);
+      });
+    }
 
     const infraGrid = document.getElementById('fatInfraGrid');
-    infraGrid.innerHTML = '';
-    FAT_INFRA_ITEMS.forEach(item => {
-      const val = fatState.infra[item.key] || '';
-      const card = document.createElement('div');
-      card.className = 'infra-card';
-      card.innerHTML = `
-        <div class="infra-title">${escapeHtml(item.label)}</div>
-        <div class="infra-btns">
-          <button type="button" class="infra-btn ${val === 'มี' ? 'active-yes' : ''}" onclick="fatSetInfra('${item.key}', 'มี')">✓ มี</button>
-          <button type="button" class="infra-btn ${val === 'ไม่มี' ? 'active-no' : ''}" onclick="fatSetInfra('${item.key}', 'ไม่มี')">✕ ไม่มี</button>
-        </div>
-      `;
-      infraGrid.appendChild(card);
-    });
+    if (infraGrid) {
+      infraGrid.innerHTML = '';
+      FAT_INFRA_ITEMS.forEach(item => {
+        const val = fatState.infra[item.key] || '';
+        const card = document.createElement('div');
+        card.className = 'infra-card';
+        card.innerHTML = `
+          <div class="infra-title">${escapeHtml(item.label)}</div>
+          <div class="infra-btns">
+            <button type="button" class="infra-btn ${val === 'มี' ? 'active-yes' : ''}" onclick="fatSetInfra('${item.key}', 'มี')">✓ มี</button>
+            <button type="button" class="infra-btn ${val === 'ไม่มี' ? 'active-no' : ''}" onclick="fatSetInfra('${item.key}', 'ไม่มี')">✕ ไม่มี</button>
+          </div>
+        `;
+        infraGrid.appendChild(card);
+      });
+    }
   }
 
   function fatUpdateDocMade(idx, field, val) {
@@ -3182,7 +3245,7 @@
     fatSaveState();
   }
 
-function fatSwitchTab(tab, btn) {
+  function fatSwitchTab(tab, btn) {
     document.querySelectorAll('#fatApp .nav-tab').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
     document.querySelectorAll('#fatApp .fat-tab-pane').forEach(p => p.classList.remove('active'));
@@ -3197,8 +3260,8 @@ function fatSwitchTab(tab, btn) {
       alert('ใบหมูขุนปัจจุบันยังไม่มีข้อมูลให้บันทึกครับ');
       return;
     }
-    if (!fatState.header.barnName.trim()) {
-      const name = prompt('กรุณาระบุ "ชื่อเล้า" ก่อนบันทึกใบนี้:', 'เล้า 1');
+    if (!fatState.header.barnName.trim() && !fatState.header.houseNo.trim()) {
+      const name = prompt('กรุณาระบุ "ชื่อเล้า" หรือ "หลังที่" ก่อนบันทึกใบนี้:', 'เล้า 1');
       if (name === null) return;
       fatState.header.barnName = name.trim() || 'เล้าหมูขุน';
     }
@@ -3243,7 +3306,9 @@ function fatSwitchTab(tab, btn) {
       date: fatState.header.date,
       promoteFarm: fatState.header.promoteFarm,
       farm: fatState.header.farm,
-      promote: fatState.header.promote
+      promote: fatState.header.promote,
+      farmerName: fatState.header.farmerName,
+      cv: fatState.header.cv
     };
     fatState = createFatInitialState(keep);
     initFatRender();
@@ -3252,7 +3317,7 @@ function fatSwitchTab(tab, btn) {
     btn.disabled = false;
     btn.textContent = origText;
     fatSwitchTab('summary', document.getElementById('fatNav_summary'));
-    alert(`✅ บันทึกหมูขุน "${snapshot.header.barnName}" แล้ว!${sheetMsg}`);
+    alert(`✅ บันทึกหมูขุน "${snapshot.header.houseNo || snapshot.header.barnName}" แล้ว!${sheetMsg}`);
   }
 
   async function fatSyncAllPendingReports() {
@@ -3342,7 +3407,9 @@ function fatSwitchTab(tab, btn) {
       date: fatState.header.date,
       promoteFarm: fatState.header.promoteFarm,
       farm: fatState.header.farm,
-      promote: fatState.header.promote
+      promote: fatState.header.promote,
+      farmerName: fatState.header.farmerName,
+      cv: fatState.header.cv
     };
     fatState = createFatInitialState(keep);
     initFatRender();
@@ -3377,7 +3444,7 @@ function fatSwitchTab(tab, btn) {
       div.innerHTML = `
         <div>
           <div style="font-weight:700;font-size:0.95rem;">🏠 ${escapeHtml(r.header.barnName || 'ไม่ระบุเล้า')} ${r.header.houseNo ? `(หลัง ${escapeHtml(r.header.houseNo)})` : ''} <span style="font-size:0.75rem;color:#64748b;">(${pfName ? escapeHtml(pfName) + ' · ' : ''}${r.header.date})</span></div>
-          <div style="font-size:0.8rem;color:#475569;">C.V.: <b>${escapeHtml(r.header.cv || '-')}</b> | บัญชี: <b>${escapeHtml(bookVal)}</b> | ตรวจนับ: <b>${escapeHtml(cntVal)}</b> | บันทึก: ${r.savedAt || '-'}</div>
+          <div style="font-size:0.8rem;color:#475569;">เกษตรกร: <b>${escapeHtml(r.header.farmerName || '-')}</b> | C.V.: <b>${escapeHtml(r.header.cv || '-')}</b> | บัญชี: <b>${escapeHtml(bookVal)}</b> | ตรวจนับ: <b>${escapeHtml(cntVal)}</b> | บันทึก: ${r.savedAt || '-'}</div>
           ${statusBadge}
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
@@ -3437,24 +3504,26 @@ function fatSwitchTab(tab, btn) {
 
     if (type === 'stock') {
       const rows = [[
-        'Report_ID', 'วันที่', 'ส่งเสริม/ฟาร์ม', 'ชื่อเล้า', 'C.V.', 'หลังที่',
+        'Report_ID', 'วันที่', 'ส่งเสริม/ฟาร์ม', 'ชื่อเกษตรกร', 'ชื่อเล้า', 'C.V.', 'หลังที่',
         'หมวด', 'รายการ', 'บัญชี', 'ตรวจนับ', 'ผลต่าง', 'สาเหตุผลต่าง',
-        'เกษตรกร', 'ข้อคิดเห็น',
+        'ข้อคิดเห็น',
         'โรงสเปรย์รถยนต์', 'ห้องสเปรย์/อาบน้ำ', 'รั้ว_มตฐ_ปศุสัตว์', 'บ่อแก๊สชีวภาพ', 'ถังอาหาร+น้ำเล้า', 'ไซโล+AutoFeed',
         'เวลาบันทึก'
       ]];
       reports.forEach(rep => {
         const h = rep.header || {};
         const pf = getPromoteFarmDisplay(h);
+        const farmerCol = isFarmSelected(pf) ? '' : (h.farmerName || rep.farmer || '');
+        const cvCol = isFarmSelected(pf) ? '' : (h.cv || '');
         const inf = rep.infra || {};
         const b = rep.pigSummary?.book === '' ? '' : Number(rep.pigSummary?.book);
         const c = rep.pigSummary?.counted === '' ? '' : Number(rep.pigSummary?.counted);
         const diff = (b !== '' || c !== '') ? ((Number(b) || 0) - (Number(c) || 0)) : '';
 
         rows.push([
-          rep.reportId, h.date, pf, h.barnName, h.cv, h.houseNo,
+          rep.reportId, h.date, pf, farmerCol, h.barnName, cvCol, h.houseNo,
           'สุกรขุน', 'สุกรขุนคงเหลือรวม', b, c, diff, rep.pigDiffCause || '',
-          rep.farmer, rep.comments,
+          rep.comments,
           inf.carSpray, inf.showerSpray, inf.livestockFence, inf.biogas, inf.feedWaterTank, inf.siloAutoFeed,
           rep.savedAt
         ]);
@@ -3469,9 +3538,9 @@ function fatSwitchTab(tab, btn) {
             f.causeOut ? `ใช้ไป: ${f.causeOut}` : ''
           ].filter(Boolean).join(' / ');
           rows.push([
-            rep.reportId, h.date, pf, h.barnName, h.cv, h.houseNo,
+            rep.reportId, h.date, pf, farmerCol, h.barnName, cvCol, h.houseNo,
             'อาหาร', f.code || `อาหาร_${i + 1}`, fb, fc, fDiff, causeStr || rep.feedDiffCause || '',
-            rep.farmer, rep.comments,
+            rep.comments,
             inf.carSpray, inf.showerSpray, inf.livestockFence, inf.biogas, inf.feedWaterTank, inf.siloAutoFeed,
             rep.savedAt
           ]);
@@ -3590,6 +3659,7 @@ function fatSwitchTab(tab, btn) {
     const infraNo = FAT_INFRA_ITEMS.map(it => `<td class="fp-center fp-bold">${fatState.infra[it.key] === 'ไม่มี' ? '✓' : ''}</td>`).join('');
 
     const commentLines = String(fatState.comments || '').split('\n');
+    const farmerDisplay = isFarmSelected(pf) ? '' : (h.farmerName || fatState.farmer || '');
 
     document.getElementById('fatPrintSheet').innerHTML = `
       <div class="fp-top-meta">
@@ -3604,7 +3674,7 @@ function fatSwitchTab(tab, btn) {
               <td colspan="2" class="fp-left"><span class="fp-bold">ชื่อเล้า</span> &nbsp; ${escapeHtml(h.barnName || '')}</td>
             </tr>
             <tr>
-              <td style="width:55%;"><span class="fp-bold">C.V.</span> &nbsp; ${escapeHtml(h.cv || '')}</td>
+              <td style="width:55%;"><span class="fp-bold">C.V.</span> &nbsp; ${escapeHtml(isFarmSelected(pf) ? '' : (h.cv || ''))}</td>
               <td style="width:45%;"><span class="fp-bold">หลังที่</span> &nbsp; ${escapeHtml(h.houseNo || '')}</td>
             </tr>
             <tr>
@@ -3639,7 +3709,7 @@ function fatSwitchTab(tab, btn) {
           </table>
 
           <div class="fp-farmer-box">
-            <div class="fp-farmer-space">${escapeHtml(fatState.farmer || '')}</div>
+            <div class="fp-farmer-space">${escapeHtml(farmerDisplay)}</div>
             <div class="fp-farmer-lbl">เกษตรกร</div>
           </div>
         </div>
