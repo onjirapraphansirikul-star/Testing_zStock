@@ -9,12 +9,14 @@
   <meta name="apple-mobile-web-app-title" content="ตรวจนับสุกร" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
-  <title>รายงานการตรวจนับสินค้าระหว่างผลิตสุกรพันธุ์</title>
+  <title>ระบบตรวจนับสุกรพันธุ์ & สุกรขุน</title>
   <style>
     :root {
       --primary: #1d4ed8;
       --primary-dark: #1e40af;
       --primary-light: #eff6ff;
+      --fat-primary: #0f766e;
+      --fat-light: #f0fdfa;
       --success: #15803d;
       --danger: #b91c1c;
       --bg: #f1f5f9;
@@ -49,7 +51,97 @@
       margin: 0 auto;
     }
 
-    /* Top Bar */
+    /* ================= HOME SCREEN ================= */
+    .home-screen {
+      max-width: 720px;
+      margin: 18px auto 0 auto;
+      padding: 6px;
+    }
+    .home-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      border-radius: 18px;
+      padding: 20px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22);
+      text-align: center;
+    }
+    .home-hero h1 {
+      margin: 0 0 6px 0;
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+    .home-hero p {
+      margin: 0;
+      font-size: 0.86rem;
+      color: #cbd5e1;
+    }
+    .home-net-pill {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .home-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media screen and (max-width: 600px) {
+      .home-grid { grid-template-columns: 1fr; }
+    }
+    .mode-card {
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 18px 16px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+      transition: transform 0.1s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      touch-action: manipulation;
+    }
+    .mode-card:active { transform: scale(0.98); }
+    .mode-card.breed:hover { border-color: var(--primary); box-shadow: 0 8px 20px rgba(29, 78, 216, 0.15); }
+    .mode-card.fat:hover { border-color: var(--fat-primary); box-shadow: 0 8px 20px rgba(15, 118, 110, 0.15); }
+    .mode-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+    .mode-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .mode-desc {
+      font-size: 0.84rem;
+      color: #475569;
+      line-height: 1.4;
+    }
+    .mode-meta {
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .mode-cta {
+      padding: 5px 10px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.8rem;
+    }
+
+    /* ================= TOP BAR & COMMON ================= */
     .top-bar {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #fff;
@@ -66,6 +158,27 @@
       z-index: 60;
       box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
     }
+    .top-bar.fat-theme {
+      background: linear-gradient(135deg, #0f172a 0%, #115e59 100%);
+    }
+    .top-left-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-home-back {
+      background: rgba(255,255,255,0.16);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.28);
+      padding: 6px 10px;
+      border-radius: 9px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .btn-home-back:active { transform: scale(0.96); }
     .top-title { font-weight: 800; font-size: 0.98rem; display: block; margin-bottom: 2px; }
     .save-badge { font-size: 0.74rem; color: #86efac; display: inline-block; margin-right: 10px; }
     .net-badge { font-size: 0.74rem; font-weight: 700; display: inline-block; cursor: pointer; }
@@ -121,6 +234,11 @@
       border-color: var(--primary);
       box-shadow: 0 3px 8px rgba(29, 78, 216, 0.25);
     }
+    .fat-theme-tabs .nav-tab.active {
+      background: var(--fat-primary);
+      border-color: var(--fat-primary);
+      box-shadow: 0 3px 8px rgba(15, 118, 110, 0.25);
+    }
 
     /* Card & Section */
     .card {
@@ -143,15 +261,24 @@
       flex-wrap: wrap;
       gap: 8px;
     }
+    .fat-section-title { color: var(--fat-primary); }
 
-    /* Header Inputs (แก้ล้นจอบน iOS) */
+    /* Header Inputs */
     .header-grid {
       display: grid;
       grid-template-columns: 165px minmax(240px, 1.5fr) minmax(170px, 1fr);
       gap: 10px;
     }
+    .fat-header-grid {
+      display: grid;
+      grid-template-columns: 160px minmax(220px, 1.5fr) minmax(160px, 1fr) 120px 120px;
+      gap: 10px;
+    }
+    @media screen and (max-width: 900px) {
+      .fat-header-grid { grid-template-columns: 1fr 1fr; }
+    }
     @media screen and (max-width: 768px) {
-      .header-grid { grid-template-columns: 1fr; }
+      .header-grid, .fat-header-grid { grid-template-columns: 1fr; }
     }
     .field { min-width: 0; }
     .field label {
@@ -163,7 +290,8 @@
     }
     .field input[type="text"],
     .field input[type="date"],
-    select {
+    select,
+    textarea.field-textarea {
       width: 100%;
       max-width: 100%;
       min-width: 0;
@@ -175,6 +303,10 @@
       background: #fff;
       color: var(--text);
       -webkit-appearance: none;
+    }
+    textarea.field-textarea {
+      resize: vertical;
+      line-height: 1.45;
     }
     .checkbox-group {
       display: flex;
@@ -239,6 +371,7 @@
     .cell-input.doc-input { font-weight: 500; font-size: 0.85rem; }
     .cell-input.synced-piglet { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
     .cell-input.synced-sow { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+    .cell-input.synced-fat { background: #ccfbf1; color: #115e59; border-color: #5eead4; }
 
     .diff-cell { font-weight: 700; font-family: monospace; font-size: 1rem; }
     .diff-zero { color: var(--success); }
@@ -296,6 +429,12 @@
       gap: 5px;
       margin-bottom: 10px;
     }
+    .fat-pen-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
     .pen-row-btn {
       padding: 7px 2px;
       border: 1px solid var(--border);
@@ -313,6 +452,11 @@
       color: #fff;
       border-color: var(--primary);
       box-shadow: 0 2px 6px rgba(29, 78, 216, 0.25);
+    }
+    .fat-pen-tabs .pen-row-btn.active {
+      background: var(--fat-primary);
+      border-color: var(--fat-primary);
+      box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
     }
     .pen-row-sum-badge {
       display: block;
@@ -347,6 +491,17 @@
       margin-bottom: 6px;
       background: #fff;
     }
+    .fat-mobile-pen-item {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 6px;
+      background: #fff;
+    }
     .mobile-pen-no { font-weight: 800; font-size: 0.95rem; color: #334155; }
     .sow-check-label {
       display: inline-flex; align-items: center; gap: 5px; padding: 7px 10px;
@@ -363,8 +518,8 @@
     }
     .mobile-pen-input:focus { border-color: var(--primary); background: #fff; outline: none; }
 
-    /* 4-Row Grid Wrapper & Table (แก้ล้นขอบ + จัดเส้นแบ่งสวยงาม) */
-    #fullPenTableWrap {
+    /* 4-Row Grid Wrapper & Table */
+    #fullPenTableWrap, #fatPairPenWrap {
       width: 100%;
       max-width: 100%;
       overflow-x: auto;
@@ -398,13 +553,16 @@
       border-bottom: 2px solid #94a3b8;
     }
 
-    /* เส้นแบ่งหนาแยกกลุ่ม A | B | C | D ชัดเจน */
-    table.grid-table th:nth-child(3n):not(:last-child),
-    table.grid-table td:nth-child(3n):not(:last-child) {
+    #fullPenTableWrap table.grid-table th:nth-child(3n):not(:last-child),
+    #fullPenTableWrap table.grid-table td:nth-child(3n):not(:last-child) {
       border-right: 2px solid #64748b;
     }
 
-    /* สลับสีพื้นอ่อนให้แถว B และ D แยกสายตาง่ายขึ้น */
+    #fatPairPenWrap table.grid-table th:nth-child(2),
+    #fatPairPenWrap table.grid-table td:nth-child(2) {
+      border-right: 2px solid #64748b;
+    }
+
     table.grid-table tbody tr:nth-child(even) td:not(.pen-no):not(.checked) {
       background: #f8fafc;
     }
@@ -482,6 +640,71 @@
       table.grid-table tr.total-foot td { font-size: 0.68rem; }
     }
 
+    /* Fattening Docs & Infra Cards */
+    .fat-doc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media screen and (max-width: 768px) {
+      .fat-doc-grid { grid-template-columns: 1fr; }
+    }
+    .fat-doc-row {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .fat-doc-label {
+      font-weight: 700;
+      font-size: 0.86rem;
+      color: #334155;
+    }
+    .infra-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 8px;
+    }
+    .infra-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: #f8fafc;
+    }
+    .infra-title {
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #0f172a;
+      margin-bottom: 7px;
+    }
+    .infra-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .infra-btn {
+      padding: 7px 4px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      color: #475569;
+      touch-action: manipulation;
+    }
+    .infra-btn.active-yes {
+      background: #dcfce7;
+      border-color: #16a34a;
+      color: #166534;
+    }
+    .infra-btn.active-no {
+      background: #fee2e2;
+      border-color: #dc2626;
+      color: #991b1b;
+    }
+
     .note-box { width: 100%; margin-top: 8px; padding: 9px; border: 1px solid var(--border); border-radius: 9px; font-size: 0.9rem; }
 
     .gsheet-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
@@ -504,61 +727,139 @@
 
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
+    .fat-tab-pane { display: none; }
+    .fat-tab-pane.active { display: block; }
 
     .print-only-header { display: none; }
+    #fatPrintSheet { display: none; }
+
     @media print {
       @page { size: A4 portrait; margin: 7mm; }
       body { background: #fff; padding: 0; font-size: 10px; color: #000; }
-      .top-bar, .nav-tabs, .no-print, #tabSaved, #tabLogs, #mobilePenContainer, .pen-row-tabs { display: none !important; }
-      .tab-pane { display: block !important; }
-      #fullPenTableWrap { display: block !important; border: none; overflow: visible; border-radius: 0; }
-      .card { border: none; box-shadow: none; padding: 0; margin: 0 0 6px 0; }
-      .print-only-header { display: block; margin-bottom: 6px; }
-      .print-only-header h2 { margin: 0; font-size: 14px; }
-      .print-only-header h3 { margin: 2px 0 6px 0; font-size: 12px; font-weight: 600; }
-      .screen-only-title { display: none !important; }
 
-      .print-2col { display: grid !important; grid-template-columns: 1.1fr 1.3fr; gap: 6px; align-items: start; }
-      table.mobile-cards, table.mobile-cards thead, table.mobile-cards tbody, table.mobile-cards tr, table.mobile-cards td {
+      /* ซ่อนหน้าแรกและส่วนที่ไม่ได้พิมพ์ */
+      #homeScreen { display: none !important; }
+      body.mode-breed #fatApp { display: none !important; }
+      body.mode-fat #breedApp { display: none !important; }
+
+      /* Print Mode: หมูพันธุ์ */
+      body.mode-breed .top-bar,
+      body.mode-breed .nav-tabs,
+      body.mode-breed .no-print,
+      body.mode-breed #tabSaved,
+      body.mode-breed #tabLogs,
+      body.mode-breed #mobilePenContainer,
+      body.mode-breed .pen-row-tabs { display: none !important; }
+      body.mode-breed .tab-pane { display: block !important; }
+      body.mode-breed #fullPenTableWrap { display: block !important; border: none; overflow: visible; border-radius: 0; }
+      body.mode-breed .card { border: none; box-shadow: none; padding: 0; margin: 0 0 6px 0; }
+      body.mode-breed .print-only-header { display: block; margin-bottom: 6px; }
+      body.mode-breed .print-only-header h2 { margin: 0; font-size: 14px; }
+      body.mode-breed .print-only-header h3 { margin: 2px 0 6px 0; font-size: 12px; font-weight: 600; }
+      body.mode-breed .screen-only-title { display: none !important; }
+
+      body.mode-breed .print-2col { display: grid !important; grid-template-columns: 1.1fr 1.3fr; gap: 6px; align-items: start; }
+      body.mode-breed table.mobile-cards,
+      body.mode-breed table.mobile-cards thead,
+      body.mode-breed table.mobile-cards tbody,
+      body.mode-breed table.mobile-cards tr,
+      body.mode-breed table.mobile-cards td {
         display: revert !important; border: 1px solid #000 !important; padding: 2px 3px !important; margin: 0 !important; background: transparent !important;
       }
-      table.mobile-cards td::before { display: none !important; }
-      table.form-table { font-size: 9px; }
-      table.form-table th { background: #f3f4f6 !important; -webkit-print-color-adjust: exact; border: 1px solid #000; font-size: 8.5px; }
-      table.form-table tr.sum-row td { background: #f3f4f6 !important; color: #000; }
-      .cell-input, select { border: none; background: transparent !important; padding: 1px; font-size: 9px; color: #000 !important; appearance: none; }
-      .diff-nonzero { background: transparent !important; color: #000; }
-      .pen-summary-banner { border: 1px solid #000; padding: 3px 6px; font-size: 9px; margin-bottom: 4px; background: #fff; }
-      table.grid-table { font-size: 7.5px; table-layout: auto; min-width: 0; }
-      table.grid-table thead th { position: static; background: #f3f4f6 !important; font-size: 7.5px; }
-      table.grid-table th, table.grid-table td { border: 1px solid #000 !important; padding: 0.5px 1px; }
-      table.grid-table td.pen-no { width: 16px; }
-      table.grid-table td.sow-cell { width: 15px; background: transparent !important; }
-      table.grid-table input.sow-chk { width: 9px; height: 9px; }
-      table.grid-table input.pen-input { padding: 0; font-size: 7.5px; min-width: 18px; }
-      table.grid-table tr.total-foot td,
-      table.grid-table tr.total-foot td.sow-total-cell { background: #f3f4f6 !important; color: #000; font-size: 7.5px; }
-      .header-grid { display: flex; flex-wrap: wrap; gap: 10px; font-size: 10px; margin-bottom: 6px; }
-      .field label { display: inline; font-weight: 700; color: #000; margin-right: 4px; }
-      .field input { border: none; border-bottom: 1px dotted #000; border-radius: 0; padding: 1px 4px; width: auto; font-size: 10px; }
-      .combo-wrap { display: inline-block; }
-      .combo-wrap input[type="text"] { padding-right: 4px; }
-      .note-box { border: none; border-bottom: 1px dotted #000; border-radius: 0; padding: 2px 0; font-size: 9.5px; }
+      body.mode-breed table.mobile-cards td::before { display: none !important; }
+      body.mode-breed table.form-table { font-size: 9px; }
+      body.mode-breed table.form-table th { background: #f3f4f6 !important; -webkit-print-color-adjust: exact; border: 1px solid #000; font-size: 8.5px; }
+      body.mode-breed table.form-table tr.sum-row td { background: #f3f4f6 !important; color: #000; }
+      body.mode-breed .cell-input, body.mode-breed select { border: none; background: transparent !important; padding: 1px; font-size: 9px; color: #000 !important; appearance: none; }
+      body.mode-breed .diff-nonzero { background: transparent !important; color: #000; }
+      body.mode-breed .pen-summary-banner { border: 1px solid #000; padding: 3px 6px; font-size: 9px; margin-bottom: 4px; background: #fff; }
+      body.mode-breed table.grid-table { font-size: 7.5px; table-layout: auto; min-width: 0; }
+      body.mode-breed table.grid-table thead th { position: static; background: #f3f4f6 !important; font-size: 7.5px; }
+      body.mode-breed table.grid-table th, body.mode-breed table.grid-table td { border: 1px solid #000 !important; padding: 0.5px 1px; }
+      body.mode-breed table.grid-table td.pen-no { width: 16px; }
+      body.mode-breed table.grid-table td.sow-cell { width: 15px; background: transparent !important; }
+      body.mode-breed table.grid-table input.sow-chk { width: 9px; height: 9px; }
+      body.mode-breed table.grid-table input.pen-input { padding: 0; font-size: 7.5px; min-width: 18px; }
+      body.mode-breed table.grid-table tr.total-foot td,
+      body.mode-breed table.grid-table tr.total-foot td.sow-total-cell { background: #f3f4f6 !important; color: #000; font-size: 7.5px; }
+      body.mode-breed .header-grid { display: flex; flex-wrap: wrap; gap: 10px; font-size: 10px; margin-bottom: 6px; }
+      body.mode-breed .field label { display: inline; font-weight: 700; color: #000; margin-right: 4px; }
+      body.mode-breed .field input { border: none; border-bottom: 1px dotted #000; border-radius: 0; padding: 1px 4px; width: auto; font-size: 10px; }
+      body.mode-breed .combo-wrap { display: inline-block; }
+      body.mode-breed .combo-wrap input[type="text"] { padding-right: 4px; }
+      body.mode-breed .note-box { border: none; border-bottom: 1px dotted #000; border-radius: 0; padding: 2px 0; font-size: 9.5px; }
+
+      /* Print Mode: หมูขุน */
+      body.mode-fat #fatScreenUI { display: none !important; }
+      body.mode-fat #fatPrintSheet { display: block !important; width: 100%; font-size: 10px; color: #000; }
+      .fp-top-meta { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; font-weight: 700; }
+      .fp-2col { display: grid; grid-template-columns: 1fr 1.12fr; gap: 4px; align-items: stretch; }
+      table.fp-tbl { width: 100%; border-collapse: collapse; font-size: 9.5px; margin-bottom: 3px; }
+      table.fp-tbl th, table.fp-tbl td { border: 1px solid #000; padding: 2.5px 4px; vertical-align: middle; }
+      table.fp-tbl th.fp-gray, table.fp-tbl td.fp-gray { background: #d9d9d9 !important; -webkit-print-color-adjust: exact; font-weight: 700; text-align: center; }
+      .fp-left { text-align: left; }
+      .fp-center { text-align: center; }
+      .fp-bold { font-weight: 700; }
+      .fp-line-box { min-height: 16px; border-bottom: 1px solid #000; padding: 1.5px 4px; font-size: 9px; }
+      .fp-farmer-box { border: 1px solid #000; margin-top: 3px; }
+      .fp-farmer-space { height: 40px; border-bottom: 1px solid #000; padding: 4px; font-size: 9.5px; }
+      .fp-farmer-lbl { text-align: center; font-weight: 700; padding: 2px; font-size: 9.5px; }
     }
   </style>
 </head>
 <body>
 
-<div class="app-container">
+<!-- ==================== หน้าแรก: เลือกระบบตรวจนับ ==================== -->
+<div id="homeScreen" class="home-screen">
+  <div class="home-hero">
+    <h1>🐷 ระบบตรวจนับสต๊อกสุกร &amp; อาหาร</h1>
+    <p>กรุณาเลือกประเภทแบบฟอร์มที่ต้องการบันทึกข้อมูล</p>
+    <div class="home-net-pill" id="homeNetBadge">● กำลังตรวจสอบสถานะ...</div>
+  </div>
+
+  <div class="home-grid">
+    <!-- เมนู 1: หมูขุน -->
+    <button type="button" class="mode-card fat" onclick="enterMode('fat')">
+      <div class="mode-icon">🐖</div>
+      <div class="mode-title">นับหมูขุน (สุกรขุน)</div>
+      <div class="mode-desc">
+        ชื่อเล้า / C.V. / หลังที่, นับคอก 1–30 (1–15 และ 16–30), สรุปบัญชี–ตรวจนับ–ผลต่าง, สาเหตุ, อาหารคงเหลือ, เอกสารที่จัดทำ, เอกสาร CUT OFF และข้อมูลมาตรฐานเล้า (มี/ไม่มี)
+      </div>
+      <div class="mode-meta">
+        <span id="homeFatMeta" style="color:#0f766e;">คลัง: 0 ใบ</span>
+        <span class="mode-cta" style="background:#0f766e;">เข้าแบบฟอร์มหมูขุน →</span>
+      </div>
+    </button>
+
+    <!-- เมนู 2: หมูพันธุ์ -->
+    <button type="button" class="mode-card breed" onclick="enterMode('breed')">
+      <div class="mode-icon">🐷</div>
+      <div class="mode-title">นับหมูพันธุ์ (สุกรพันธุ์)</div>
+      <div class="mode-desc">
+        รายงานการตรวจนับสินค้าระหว่างผลิตสุกรพันธุ์, เล้าคลอด (F) / พักผสม (M) / เตรียมทดแทน (R/I), นับแม่/ลูก คอก A–D (1–38), อาหารคงเหลือ และส่งเข้า Google Sheet
+      </div>
+      <div class="mode-meta">
+        <span id="homeBreedMeta" style="color:#1d4ed8;">คลัง: 0 ใบ</span>
+        <span class="mode-cta" style="background:#1d4ed8;">เข้าแบบฟอร์มหมูพันธุ์ →</span>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- ==================== ระบบที่ 1: หมูพันธุ์ ==================== -->
+<div id="breedApp" class="app-container" style="display:none;">
   <div class="top-bar no-print">
     <div>
-      <span class="top-title">🐷 ตรวจนับสต๊อกสุกร & อาหาร</span>
+      <div class="top-left-row">
+        <button type="button" class="btn-home-back" onclick="goHome()">🏠 หน้าแรก</button>
+        <span class="top-title" style="margin:0;">🐷 ตรวจนับสุกรพันธุ์ &amp; อาหาร</span>
+      </div>
       <span class="save-badge" id="saveStatus">● พร้อมใช้งาน</span>
       <span class="net-badge" id="netStatusBadge" onclick="switchTab('logs', document.getElementById('navBtn_logs'))">● กำลังตรวจสถานะเน็ต...</span>
     </div>
     <div class="top-actions">
-      <button class="btn btn-save-new" id="btnSaveNew" onclick="saveAndNewReport()">💾 บันทึก & สร้างใบใหม่</button>
-      <button class="btn btn-print" onclick="window.print()">🖨️ พิมพ์ A4</button>
+      <button class="btn btn-save-new" id="btnSaveNew" onclick="saveAndNewReport()">💾 บันทึก &amp; สร้างใบใหม่</button>
+      <button class="btn btn-print" onclick="printMode('breed')">🖨️ พิมพ์ A4</button>
       <button class="btn btn-clear" onclick="clearCurrentDraft()">🗑️ ล้างใบนี้</button>
     </div>
   </div>
@@ -577,7 +878,7 @@
 
   <div class="card" id="tabHeader">
     <div class="section-title screen-only-title">
-      <span>ข้อมูลทั่วไปของใบตรวจนับ</span>
+      <span>ข้อมูลทั่วไปของใบตรวจนับ (หมูพันธุ์)</span>
       <span id="editingBadge" style="font-size:0.78rem; color:#15803d;"></span>
     </div>
     <div class="header-grid">
@@ -764,7 +1065,7 @@
 
     <div class="section-title"><span>📊 สำรองข้อมูลไฟล์ CSV</span></div>
     <div class="export-grid">
-      <button class="btn btn-excel" style="padding:10px; justify-content:center;" onclick="exportExcelDB('stock')">⬇️ DB_Stock (สุกร & อาหาร)</button>
+      <button class="btn btn-excel" style="padding:10px; justify-content:center;" onclick="exportExcelDB('stock')">⬇️ DB_Stock (สุกร &amp; อาหาร)</button>
       <button class="btn btn-excel" style="padding:10px; justify-content:center;" onclick="exportExcelDB('pens')">⬇️ DB_Pens (รายคอก A-D)</button>
       <button class="btn btn-excel" style="padding:10px; justify-content:center; background:#0369a1;" onclick="exportExcelDB('logs')">⬇️ DB_Logs (เวลาที่คีย์)</button>
     </div>
@@ -793,13 +1094,263 @@
   </div>
 </div>
 
-<script>
+<!-- ==================== ระบบที่ 2: หมูขุน (ตามภาพแบบฟอร์ม) ==================== -->
+<div id="fatApp" class="app-container" style="display:none;">
+  <div id="fatScreenUI">
+    <div class="top-bar fat-theme no-print">
+      <div>
+        <div class="top-left-row">
+          <button type="button" class="btn-home-back" onclick="goHome()">🏠 หน้าแรก</button>
+          <span class="top-title" style="margin:0;">🐖 ตรวจนับสุกรขุน &amp; อาหาร</span>
+        </div>
+        <span class="save-badge" id="fat_saveStatus">● พร้อมใช้งาน</span>
+        <span class="net-badge" id="fat_netStatusBadge" onclick="fatSwitchTab('logs', document.getElementById('fatNav_logs'))">● กำลังตรวจสถานะเน็ต...</span>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-save-new" id="fat_btnSaveNew" onclick="fatSaveAndNewReport()">💾 บันทึก &amp; สร้างใบใหม่</button>
+        <button class="btn btn-print" onclick="printMode('fat')">🖨️ พิมพ์ A4</button>
+        <button class="btn btn-clear" onclick="fatClearCurrentDraft()">🗑️ ล้างใบนี้</button>
+      </div>
+    </div>
+
+    <div class="nav-tabs fat-theme-tabs no-print">
+      <button class="nav-tab active" id="fatNav_summary" onclick="fatSwitchTab('summary', this)">📋 สรุป/อาหาร</button>
+      <button class="nav-tab" id="fatNav_pens" onclick="fatSwitchTab('pens', this)">🐖 คอก (1-30)</button>
+      <button class="nav-tab" id="fatNav_docs" onclick="fatSwitchTab('docs', this)">📄 เอกสาร/ข้อมูล</button>
+      <button class="nav-tab" id="fatNav_logs" onclick="fatSwitchTab('logs', this)">📁 คลัง (<span id="fatSavedCountBadge">0</span>)</button>
+    </div>
+
+    <!-- Header ข้อมูลทั่วไป (หมูขุน) -->
+    <div class="card">
+      <div class="section-title fat-section-title">
+        <span>ข้อมูลทั่วไปของใบตรวจนับ (หมูขุน)</span>
+        <span id="fat_editingBadge" style="font-size:0.78rem; color:#0f766e;">🆕 ใบงานใหม่</span>
+      </div>
+      <div class="fat-header-grid">
+        <div class="field">
+          <label>วันที่:</label>
+          <input type="date" id="fat_hdr_date" onchange="fatUpdateHeader('date', this.value)" />
+        </div>
+        <div class="field">
+          <label>ส่งเสริม / ฟาร์ม:</label>
+          <div class="combo-wrap" id="fatPromoteFarmCombo">
+            <input type="text" id="fat_hdr_promoteFarm" autocomplete="off"
+              placeholder="พิมพ์ค้นหา หรือกดเลือก ส่งเสริม / ฟาร์ม..."
+              onfocus="fatOpenPFList(true)"
+              oninput="fatOnPFInput(this.value)"
+              onkeydown="fatOnPFKey(event)" />
+            <button type="button" class="combo-clear no-print" id="fatBtnClearPF" title="ล้าง" onclick="fatClearPF()">✕</button>
+            <button type="button" class="combo-arrow no-print" title="แสดงรายการทั้งหมด" onclick="fatTogglePFList()">▼</button>
+            <div class="combo-list no-print" id="fatPromoteFarmList"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>ชื่อเล้า:</label>
+          <input type="text" id="fat_hdr_barnName" placeholder="ระบุชื่อเล้า" onchange="fatUpdateHeader('barnName', this.value)" />
+        </div>
+        <div class="field">
+          <label>C.V.:</label>
+          <input type="text" id="fat_hdr_cv" placeholder="ระบุ C.V." onchange="fatUpdateHeader('cv', this.value)" />
+        </div>
+        <div class="field">
+          <label>หลังที่:</label>
+          <input type="text" id="fat_hdr_houseNo" placeholder="ระบุหลังที่" onchange="fatUpdateHeader('houseNo', this.value)" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 1: สรุปผลตรวจนับสุกรคงเหลือ + การตรวจนับอาหารคงเหลือ -->
+    <div class="fat-tab-pane active" id="fatTabSummary">
+      <div class="card">
+        <div class="section-title fat-section-title"><span>สรุปผลตรวจนับสุกรคงเหลือ</span></div>
+        <table class="form-table mobile-cards">
+          <thead>
+            <tr>
+              <th style="width:28%;">รายการ</th>
+              <th style="width:24%;">บัญชี</th>
+              <th style="width:24%;">ตามตรวจนับ (ซิงค์จากคอก)</th>
+              <th style="width:24%;">ผลต่าง</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="left col-name">สุกรขุนคงเหลือรวม</td>
+              <td class="col-num" data-label="บัญชี">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" class="cell-input" id="fat_pig_book"
+                  oninput="fatOnPigSummaryInput('book', this)" onchange="fatOnPigSummaryCommit('book', this)" />
+              </td>
+              <td class="col-num" data-label="ตามตรวจนับ (ซิงค์จากคอก 1-30)">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" class="cell-input synced-fat" id="fat_pig_counted"
+                  oninput="fatOnPigSummaryInput('counted', this)" onchange="fatOnPigSummaryCommit('counted', this)" />
+              </td>
+              <td class="diff-cell col-diff" data-label="ผลต่าง" id="fat_pig_diff"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="field" style="margin-top:10px;">
+          <label>สาเหตุผลต่างพันธุ์สัตว์:</label>
+          <textarea class="field-textarea" id="fat_pigDiffCause" rows="3" placeholder="ระบุสาเหตุผลต่างพันธุ์สัตว์ (ถ้ามี)..." onchange="fatUpdateField('pigDiffCause', this.value)"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title fat-section-title"><span>การตรวจนับอาหารคงเหลือ</span></div>
+        <table class="form-table mobile-cards">
+          <thead>
+            <tr>
+              <th style="width:25%;">เบอร์</th>
+              <th style="width:25%;">บัญชี</th>
+              <th style="width:25%;">ตรวจนับ</th>
+              <th style="width:25%;">ผลต่าง</th>
+            </tr>
+          </thead>
+          <tbody id="fatFeedTbody"></tbody>
+        </table>
+
+        <div class="field" style="margin-top:10px;">
+          <label>สาเหตุผลต่างอาหาร:</label>
+          <textarea class="field-textarea" id="fat_feedDiffCause" rows="3" placeholder="ระบุสาเหตุผลต่างอาหาร (ถ้ามี)..." onchange="fatUpdateField('feedDiffCause', this.value)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: คอกที่ 1-15 และ 16-30 -->
+    <div class="card fat-tab-pane" id="fatTabPens">
+      <div class="section-title fat-section-title"><span>ตรวจนับจำนวนตัวรายคอก (1–30)</span></div>
+
+      <div class="pen-summary-banner" style="background:linear-gradient(to right, #f8fafc, #f0fdfa); border-color:#99f6e4;">
+        <span>📊 รวมสุกรขุนทั้งหมด (คอก 1–30)</span>
+        <span>
+          1–15: <strong id="fatSum1_15_banner" style="color:#0f766e;">0</strong> ตัว &nbsp;|&nbsp;
+          16–30: <strong id="fatSum16_30_banner" style="color:#0f766e;">0</strong> ตัว &nbsp;|&nbsp;
+          รวมทั้งหมด: <strong id="fatTotalAll_banner" style="color:#1d4ed8; font-size:1.05rem;">0</strong> ตัว
+        </span>
+      </div>
+
+      <div class="fat-pen-tabs no-print">
+        <button class="pen-row-btn active" onclick="fatSwitchPenView('1', this)">คอก 1–15 <span class="pen-row-sum-badge" id="fatBadge1">รวม 0 ตัว</span></button>
+        <button class="pen-row-btn" onclick="fatSwitchPenView('2', this)">คอก 16–30 <span class="pen-row-sum-badge" id="fatBadge2">รวม 0 ตัว</span></button>
+        <button class="pen-row-btn" onclick="fatSwitchPenView('ALL', this)">ดูคู่ 1–30 <span class="pen-row-sum-badge">รวม 2 ฝั่ง</span></button>
+      </div>
+
+      <div id="fatMobilePenContainer" class="no-print"></div>
+
+      <div id="fatPairPenWrap" style="display:none;">
+        <table class="grid-table">
+          <thead>
+            <tr>
+              <th style="width:18%;">คอกที่</th>
+              <th style="width:32%;">จ.น.ตัว</th>
+              <th style="width:18%;">คอกที่</th>
+              <th style="width:32%;">จ.น.ตัว</th>
+            </tr>
+          </thead>
+          <tbody id="fatPenPairBody"></tbody>
+          <tfoot>
+            <tr class="total-foot" style="background:#ccfbf1; color:#0f766e;">
+              <td style="background:#ccfbf1; color:#0f766e;">รวม</td>
+              <td style="background:#ccfbf1; color:#0f766e;"><span id="fatPairSum1">0</span></td>
+              <td style="background:#ccfbf1; color:#0f766e;">รวม</td>
+              <td style="background:#ccfbf1; color:#0f766e;"><span id="fatPairSum2">0</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 3: เอกสารที่จัดทำ, เกษตรกร, ข้อคิดเห็น, เอกสาร CUT OFF, ข้อมูลเล้า -->
+    <div class="fat-tab-pane" id="fatTabDocs">
+      <div class="fat-doc-grid">
+        <div class="card">
+          <div class="section-title fat-section-title"><span>เอกสารที่จัดทำ</span></div>
+          <div id="fatDocsMadeContainer"></div>
+          <div class="field" style="margin-top:10px;">
+            <label>เกษตรกร (ชื่อ / ลงชื่อ):</label>
+            <input type="text" id="fat_farmer" placeholder="ระบุชื่อเกษตรกร" onchange="fatUpdateField('farmer', this.value)" />
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title fat-section-title"><span>เอกสาร CUT OFF (เลขที่ / วัน เดือน ปี)</span></div>
+          <div id="fatDocsCutoffContainer"></div>
+          <div class="field" style="margin-top:10px;">
+            <label>ข้อคิดเห็น:</label>
+            <textarea class="field-textarea" id="fat_comments" rows="3" placeholder="ระบุข้อคิดเห็นเพิ่มเติม..." onchange="fatUpdateField('comments', this.value)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title fat-section-title"><span>ข้อมูลอุปกรณ์และมาตรฐานเล้า (มี / ไม่มี)</span></div>
+        <div class="infra-grid" id="fatInfraGrid"></div>
+      </div>
+    </div>
+
+    <!-- Tab 4: คลัง & Google Sheet & Logs (หมูขุน) -->
+    <div class="fat-tab-pane" id="fatTabLogs">
+      <div class="card">
+        <div class="gsheet-box">
+          <div style="font-weight:700; color:#166534; font-size:0.95rem;">☁️ เชื่อมต่อ Google Sheet (โหมดหมูขุน)</div>
+          <div style="font-size:0.78rem; color:#15803d;">ใช้ลิงก์ Google Apps Script Web App URL (สามารถใช้ร่วมกับหมูพันธุ์ หรือวางลิงก์เฉพาะได้):</div>
+          <div class="gsheet-row">
+            <input type="text" id="fat_gsheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec" onchange="fatSaveGSheetUrl(this.value)" />
+            <button class="btn btn-save-new" onclick="fatSaveGSheetUrl(document.getElementById('fat_gsheetUrlInput').value, true)">บันทึกลิงก์</button>
+          </div>
+          <button class="btn btn-save-new" id="fat_btnSyncAll" style="display:none; width:100%; justify-content:center; padding:11px; margin-top:10px; font-size:0.92rem;" onclick="fatSyncAllPendingReports()">
+            ☁️ ส่งที่รอทั้งหมดเข้า Sheet (0 ใบ)
+          </button>
+        </div>
+
+        <div class="section-title fat-section-title"><span>📊 สำรองข้อมูลไฟล์ CSV (หมูขุน)</span></div>
+        <div class="export-grid">
+          <button class="btn btn-excel" style="padding:10px; justify-content:center;" onclick="fatExportCSV('stock')">⬇️ DB_Fat_Stock (สรุป/อาหาร/เอกสาร)</button>
+          <button class="btn btn-excel" style="padding:10px; justify-content:center;" onclick="fatExportCSV('pens')">⬇️ DB_Fat_Pens (รายคอก 1-30)</button>
+          <button class="btn btn-excel" style="padding:10px; justify-content:center; background:#0369a1;" onclick="fatExportCSV('logs')">⬇️ DB_Fat_Logs (เวลาที่คีย์)</button>
+        </div>
+
+        <div class="section-title fat-section-title" style="margin-top:8px;">
+          <span>📁 คลังใบรายงานหมูขุน (<span id="fatSavedListCount">0</span> ใบ)</span>
+          <button class="btn btn-clear" style="font-size:0.75rem; padding:5px 9px;" onclick="fatClearAllSavedReports()">ล้างคลังทั้งหมด</button>
+        </div>
+        <div id="fatSavedReportsList"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title fat-section-title">
+          <span>🕒 ประวัติเวลาที่คีย์ในใบปัจจุบัน (<span id="fatLogCountBadge">0</span>)</span>
+          <button class="btn" style="background:#f1f5f9; color:#334155;" onclick="fatClearLogsOnly()">ล้าง Log ใบนี้</button>
+        </div>
+        <div class="log-list">
+          <table class="log-table">
+            <thead>
+              <tr><th>วัน-เวลา</th><th>รายการ / จุดที่คีย์</th><th>จำนวน</th></tr>
+            </thead>
+            <tbody id="fatLogTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- หน้าพิมพ์ A4 สำหรับหมูขุน (ตรงตามแบบฟอร์มในภาพ) -->
+  <div id="fatPrintSheet"></div>
+</div>
+
+  <script>
   const DEFAULT_GSHEET_URL = 'https://script.google.com/macros/s/AKfycbxc4CXnGK0kbNoq8F3P-nPFSR_54bShs7VoTjeTgCw1rczByKaQKkBnv9ov8Y6YCDQbvw/exec';
 
   const GSHEET_URL_KEY = 'cpf_pig_gsheet_url_v1';
   const CURRENT_KEY = 'cpf_pig_stock_current_v4';
   const SAVED_KEY = 'cpf_pig_stock_saved_v4';
   const PEN_COUNT = 38;
+
+  const FAT_GSHEET_URL_KEY = 'cpf_fat_gsheet_url_v1';
+  const FAT_CURRENT_KEY = 'cpf_fat_stock_current_v1';
+  const FAT_SAVED_KEY = 'cpf_fat_stock_saved_v1';
+  const FAT_PEN_COUNT = 30;
+
+  let activeMode = 'home'; // 'home' | 'breed' | 'fat'
 
   const PROMOTE_FARM_LIST = [
     'สส.FAT-พิบูลมังสาหาร',
@@ -873,6 +1424,60 @@
     'สส.สุกรขุนแก้งคร้อ'
   ];
 
+  /* ================= MODE NAVIGATION ================= */
+  function enterMode(mode) {
+    activeMode = mode;
+    document.getElementById('homeScreen').style.display = 'none';
+    document.getElementById('breedApp').style.display = mode === 'breed' ? 'block' : 'none';
+    document.getElementById('fatApp').style.display = mode === 'fat' ? 'block' : 'none';
+    document.body.classList.remove('mode-breed', 'mode-fat');
+    document.body.classList.add(mode === 'breed' ? 'mode-breed' : 'mode-fat');
+    window.scrollTo(0, 0);
+    updateNetworkUI();
+  }
+
+  function goHome() {
+    activeMode = 'home';
+    document.getElementById('homeScreen').style.display = 'block';
+    document.getElementById('breedApp').style.display = 'none';
+    document.getElementById('fatApp').style.display = 'none';
+    document.body.classList.remove('mode-breed', 'mode-fat');
+    updateHomeMeta();
+    window.scrollTo(0, 0);
+  }
+
+  function printMode(mode) {
+    document.body.classList.remove('mode-breed', 'mode-fat');
+    document.body.classList.add(mode === 'breed' ? 'mode-breed' : 'mode-fat');
+    if (mode === 'fat' && typeof renderFatPrintSheet === 'function') renderFatPrintSheet();
+    window.print();
+  }
+
+  window.addEventListener('beforeprint', () => {
+    if (activeMode === 'fat' && typeof renderFatPrintSheet === 'function') renderFatPrintSheet();
+  });
+
+  function updateHomeMeta() {
+    const bPending = savedReports.filter(r => !r.syncedToSheet).length;
+    const fList = (typeof fatSavedReports !== 'undefined') ? fatSavedReports : [];
+    const fPending = fList.filter(r => !r.syncedToSheet).length;
+
+    const bEl = document.getElementById('homeBreedMeta');
+    const fEl = document.getElementById('homeFatMeta');
+    if (bEl) bEl.textContent = `คลัง: ${savedReports.length} ใบ` + (bPending ? ` (รอส่ง ${bPending})` : '');
+    if (fEl) fEl.textContent = `คลัง: ${fList.length} ใบ` + (fPending ? ` (รอส่ง ${fPending})` : '');
+
+    const hNet = document.getElementById('homeNetBadge');
+    if (hNet) {
+      const online = navigator.onLine;
+      hNet.textContent = online ? '🟢 ออนไลน์ — พร้อมใช้งาน & ซิงค์ Sheet' : '🔴 ออฟไลน์ — บันทึกในเครื่องได้ตามปกติ';
+      hNet.style.color = online ? '#86efac' : '#fca5a5';
+    }
+  }
+
+  /* =====================================================================
+     ส่วนที่ 1: ระบบหมูพันธุ์ (คงโครงสร้างและฟีเจอร์ตามโค้ดล่าสุดทั้งหมด)
+     ===================================================================== */
   const DEFAULT_PIG_ROWS = [
     { key: 'pigletA', label: 'ลูกสุกร แถว A', causeFixed: '', docFixed: '', group: 'piglet' },
     { key: 'pigletB', label: 'ลูกสุกร แถว B', causeFixed: '', docFixed: '', group: 'piglet' },
@@ -910,19 +1515,23 @@
     return h.farm || h.promote || '';
   }
 
-  function applyPromoteFarmToHeader(val) {
+  function applyPromoteFarmToHeaderObj(headerObj, val) {
     const clean = String(val || '').trim();
-    state.header.promoteFarm = clean;
+    headerObj.promoteFarm = clean;
     if (!clean) {
-      state.header.promote = '';
-      state.header.farm = '';
+      headerObj.promote = '';
+      headerObj.farm = '';
     } else if (clean.startsWith('สส')) {
-      state.header.promote = clean;
-      state.header.farm = '';
+      headerObj.promote = clean;
+      headerObj.farm = '';
     } else {
-      state.header.promote = '';
-      state.header.farm = clean;
+      headerObj.promote = '';
+      headerObj.farm = clean;
     }
+  }
+
+  function applyPromoteFarmToHeader(val) {
+    applyPromoteFarmToHeaderObj(state.header, val);
   }
 
   function createInitialState(keepHeader = null) {
@@ -1035,6 +1644,21 @@
       btnAll.textContent = `☁️ ส่งที่รอทั้งหมดเข้า Sheet (${pendingCount} ใบ)`;
       btnAll.style.display = pendingCount > 0 ? 'inline-flex' : 'none';
     }
+
+    const fList = (typeof fatSavedReports !== 'undefined') ? fatSavedReports : [];
+    const fatPending = fList.filter(r => !r.syncedToSheet).length;
+    const fBadge = document.getElementById('fat_netStatusBadge');
+    if (fBadge) {
+      fBadge.textContent = (online ? '🟢 ออนไลน์' : '🔴 ออฟไลน์ (เก็บข้อมูลในเครื่อง)') +
+        (fatPending > 0 ? ` · ⏳ รอส่ง Sheet ${fatPending} ใบ` : '');
+      fBadge.style.color = online ? (fatPending > 0 ? '#fde047' : '#86efac') : '#fca5a5';
+    }
+    const fBtnAll = document.getElementById('fat_btnSyncAll');
+    if (fBtnAll) {
+      fBtnAll.textContent = `☁️ ส่งที่รอทั้งหมดเข้า Sheet (${fatPending} ใบ)`;
+      fBtnAll.style.display = fatPending > 0 ? 'inline-flex' : 'none';
+    }
+    updateHomeMeta();
   }
 
   function makeReportId(h) {
@@ -1055,8 +1679,8 @@
 
   function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-  async function postReportToGoogleSheet(reportObj) {
-    const url = getGSheetUrl();
+  async function postReportToGoogleSheet(reportObj, customUrl = null) {
+    const url = (customUrl || getGSheetUrl()).trim();
     if (!url) return { ok: false, noUrl: true };
 
     const syncNonce = String(Date.now()) + '_' + Math.random().toString(36).slice(2, 6);
@@ -1427,6 +2051,10 @@
     if (combo && !combo.contains(e.target)) {
       closePromoteFarmList();
     }
+    const fCombo = document.getElementById('fatPromoteFarmCombo');
+    if (fCombo && !fCombo.contains(e.target) && typeof fatClosePFList === 'function') {
+      fatClosePFList();
+    }
   });
 
   function renderHeader() {
@@ -1790,7 +2418,7 @@
 
   function switchPenView(col, btn) {
     currentPenCol = col;
-    document.querySelectorAll('.pen-row-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#tabPens .pen-row-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     renderMobilePenList();
   }
@@ -1881,9 +2509,9 @@
   function updateNote(key, val) { state[key] = val; saveState(); }
 
   function switchTab(tab, btn) {
-    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#breedApp .nav-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#breedApp .tab-pane').forEach(p => p.classList.remove('active'));
     if (tab === 'pigs') {
       document.getElementById('tabPigs').classList.add('active');
     } else if (tab === 'pens') {
@@ -2010,11 +2638,1106 @@
     renderLogs();
     updateNetworkUI();
   }
+    /* =====================================================================
+     ส่วนที่ 2: ระบบหมูขุน (สร้างใหม่ตามแบบฟอร์มในภาพ)
+     ===================================================================== */
+  const FAT_DOCS_MADE_DEFAULT = [
+    { key: 'catchScale', label: 'บิลจับและใบชั่งฯ', fixed: true },
+    { key: 'transfer', label: 'ใบโอนย้าย', fixed: true },
+    { key: 'materialReq', label: 'ใบเบิกวัตถุดิบ', fixed: true },
+    { key: 'approval', label: 'ใบขออนุมัติฯ', fixed: true },
+    { key: 'invoice', label: 'ใบแจ้งหนี้', fixed: true },
+    { key: 'extra1', label: '', fixed: false },
+    { key: 'extra2', label: '', fixed: false }
+  ];
 
+  const FAT_DOCS_CUTOFF_DEFAULT = [
+    { key: 'catchScale', label: 'บิลจับและใบชั่งฯ' },
+    { key: 'transfer', label: 'ใบโอนย้าย' },
+    { key: 'materialReq', label: 'ใบเบิกวัตถุดิบ' },
+    { key: 'approval', label: 'ใบขออนุมัติฯ' },
+    { key: 'invoice', label: 'ใบแจ้งหนี้' }
+  ];
+
+  const FAT_INFRA_ITEMS = [
+    { key: 'carSpray', label: 'โรงสเปรย์รถยนต์' },
+    { key: 'showerSpray', label: 'ห้องสเปรย์/อาบน้ำ' },
+    { key: 'livestockFence', label: 'รั้ว มตฐ. ปศุสัตว์' },
+    { key: 'biogas', label: 'บ่อแก๊สชีวภาพ' },
+    { key: 'feedWaterTank', label: 'ถังอาหาร+น้ำเล้า' },
+    { key: 'siloAutoFeed', label: 'ไซโล+Auto Feed' }
+  ];
+
+  const FAT_FEED_ROW_COUNT = 3;
+
+  function createFatInitialState(keepHeader = null) {
+    const today = new Date().toISOString().slice(0, 10);
+    const keepPF = keepHeader ? getPromoteFarmDisplay(keepHeader) : '';
+    const infra = {};
+    FAT_INFRA_ITEMS.forEach(it => { infra[it.key] = ''; });
+
+    return {
+      reportType: 'fattening',
+      reportId: null,
+      savedAt: null,
+      syncedToSheet: false,
+      sheetName: '',
+      header: {
+        date: keepHeader ? keepHeader.date : today,
+        promoteFarm: keepPF,
+        promote: keepHeader ? (keepHeader.promote || '') : '',
+        farm: keepHeader ? (keepHeader.farm || '') : '',
+        barnName: '',
+        cv: '',
+        houseNo: ''
+      },
+      pigSummary: {
+        book: '',
+        counted: ''
+      },
+      pigDiffCause: '',
+      pens: Array(FAT_PEN_COUNT).fill(''),
+      feeds: Array.from({ length: FAT_FEED_ROW_COUNT }, () => ({
+        code: '', book: '', counted: ''
+      })),
+      feedDiffCause: '',
+      docsMade: FAT_DOCS_MADE_DEFAULT.map(d => ({ key: d.key, label: d.label, fixed: d.fixed, docNo: '' })),
+      docsCutoff: FAT_DOCS_CUTOFF_DEFAULT.map(d => ({ key: d.key, label: d.label, docInfo: '' })),
+      farmer: '',
+      comments: '',
+      infra,
+      logs: []
+    };
+  }
+
+  function normalizeFatState(obj) {
+    const base = Object.assign(createFatInitialState(), obj || {});
+    if (!base.header.promoteFarm) {
+      base.header.promoteFarm = getPromoteFarmDisplay(base.header);
+    }
+    base.pens = padArray(base.pens, FAT_PEN_COUNT, '');
+    if (!Array.isArray(base.feeds) || base.feeds.length === 0) {
+      base.feeds = createFatInitialState().feeds;
+    } else {
+      base.feeds = padArray(base.feeds, FAT_FEED_ROW_COUNT, null).map(f => Object.assign({ code: '', book: '', counted: '' }, f || {}));
+    }
+    if (!Array.isArray(base.docsMade) || base.docsMade.length < FAT_DOCS_MADE_DEFAULT.length) {
+      base.docsMade = FAT_DOCS_MADE_DEFAULT.map((d, i) => Object.assign({ key: d.key, label: d.label, fixed: d.fixed, docNo: '' }, (base.docsMade && base.docsMade[i]) || {}));
+    }
+    if (!Array.isArray(base.docsCutoff) || base.docsCutoff.length < FAT_DOCS_CUTOFF_DEFAULT.length) {
+      base.docsCutoff = FAT_DOCS_CUTOFF_DEFAULT.map((d, i) => Object.assign({ key: d.key, label: d.label, docInfo: '' }, (base.docsCutoff && base.docsCutoff[i]) || {}));
+    }
+    base.infra = Object.assign(createFatInitialState().infra, base.infra || {});
+    if (!Array.isArray(base.logs)) base.logs = [];
+    return base;
+  }
+
+  let fatState = loadFatCurrent();
+  let fatSavedReports = loadFatSavedReports();
+  let fatCurrentPenView = '1';
+  let fatComboActiveIdx = -1;
+  let fatComboFiltered = [];
+
+  function loadFatCurrent() {
+    try {
+      const raw = localStorage.getItem(FAT_CURRENT_KEY);
+      if (!raw) return createFatInitialState();
+      return normalizeFatState(JSON.parse(raw));
+    } catch { return createFatInitialState(); }
+  }
+
+  function loadFatSavedReports() {
+    try { return JSON.parse(localStorage.getItem(FAT_SAVED_KEY) || '[]'); } catch { return []; }
+  }
+
+  function fatSaveState(msg = 'บันทึกอัตโนมัติ') {
+    localStorage.setItem(FAT_CURRENT_KEY, JSON.stringify(fatState));
+    const el = document.getElementById('fat_saveStatus');
+    if (el) el.textContent = `● ${msg} (${new Date().toTimeString().slice(0, 8)})`;
+  }
+
+  function fatPersistSavedReports() {
+    localStorage.setItem(FAT_SAVED_KEY, JSON.stringify(fatSavedReports));
+    renderFatSavedReports();
+    updateNetworkUI();
+  }
+
+  function fatGetGSheetUrl() {
+    return (localStorage.getItem(FAT_GSHEET_URL_KEY) || getGSheetUrl() || '').trim();
+  }
+
+  function fatSaveGSheetUrl(val, showAlert = false) {
+    const clean = val.trim();
+    localStorage.setItem(FAT_GSHEET_URL_KEY, clean);
+    document.getElementById('fat_gsheetUrlInput').value = clean;
+    if (showAlert) alert(clean ? '✅ บันทึกลิงก์ Google Sheet (หมูขุน) เรียบร้อย!' : 'ล้างลิงก์แล้ว');
+  }
+
+  function fatHasAnyData(s) {
+    if (s.header.barnName.trim() !== '' || s.header.cv.trim() !== '' || s.header.houseNo.trim() !== '') return true;
+    if (s.pigSummary.book !== '' || s.pigSummary.counted !== '') return true;
+    if (s.pens.some(v => v !== '')) return true;
+    if (s.feeds.some(f => f.code !== '' || f.book !== '' || f.counted !== '')) return true;
+    if (s.pigDiffCause.trim() !== '' || s.feedDiffCause.trim() !== '' || s.farmer.trim() !== '' || s.comments.trim() !== '') return true;
+    if (s.docsMade.some(d => d.docNo.trim() !== '' || (!d.fixed && d.label.trim() !== ''))) return true;
+    if (s.docsCutoff.some(d => d.docInfo.trim() !== '')) return true;
+    if (Object.values(s.infra).some(v => v !== '')) return true;
+    return false;
+  }
+
+  function fatAddLog(section, value) {
+    const now = new Date();
+    const timeStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')} ${now.toTimeString().slice(0,8)}`;
+    fatState.logs.unshift({ time: timeStr, section, value: String(value) });
+    if (fatState.logs.length > 500) fatState.logs.pop();
+    renderFatLogs();
+  }
+
+  /* Combo Promote/Farm (หมูขุน) */
+  function fatRenderPFList(filterText = '') {
+    const listEl = document.getElementById('fatPromoteFarmList');
+    const q = String(filterText || '').trim().toLowerCase();
+    fatComboFiltered = q
+      ? PROMOTE_FARM_LIST.filter(item => item.toLowerCase().includes(q))
+      : [...PROMOTE_FARM_LIST];
+
+    const currentVal = fatState.header.promoteFarm || '';
+    if (fatComboFiltered.length === 0) {
+      listEl.innerHTML = `<div class="combo-empty">ไม่พบ "${escapeHtml(filterText)}" (พิมพ์ใช้ชื่อนี้ได้เลย)</div>`;
+      fatComboActiveIdx = -1;
+      return;
+    }
+
+    listEl.innerHTML = fatComboFiltered.map((item, idx) => {
+      const cls = [
+        'combo-item',
+        item === currentVal ? 'selected' : '',
+        idx === fatComboActiveIdx ? 'active' : ''
+      ].filter(Boolean).join(' ');
+      return `<div class="${cls}" onclick="fatSelectPF(${idx})">${escapeHtml(item)}</div>`;
+    }).join('');
+  }
+
+  function fatOpenPFList(showAll = false) {
+    const val = document.getElementById('fat_hdr_promoteFarm').value;
+    fatComboActiveIdx = -1;
+    fatRenderPFList(showAll ? '' : val);
+    document.getElementById('fatPromoteFarmList').classList.add('open');
+  }
+
+  function fatClosePFList() {
+    const el = document.getElementById('fatPromoteFarmList');
+    if (el) el.classList.remove('open');
+    fatComboActiveIdx = -1;
+  }
+
+  function fatTogglePFList() {
+    const listEl = document.getElementById('fatPromoteFarmList');
+    if (listEl.classList.contains('open')) fatClosePFList();
+    else {
+      fatOpenPFList(true);
+      document.getElementById('fat_hdr_promoteFarm').focus();
+    }
+  }
+
+  function fatUpdateClearPFBtn() {
+    const val = document.getElementById('fat_hdr_promoteFarm').value;
+    document.getElementById('fatBtnClearPF').classList.toggle('visible', val.length > 0);
+  }
+
+  function fatOnPFInput(val) {
+    applyPromoteFarmToHeaderObj(fatState.header, val);
+    fatUpdateClearPFBtn();
+    fatComboActiveIdx = -1;
+    fatRenderPFList(val);
+    document.getElementById('fatPromoteFarmList').classList.add('open');
+    fatSaveState();
+  }
+
+  function fatSelectPF(idx) {
+    const val = fatComboFiltered[idx];
+    if (val === undefined) return;
+    document.getElementById('fat_hdr_promoteFarm').value = val;
+    applyPromoteFarmToHeaderObj(fatState.header, val);
+    fatUpdateClearPFBtn();
+    fatClosePFList();
+    fatSaveState();
+  }
+
+  function fatClearPF() {
+    const inp = document.getElementById('fat_hdr_promoteFarm');
+    inp.value = '';
+    applyPromoteFarmToHeaderObj(fatState.header, '');
+    fatUpdateClearPFBtn();
+    fatOpenPFList(true);
+    inp.focus();
+    fatSaveState();
+  }
+
+  function fatOnPFKey(e) {
+    const listEl = document.getElementById('fatPromoteFarmList');
+    if (!listEl.classList.contains('open') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      fatOpenPFList(false);
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (fatComboFiltered.length > 0) {
+        fatComboActiveIdx = (fatComboActiveIdx + 1) % fatComboFiltered.length;
+        fatRenderPFList(document.getElementById('fat_hdr_promoteFarm').value);
+        listEl.children[fatComboActiveIdx]?.scrollIntoView({ block: 'nearest' });
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (fatComboFiltered.length > 0) {
+        fatComboActiveIdx = fatComboActiveIdx <= 0 ? fatComboFiltered.length - 1 : fatComboActiveIdx - 1;
+        fatRenderPFList(document.getElementById('fat_hdr_promoteFarm').value);
+        listEl.children[fatComboActiveIdx]?.scrollIntoView({ block: 'nearest' });
+      }
+    } else if (e.key === 'Enter') {
+      if (listEl.classList.contains('open') && fatComboActiveIdx >= 0 && fatComboFiltered[fatComboActiveIdx]) {
+        e.preventDefault();
+        fatSelectPF(fatComboActiveIdx);
+      } else {
+        fatClosePFList();
+      }
+    } else if (e.key === 'Escape') {
+      fatClosePFList();
+    }
+  }
+
+  /* Render Fattening Form */
+  function renderFatHeader() {
+    document.getElementById('fat_hdr_date').value = fatState.header.date || '';
+    document.getElementById('fat_hdr_promoteFarm').value = getPromoteFarmDisplay(fatState.header);
+    fatUpdateClearPFBtn();
+    document.getElementById('fat_hdr_barnName').value = fatState.header.barnName || '';
+    document.getElementById('fat_hdr_cv').value = fatState.header.cv || '';
+    document.getElementById('fat_hdr_houseNo').value = fatState.header.houseNo || '';
+    document.getElementById('fat_pigDiffCause').value = fatState.pigDiffCause || '';
+    document.getElementById('fat_feedDiffCause').value = fatState.feedDiffCause || '';
+    document.getElementById('fat_farmer').value = fatState.farmer || '';
+    document.getElementById('fat_comments').value = fatState.comments || '';
+    document.getElementById('fat_gsheetUrlInput').value = fatGetGSheetUrl();
+    document.getElementById('fat_editingBadge').textContent = fatState.reportId ? `✏️ แก้ไขใบ: ${fatState.reportId}` : '🆕 ใบงานใหม่';
+  }
+
+  function renderFatPigSummary() {
+    const bookInp = document.getElementById('fat_pig_book');
+    const cntInp = document.getElementById('fat_pig_counted');
+    bookInp.value = fatState.pigSummary.book || '';
+    bookInp.dataset.prev = fatState.pigSummary.book || '';
+    cntInp.value = fatState.pigSummary.counted || '';
+    cntInp.dataset.prev = fatState.pigSummary.counted || '';
+    recalcFatPigDiff();
+  }
+
+  function recalcFatPigDiff() {
+    const b = fatState.pigSummary.book === '' ? null : Number(fatState.pigSummary.book);
+    const c = fatState.pigSummary.counted === '' ? null : Number(fatState.pigSummary.counted);
+    const diff = (b !== null || c !== null) ? ((b || 0) - (c || 0)) : '';
+    const diffEl = document.getElementById('fat_pig_diff');
+    if (diffEl) {
+      diffEl.textContent = diff === '' ? '' : (diff > 0 ? '+' + diff : diff);
+      diffEl.className = 'diff-cell col-diff ' + (diff === '' ? '' : (diff === 0 ? 'diff-zero' : 'diff-nonzero'));
+    }
+  }
+
+  function fatOnPigSummaryInput(field, el) {
+    const clean = sanitizeInt(el.value);
+    if (el.value !== clean) el.value = clean;
+    fatState.pigSummary[field] = clean;
+    recalcFatPigDiff();
+  }
+
+  function fatOnPigSummaryCommit(field, el) {
+    if (el.dataset.prev !== el.value && el.value !== '') {
+      fatAddLog(`สรุปสุกรขุน (${field === 'book' ? 'บัญชี' : 'ตามตรวจนับ'})`, el.value);
+    }
+    el.dataset.prev = el.value;
+    fatSaveState();
+  }
+
+  function renderFatFeedTable() {
+    const tbody = document.getElementById('fatFeedTbody');
+    tbody.innerHTML = '';
+    fatState.feeds.forEach((f, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="col-name" style="font-weight:700;">
+          <span class="no-print" style="font-size:0.78rem;color:#64748b;margin-right:6px;">#${idx+1} เบอร์:</span>
+          <input type="text" class="cell-input" style="width:95px;display:inline-block;" value="${escapeHtml(f.code || '')}" placeholder="เบอร์อาหาร"
+            onchange="fatOnFeedText(${idx},'code',this.value)" />
+        </td>
+        <td class="col-num" data-label="บัญชี">
+          <input type="text" inputmode="decimal" class="cell-input" id="fat_feed_${idx}_book" data-prev="${escapeHtml(f.book || '')}" value="${escapeHtml(f.book || '')}"
+            oninput="fatOnFeedInput(${idx},'book',this)" onchange="fatOnFeedCommit(${idx},'book',this)" />
+        </td>
+        <td class="col-num" data-label="ตรวจนับ">
+          <input type="text" inputmode="decimal" class="cell-input" id="fat_feed_${idx}_counted" data-prev="${escapeHtml(f.counted || '')}" value="${escapeHtml(f.counted || '')}"
+            oninput="fatOnFeedInput(${idx},'counted',this)" onchange="fatOnFeedCommit(${idx},'counted',this)" />
+        </td>
+        <td class="diff-cell col-diff" data-label="ผลต่าง" id="fat_feed_diff_${idx}"></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    recalcFatFeedDiffs();
+  }
+
+  function recalcFatFeedDiffs() {
+    fatState.feeds.forEach((f, idx) => {
+      const b = f.book === '' ? null : Number(f.book);
+      const c = f.counted === '' ? null : Number(f.counted);
+      const diff = (b !== null || c !== null) ? Math.round(((b || 0) - (c || 0)) * 10000) / 10000 : '';
+      const diffEl = document.getElementById(`fat_feed_diff_${idx}`);
+      if (diffEl) {
+        diffEl.textContent = diff === '' ? '' : (diff > 0 ? '+' + diff : diff);
+        diffEl.className = 'diff-cell col-diff ' + (diff === '' ? '' : (diff === 0 ? 'diff-zero' : 'diff-nonzero'));
+      }
+    });
+  }
+
+  function fatOnFeedText(idx, field, val) {
+    fatState.feeds[idx][field] = val;
+    fatSaveState();
+  }
+
+  function fatOnFeedInput(idx, field, el) {
+    const clean = sanitizeDecimal(el.value);
+    if (el.value !== clean) el.value = clean;
+    fatState.feeds[idx][field] = clean;
+    recalcFatFeedDiffs();
+  }
+
+  function fatOnFeedCommit(idx, field, el) {
+    if (el.dataset.prev !== el.value && el.value !== '') {
+      const code = fatState.feeds[idx].code || `แถว ${idx + 1}`;
+      fatAddLog(`อาหาร เบอร์ ${code} (${field === 'book' ? 'บัญชี' : 'ตรวจนับ'})`, el.value);
+    }
+    el.dataset.prev = el.value;
+    fatSaveState();
+  }
+
+  /* Pens 1-30 (1-15 & 16-30) */
+  function renderFatMobilePenList() {
+    const wrap = document.getElementById('fatMobilePenContainer');
+    const pairWrap = document.getElementById('fatPairPenWrap');
+    if (fatCurrentPenView === 'ALL') {
+      wrap.style.display = 'none';
+      pairWrap.style.display = 'block';
+      return;
+    }
+    wrap.style.display = 'block';
+    pairWrap.style.display = 'none';
+    wrap.innerHTML = '';
+
+    const start = fatCurrentPenView === '1' ? 0 : 15;
+    const end = start + 15;
+    for (let i = start; i < end; i++) {
+      const val = fatState.pens[i] || '';
+      const div = document.createElement('div');
+      div.className = 'fat-mobile-pen-item';
+      div.innerHTML = `
+        <div class="mobile-pen-no">คอก ${i + 1}</div>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" class="mobile-pen-input" id="fat_mpen_${i}" data-prev="${val}" value="${val}"
+          placeholder="จ.น.ตัว"
+          oninput="fatOnPenInput(${i}, this)"
+          onchange="fatOnPenCommit(${i}, this)"
+          onkeydown="fatOnPenEnter(event, ${i}, 'fat_mpen', ${end - 1})" />
+      `;
+      wrap.appendChild(div);
+    }
+  }
+
+  function renderFatPairPenTable() {
+    const tbody = document.getElementById('fatPenPairBody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < 15; i++) {
+      const idx1 = i;
+      const idx2 = i + 15;
+      const v1 = fatState.pens[idx1] || '';
+      const v2 = fatState.pens[idx2] || '';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="pen-no">${idx1 + 1}</td>
+        <td><input type="text" inputmode="numeric" pattern="[0-9]*" class="pen-input" id="fat_ppen_${idx1}" data-prev="${v1}" value="${v1}"
+          oninput="fatOnPenInput(${idx1}, this)" onchange="fatOnPenCommit(${idx1}, this)"
+          onkeydown="fatOnPenEnter(event, ${idx1}, 'fat_ppen', 29)" /></td>
+        <td class="pen-no">${idx2 + 1}</td>
+        <td><input type="text" inputmode="numeric" pattern="[0-9]*" class="pen-input" id="fat_ppen_${idx2}" data-prev="${v2}" value="${v2}"
+          oninput="fatOnPenInput(${idx2}, this)" onchange="fatOnPenCommit(${idx2}, this)"
+          onkeydown="fatOnPenEnter(event, ${idx2}, 'fat_ppen', 29)" /></td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  function updateFatPenSums(fromPenEdit = false) {
+    let sum1 = 0, sum2 = 0, hasAny = false;
+    for (let i = 0; i < 15; i++) {
+      if (fatState.pens[i] !== '') { sum1 += Number(fatState.pens[i]) || 0; hasAny = true; }
+    }
+    for (let i = 15; i < 30; i++) {
+      if (fatState.pens[i] !== '') { sum2 += Number(fatState.pens[i]) || 0; hasAny = true; }
+    }
+    const total = sum1 + sum2;
+
+    document.getElementById('fatSum1_15_banner').textContent = sum1;
+    document.getElementById('fatSum16_30_banner').textContent = sum2;
+    document.getElementById('fatTotalAll_banner').textContent = total;
+    document.getElementById('fatBadge1').textContent = `รวม ${sum1} ตัว`;
+    document.getElementById('fatBadge2').textContent = `รวม ${sum2} ตัว`;
+    document.getElementById('fatPairSum1').textContent = sum1;
+    document.getElementById('fatPairSum2').textContent = sum2;
+
+    if (hasAny || fromPenEdit) {
+      const newVal = hasAny ? String(total) : '';
+      fatState.pigSummary.counted = newVal;
+      const cntInp = document.getElementById('fat_pig_counted');
+      if (cntInp) { cntInp.value = newVal; cntInp.dataset.prev = newVal; }
+      recalcFatPigDiff();
+    }
+  }
+
+  function fatSwitchPenView(view, btn) {
+    fatCurrentPenView = view;
+    document.querySelectorAll('#fatTabPens .pen-row-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderFatMobilePenList();
+  }
+
+  function fatOnPenInput(idx, el) {
+    const clean = sanitizeInt(el.value);
+    if (el.value !== clean) el.value = clean;
+    fatState.pens[idx] = clean;
+    const mEl = document.getElementById(`fat_mpen_${idx}`);
+    const pEl = document.getElementById(`fat_ppen_${idx}`);
+    if (mEl && mEl !== el) mEl.value = clean;
+    if (pEl && pEl !== el) pEl.value = clean;
+    updateFatPenSums(true);
+  }
+
+  function fatOnPenCommit(idx, el) {
+    if (el.dataset.prev !== el.value && el.value !== '') {
+      fatAddLog(`คอกที่ ${idx + 1}`, el.value);
+    }
+    el.dataset.prev = el.value;
+    const mEl = document.getElementById(`fat_mpen_${idx}`);
+    const pEl = document.getElementById(`fat_ppen_${idx}`);
+    if (mEl) mEl.dataset.prev = el.value;
+    if (pEl) pEl.dataset.prev = el.value;
+    fatSaveState();
+  }
+
+  function fatOnPenEnter(e, idx, prefix, maxIdx) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (idx < maxIdx) document.getElementById(`${prefix}_${idx + 1}`)?.focus();
+    }
+  }
+
+  /* Docs & Infra */
+  function renderFatDocsAndInfra() {
+    const madeWrap = document.getElementById('fatDocsMadeContainer');
+    madeWrap.innerHTML = '';
+    fatState.docsMade.forEach((d, idx) => {
+      const row = document.createElement('div');
+      row.className = 'fat-doc-row';
+      if (d.fixed) {
+        row.innerHTML = `
+          <div class="fat-doc-label">${escapeHtml(d.label)}</div>
+          <input type="text" class="cell-input text-left" value="${escapeHtml(d.docNo || '')}" placeholder="เลขที่เอกสาร"
+            onchange="fatUpdateDocMade(${idx}, 'docNo', this.value)" />
+        `;
+      } else {
+        row.innerHTML = `
+          <input type="text" class="cell-input text-left" value="${escapeHtml(d.label || '')}" placeholder="ชื่อเอกสารเพิ่มเติม"
+            onchange="fatUpdateDocMade(${idx}, 'label', this.value)" />
+          <input type="text" class="cell-input text-left" value="${escapeHtml(d.docNo || '')}" placeholder="เลขที่เอกสาร"
+            onchange="fatUpdateDocMade(${idx}, 'docNo', this.value)" />
+        `;
+      }
+      madeWrap.appendChild(row);
+    });
+
+    const cutWrap = document.getElementById('fatDocsCutoffContainer');
+    cutWrap.innerHTML = '';
+    fatState.docsCutoff.forEach((d, idx) => {
+      const row = document.createElement('div');
+      row.className = 'fat-doc-row';
+      row.innerHTML = `
+        <div class="fat-doc-label">${escapeHtml(d.label)}</div>
+        <input type="text" class="cell-input text-left" value="${escapeHtml(d.docInfo || '')}" placeholder="เลขที่ / วัน เดือน ปี"
+          onchange="fatUpdateDocCutoff(${idx}, this.value)" />
+      `;
+      cutWrap.appendChild(row);
+    });
+
+    const infraGrid = document.getElementById('fatInfraGrid');
+    infraGrid.innerHTML = '';
+    FAT_INFRA_ITEMS.forEach(item => {
+      const val = fatState.infra[item.key] || '';
+      const card = document.createElement('div');
+      card.className = 'infra-card';
+      card.innerHTML = `
+        <div class="infra-title">${escapeHtml(item.label)}</div>
+        <div class="infra-btns">
+          <button type="button" class="infra-btn ${val === 'มี' ? 'active-yes' : ''}" onclick="fatSetInfra('${item.key}', 'มี')">✓ มี</button>
+          <button type="button" class="infra-btn ${val === 'ไม่มี' ? 'active-no' : ''}" onclick="fatSetInfra('${item.key}', 'ไม่มี')">✕ ไม่มี</button>
+        </div>
+      `;
+      infraGrid.appendChild(card);
+    });
+  }
+
+  function fatUpdateDocMade(idx, field, val) {
+    fatState.docsMade[idx][field] = val;
+    fatSaveState();
+  }
+
+  function fatUpdateDocCutoff(idx, val) {
+    fatState.docsCutoff[idx].docInfo = val;
+    fatSaveState();
+  }
+
+  function fatSetInfra(key, choice) {
+    fatState.infra[key] = fatState.infra[key] === choice ? '' : choice;
+    renderFatDocsAndInfra();
+    fatSaveState();
+  }
+
+  function fatUpdateHeader(field, val) {
+    fatState.header[field] = val;
+    fatSaveState();
+  }
+
+  function fatUpdateField(field, val) {
+    fatState[field] = val;
+    fatSaveState();
+  }
+
+  function fatSwitchTab(tab, btn) {
+    document.querySelectorAll('#fatApp .nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#fatApp .fat-tab-pane').forEach(p => p.classList.remove('active'));
+    if (tab === 'summary') document.getElementById('fatTabSummary').classList.add('active');
+    else if (tab === 'pens') document.getElementById('fatTabPens').classList.add('active');
+    else if (tab === 'docs') document.getElementById('fatTabDocs').classList.add('active');
+    else if (tab === 'logs') document.getElementById('fatTabLogs').classList.add('active');
+  }
+
+  /* Save, Sync, Saved Reports & Logs (หมูขุน) */
+  async function fatSaveAndNewReport() {
+    if (!fatHasAnyData(fatState)) {
+      alert('ใบหมูขุนปัจจุบันยังไม่มีข้อมูลให้บันทึกครับ');
+      return;
+    }
+    if (!fatState.header.barnName.trim()) {
+      const name = prompt('กรุณาระบุ "ชื่อเล้า" ก่อนบันทึกใบนี้:', 'เล้า 1');
+      if (name === null) return;
+      fatState.header.barnName = name.trim() || 'เล้าหมูขุน';
+    }
+
+    const btn = document.getElementById('fat_btnSaveNew');
+    const origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳ กำลังบันทึก...';
+
+    const snapshot = JSON.parse(JSON.stringify(fatState));
+    snapshot.reportType = 'fattening';
+    if (!snapshot.reportId) snapshot.reportId = 'FAT-' + makeReportId(snapshot.header);
+    snapshot.savedAt = formatNowThai();
+
+    let sheetMsg = '';
+    const gUrl = fatGetGSheetUrl();
+    if (gUrl && navigator.onLine) {
+      btn.textContent = '☁️ กำลังส่งเข้า Sheet...';
+      const result = await postReportToGoogleSheet(snapshot, gUrl);
+      if (result.ok) {
+        snapshot.syncedToSheet = true;
+        snapshot.sheetName = result.sheetName;
+        sheetMsg = `\n☁️ ส่งเข้า Google Sheet (${result.sheetName}) เรียบร้อย!`;
+      } else {
+        snapshot.syncedToSheet = false;
+        sheetMsg = `\n⚠️ ยังส่งเข้า Google Sheet ไม่สำเร็จ (${result.error})\nแต่บันทึกเก็บไว้ในเครื่องแล้ว สามารถกดส่งซ้ำในแท็บคลังได้ครับ`;
+      }
+    } else if (gUrl && !navigator.onLine) {
+      snapshot.syncedToSheet = false;
+      sheetMsg = '\n📴 ตอนนี้ไม่มีอินเทอร์เน็ต — บันทึกเก็บไว้ในเครื่องแบบ Offline แล้ว!';
+    } else {
+      snapshot.syncedToSheet = false;
+      sheetMsg = '\n(บันทึกเก็บในเครื่องเรียบร้อย)';
+    }
+
+    const existingIdx = fatSavedReports.findIndex(r => r.reportId === snapshot.reportId);
+    if (existingIdx >= 0) fatSavedReports[existingIdx] = snapshot;
+    else fatSavedReports.unshift(snapshot);
+    fatPersistSavedReports();
+
+    const keep = {
+      date: fatState.header.date,
+      promoteFarm: fatState.header.promoteFarm,
+      farm: fatState.header.farm,
+      promote: fatState.header.promote
+    };
+    fatState = createFatInitialState(keep);
+    initFatRender();
+    fatSaveState('บันทึก & สร้างใบใหม่แล้ว');
+
+    btn.disabled = false;
+    btn.textContent = origText;
+    fatSwitchTab('summary', document.getElementById('fatNav_summary'));
+    alert(`✅ บันทึกหมูขุน "${snapshot.header.barnName}" แล้ว!${sheetMsg}`);
+  }
+
+  async function fatSyncAllPendingReports() {
+    if (!navigator.onLine) return alert('📴 ยังไม่มีอินเทอร์เน็ต กรุณาเชื่อมต่อเน็ตก่อนกดส่งครับ');
+    const gUrl = fatGetGSheetUrl();
+    if (!gUrl) return alert('กรุณาวางลิงก์ Google Apps Script Web App URL ก่อนครับ');
+
+    const pendingList = fatSavedReports.filter(r => !r.syncedToSheet);
+    if (pendingList.length === 0) return alert('✅ ส่งข้อมูลหมูขุนครบทุกใบแล้วครับ');
+
+    const btn = document.getElementById('fat_btnSyncAll');
+    const origText = btn ? btn.textContent : '';
+    if (btn) btn.disabled = true;
+
+    let okCount = 0, failCount = 0, lastError = '';
+    for (let i = 0; i < fatSavedReports.length; i++) {
+      if (fatSavedReports[i].syncedToSheet) continue;
+      if (btn) btn.textContent = `⏳ กำลังส่ง (${okCount + failCount + 1}/${pendingList.length})...`;
+      const result = await postReportToGoogleSheet(fatSavedReports[i], gUrl);
+      if (result.ok) {
+        fatSavedReports[i].syncedToSheet = true;
+        fatSavedReports[i].sheetName = result.sheetName;
+        okCount++;
+        fatPersistSavedReports();
+      } else {
+        failCount++;
+        lastError = result.error || 'ส่งไม่สำเร็จ';
+      }
+    }
+
+    if (btn) { btn.disabled = false; btn.textContent = origText; }
+    updateNetworkUI();
+    if (failCount === 0) alert(`✅ ส่งข้อมูลหมูขุนเข้า Google Sheet สำเร็จ ${okCount} ใบ!`);
+    else alert(`ส่งสำเร็จ ${okCount} ใบ\n⚠️ ไม่สำเร็จ ${failCount} ใบ (${lastError})`);
+  }
+
+  async function fatRetrySyncReport(reportId) {
+    if (!navigator.onLine) return alert('📴 ยังไม่มีอินเทอร์เน็ต');
+    const gUrl = fatGetGSheetUrl();
+    if (!gUrl) return alert('กรุณาวางลิงก์ Google Apps Script Web App URL ก่อนครับ');
+
+    const idx = fatSavedReports.findIndex(r => r.reportId === reportId);
+    if (idx < 0) return;
+    const result = await postReportToGoogleSheet(fatSavedReports[idx], gUrl);
+    if (result.ok) {
+      fatSavedReports[idx].syncedToSheet = true;
+      fatSavedReports[idx].sheetName = result.sheetName;
+      fatPersistSavedReports();
+      alert(`✅ ส่งเข้า Google Sheet (${result.sheetName}) สำเร็จ!`);
+    } else {
+      alert(`❌ ส่งไม่สำเร็จ: ${result.error}`);
+    }
+  }
+
+  function fatLoadReportForEdit(reportId) {
+    const target = fatSavedReports.find(r => r.reportId === reportId);
+    if (!target) return;
+    if (fatHasAnyData(fatState) && fatState.reportId !== reportId) {
+      if (!confirm('ใบหมูขุนที่กำลังเปิดอยู่มีข้อมูลที่ยังไม่กดบันทึก ต้องการเปิดใบที่เลือกทับเลยไหม?')) return;
+    }
+    fatState = normalizeFatState(JSON.parse(JSON.stringify(target)));
+    initFatRender();
+    fatSaveState(`เปิดแก้ไข: ${fatState.header.barnName}`);
+    fatSwitchTab('summary', document.getElementById('fatNav_summary'));
+  }
+
+  function fatDeleteSavedReport(reportId) {
+    if (!confirm('ต้องการลบใบงานหมูขุนนี้ออกจากคลังใช่ไหม?')) return;
+    fatSavedReports = fatSavedReports.filter(r => r.reportId !== reportId);
+    if (fatState.reportId === reportId) fatState.reportId = null;
+    fatPersistSavedReports();
+    renderFatHeader();
+  }
+
+  function fatClearAllSavedReports() {
+    if (fatSavedReports.length === 0) return;
+    if (!confirm('ยืนยันล้างใบงานหมูขุนในคลังทั้งหมด?')) return;
+    fatSavedReports = [];
+    fatState.reportId = null;
+    fatPersistSavedReports();
+    renderFatHeader();
+  }
+
+  function fatClearCurrentDraft() {
+    if (!confirm('ล้างข้อมูลในใบหมูขุนปัจจุบันเพื่อกรอกใหม่?')) return;
+    const keep = {
+      date: fatState.header.date,
+      promoteFarm: fatState.header.promoteFarm,
+      farm: fatState.header.farm,
+      promote: fatState.header.promote
+    };
+    fatState = createFatInitialState(keep);
+    initFatRender();
+    fatSaveState('ล้างใบปัจจุบันแล้ว');
+  }
+
+  function renderFatSavedReports() {
+    document.getElementById('fatSavedCountBadge').textContent = fatSavedReports.length;
+    document.getElementById('fatSavedListCount').textContent = fatSavedReports.length;
+    const list = document.getElementById('fatSavedReportsList');
+    list.innerHTML = '';
+
+    if (fatSavedReports.length === 0) {
+      list.innerHTML = '<div style="text-align:center;color:#64748b;padding:16px;background:#f8fafc;border-radius:8px;">ยังไม่มีใบงานหมูขุนในคลัง (กด "💾 บันทึก & สร้างใบใหม่" เพื่อเก็บข้อมูล)</div>';
+      updateNetworkUI();
+      return;
+    }
+
+    fatSavedReports.forEach(r => {
+      const penTotal = (r.pens || []).reduce((a, v) => a + (Number(v) || 0), 0);
+      const bookVal = r.pigSummary?.book || '-';
+      const cntVal = r.pigSummary?.counted || penTotal;
+      const isEditing = fatState.reportId === r.reportId;
+      const pfName = getPromoteFarmDisplay(r.header);
+
+      const statusBadge = r.syncedToSheet
+        ? `<span class="badge-synced">✅ ส่ง Google Sheet แล้ว (${escapeHtml(r.sheetName || '')})</span>`
+        : `<span class="badge-pending">⏳ ยังไม่ได้ส่งเข้า Google Sheet</span>`;
+
+      const div = document.createElement('div');
+      div.className = 'saved-card-item' + (isEditing ? ' editing' : '');
+      div.innerHTML = `
+        <div>
+          <div style="font-weight:700;font-size:0.95rem;">🏠 ${escapeHtml(r.header.barnName || 'ไม่ระบุเล้า')} ${r.header.houseNo ? `(หลัง ${escapeHtml(r.header.houseNo)})` : ''} <span style="font-size:0.75rem;color:#64748b;">(${pfName ? escapeHtml(pfName) + ' · ' : ''}${r.header.date})</span></div>
+          <div style="font-size:0.8rem;color:#475569;">C.V.: <b>${escapeHtml(r.header.cv || '-')}</b> | บัญชี: <b>${escapeHtml(bookVal)}</b> | ตรวจนับ: <b>${escapeHtml(cntVal)}</b> | บันทึก: ${r.savedAt || '-'}</div>
+          ${statusBadge}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${!r.syncedToSheet ? `<button class="btn" style="background:#16a34a;color:#fff;" onclick="fatRetrySyncReport('${r.reportId}')">☁️ ส่งเข้า Sheet</button>` : ''}
+          <button class="btn" style="background:#2563eb;color:#fff;" onclick="fatLoadReportForEdit('${r.reportId}')">📂 เปิด/แก้ไข</button>
+          <button class="btn" style="background:#fee2e2;color:#b91c1c;" onclick="fatDeleteSavedReport('${r.reportId}')">🗑️</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+    updateNetworkUI();
+  }
+
+  function renderFatLogs() {
+    document.getElementById('fatLogCountBadge').textContent = fatState.logs.length;
+    const tbody = document.getElementById('fatLogTbody');
+    tbody.innerHTML = '';
+    if (fatState.logs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#64748b;padding:20px;">ยังไม่มีประวัติการคีย์ในใบนี้</td></tr>';
+      return;
+    }
+    fatState.logs.forEach(l => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="white-space:nowrap;color:#64748b;">${l.time}</td>
+        <td><strong>${escapeHtml(l.section)}</strong></td>
+        <td style="font-weight:700;color:var(--fat-primary);">${escapeHtml(l.value)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function fatClearLogsOnly() {
+    if (!confirm('ล้าง Log เวลาของใบหมูขุนปัจจุบันใช่หรือไม่?')) return;
+    fatState.logs = [];
+    renderFatLogs();
+    fatSaveState('ล้าง Log แล้ว');
+  }
+
+  function getFatAllReportsForExport() {
+    const list = [...fatSavedReports];
+    if (fatHasAnyData(fatState)) {
+      const liveCopy = JSON.parse(JSON.stringify(fatState));
+      if (!liveCopy.reportId) liveCopy.reportId = 'FAT-' + makeReportId(liveCopy.header) + '-ร่าง';
+      if (!liveCopy.savedAt) liveCopy.savedAt = formatNowThai();
+      const idx = list.findIndex(r => r.reportId === liveCopy.reportId);
+      if (idx >= 0) list[idx] = liveCopy;
+      else list.unshift(liveCopy);
+    }
+    return list;
+  }
+
+  function fatExportCSV(type) {
+    const reports = getFatAllReportsForExport();
+    if (reports.length === 0) return alert('ยังไม่มีข้อมูลหมูขุนสำหรับส่งออกครับ');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    if (type === 'stock') {
+      const rows = [[
+        'Report_ID', 'วันที่', 'ส่งเสริม/ฟาร์ม', 'ชื่อเล้า', 'C.V.', 'หลังที่',
+        'บัญชี_สุกร', 'ตรวจนับ_สุกร', 'ผลต่าง_สุกร', 'สาเหตุผลต่างพันธุ์สัตว์',
+        'อาหาร_รายการ', 'อาหาร_ผลต่างสาเหตุ', 'เกษตรกร', 'ข้อคิดเห็น',
+        'โรงสเปรย์รถยนต์', 'ห้องสเปรย์/อาบน้ำ', 'รั้ว_มตฐ_ปศุสัตว์', 'บ่อแก๊สชีวภาพ', 'ถังอาหาร+น้ำเล้า', 'ไซโล+AutoFeed',
+        'เวลาบันทึก'
+      ]];
+      reports.forEach(rep => {
+        const h = rep.header || {};
+        const pf = getPromoteFarmDisplay(h);
+        const b = rep.pigSummary?.book === '' ? '' : Number(rep.pigSummary?.book);
+        const c = rep.pigSummary?.counted === '' ? '' : Number(rep.pigSummary?.counted);
+        const diff = (b !== '' || c !== '') ? ((Number(b) || 0) - (Number(c) || 0)) : '';
+        const feedSummary = (rep.feeds || []).filter(f => f.code || f.book !== '' || f.counted !== '')
+          .map(f => `[${f.code || '-'}] บัญชี:${f.book || 0}/นับ:${f.counted || 0}`).join(' ; ');
+        const inf = rep.infra || {};
+        rows.push([
+          rep.reportId, h.date, pf, h.barnName, h.cv, h.houseNo,
+          b, c, diff, rep.pigDiffCause,
+          feedSummary, rep.feedDiffCause, rep.farmer, rep.comments,
+          inf.carSpray, inf.showerSpray, inf.livestockFence, inf.biogas, inf.feedWaterTank, inf.siloAutoFeed,
+          rep.savedAt
+        ]);
+      });
+      downloadCSV(rows, `DB_Fat_Stock_${dateStamp}.csv`);
+    } else if (type === 'pens') {
+      const rows = [['Report_ID', 'วันที่', 'ส่งเสริม/ฟาร์ม', 'ชื่อเล้า', 'หลังที่', 'คอกที่', 'จ.น.ตัว']];
+      reports.forEach(rep => {
+        const h = rep.header || {};
+        const pf = getPromoteFarmDisplay(h);
+        for (let i = 0; i < FAT_PEN_COUNT; i++) {
+          const val = rep.pens && rep.pens[i] !== '' && rep.pens[i] !== undefined ? Number(rep.pens[i]) : 0;
+          rows.push([rep.reportId, h.date, pf, h.barnName, h.houseNo, i + 1, val]);
+        }
+      });
+      downloadCSV(rows, `DB_Fat_Pens_${dateStamp}.csv`);
+    } else if (type === 'logs') {
+      const rows = [['Report_ID', 'ชื่อเล้า', 'วัน-เวลาที่คีย์', 'จุดที่คีย์', 'จำนวน']];
+      reports.forEach(rep => {
+        [...(rep.logs || [])].reverse().forEach(l => {
+          rows.push([rep.reportId, rep.header?.barnName || '', l.time, l.section, l.value]);
+        });
+      });
+      downloadCSV(rows, `DB_Fat_Logs_${dateStamp}.csv`);
+    }
+  }
+
+  /* Render Fattening A4 Print Sheet (ตรงตามภาพแบบฟอร์ม 100%) */
+  function renderFatPrintSheet() {
+    const h = fatState.header;
+    const pf = getPromoteFarmDisplay(h);
+    const bVal = fatState.pigSummary.book === '' ? '' : Number(fatState.pigSummary.book);
+    const cVal = fatState.pigSummary.counted === '' ? '' : Number(fatState.pigSummary.counted);
+    const pDiff = (bVal !== '' || cVal !== '') ? ((Number(bVal) || 0) - (Number(cVal) || 0)) : '';
+
+    let sum1 = 0, has1 = false, sum2 = 0, has2 = false;
+    for (let i = 0; i < 15; i++) {
+      if (fatState.pens[i] !== '') { sum1 += Number(fatState.pens[i]) || 0; has1 = true; }
+    }
+    for (let i = 15; i < 30; i++) {
+      if (fatState.pens[i] !== '') { sum2 += Number(fatState.pens[i]) || 0; has2 = true; }
+    }
+
+    const pigCauseLines = String(fatState.pigDiffCause || '').split('\n');
+    let pigCauseRowsHtml = '';
+    for (let i = 0; i < 9; i++) {
+      pigCauseRowsHtml += `<tr><td style="height:17px;">${escapeHtml(pigCauseLines[i] || '')}</td></tr>`;
+    }
+
+    let docsMadeRowsHtml = '';
+    fatState.docsMade.forEach(d => {
+      docsMadeRowsHtml += `
+        <tr>
+          <td class="fp-left" style="width:52%;height:18px;">${escapeHtml(d.label || '')}</td>
+          <td class="fp-center" style="width:48%;">${escapeHtml(d.docNo || '')}</td>
+        </tr>`;
+    });
+
+    let penRowsHtml = '';
+    for (let i = 0; i < 15; i++) {
+      const v1 = fatState.pens[i] !== '' ? fatState.pens[i] : '';
+      const v2 = fatState.pens[i + 15] !== '' ? fatState.pens[i + 15] : '';
+      penRowsHtml += `
+        <tr>
+          <td class="fp-center fp-bold">${i + 1}</td>
+          <td class="fp-center">${escapeHtml(v1)}</td>
+          <td class="fp-center fp-bold">${i + 16}</td>
+          <td class="fp-center">${escapeHtml(v2)}</td>
+        </tr>`;
+    }
+
+    let feedRowsHtml = '';
+    for (let i = 0; i < FAT_FEED_ROW_COUNT; i++) {
+      const f = fatState.feeds[i] || { code: '', book: '', counted: '' };
+      const fb = f.book === '' ? '' : Number(f.book);
+      const fc = f.counted === '' ? '' : Number(f.counted);
+      const fDiff = (fb !== '' || fc !== '') ? Math.round(((Number(fb) || 0) - (Number(fc) || 0)) * 10000) / 10000 : '';
+      feedRowsHtml += `
+        <tr>
+          <td class="fp-center" style="height:18px;">${escapeHtml(f.code || '')}</td>
+          <td class="fp-center">${fb}</td>
+          <td class="fp-center">${fc}</td>
+          <td class="fp-center">${fDiff === '' ? '' : (fDiff > 0 ? '+' + fDiff : fDiff)}</td>
+        </tr>`;
+    }
+
+    const feedCauseLines = String(fatState.feedDiffCause || '').split('\n');
+    let feedCauseRowsHtml = '';
+    for (let i = 0; i < 4; i++) {
+      feedCauseRowsHtml += `<tr><td style="height:17px;">${escapeHtml(feedCauseLines[i] || '')}</td></tr>`;
+    }
+
+    let cutoffRowsHtml = '';
+    fatState.docsCutoff.forEach(d => {
+      cutoffRowsHtml += `
+        <tr>
+          <td class="fp-left" style="width:28%;height:17px;">${escapeHtml(d.label)}</td>
+          <td class="fp-left" style="width:72%;">${escapeHtml(d.docInfo || '')}</td>
+        </tr>`;
+    });
+
+    const infraHeaders = FAT_INFRA_ITEMS.map(it => `<th class="fp-center" style="font-size:8.5px;">${escapeHtml(it.label)}</th>`).join('');
+    const infraYes = FAT_INFRA_ITEMS.map(it => `<td class="fp-center fp-bold">${fatState.infra[it.key] === 'มี' ? '✓' : ''}</td>`).join('');
+    const infraNo = FAT_INFRA_ITEMS.map(it => `<td class="fp-center fp-bold">${fatState.infra[it.key] === 'ไม่มี' ? '✓' : ''}</td>`).join('');
+
+    const commentLines = String(fatState.comments || '').split('\n');
+
+    document.getElementById('fatPrintSheet').innerHTML = `
+      <div class="fp-top-meta">
+        <span>รายงานการตรวจนับสุกรขุน &amp; อาหารคงเหลือ ${pf ? '— ' + escapeHtml(pf) : ''}</span>
+        <span>วันที่: ${escapeHtml(h.date || '')}</span>
+      </div>
+
+      <div class="fp-2col">
+        <div>
+          <table class="fp-tbl">
+            <tr>
+              <td colspan="2" class="fp-left"><span class="fp-bold">ชื่อเล้า</span> &nbsp; ${escapeHtml(h.barnName || '')}</td>
+            </tr>
+            <tr>
+              <td style="width:55%;"><span class="fp-bold">C.V.</span> &nbsp; ${escapeHtml(h.cv || '')}</td>
+              <td style="width:45%;"><span class="fp-bold">หลังที่</span> &nbsp; ${escapeHtml(h.houseNo || '')}</td>
+            </tr>
+            <tr>
+              <td colspan="2" class="fp-gray">สรุปผลตรวจนับสุกรคงเหลือ</td>
+            </tr>
+            <tr>
+              <td class="fp-left fp-bold">บัญชี</td>
+              <td class="fp-center fp-bold">${bVal}</td>
+            </tr>
+            <tr>
+              <td class="fp-left fp-bold">ตามตรวจนับ</td>
+              <td class="fp-center fp-bold">${cVal}</td>
+            </tr>
+            <tr>
+              <td class="fp-left fp-bold">ผลต่าง</td>
+              <td class="fp-center fp-bold">${pDiff === '' ? '' : (pDiff > 0 ? '+' + pDiff : pDiff)}</td>
+            </tr>
+            <tr>
+              <td colspan="2" class="fp-gray">สาเหตุผลต่างพันธุ์สัตว์</td>
+            </tr>
+          </table>
+          <table class="fp-tbl" style="margin-top:-4px;">
+            ${pigCauseRowsHtml}
+          </table>
+
+          <table class="fp-tbl">
+            <tr>
+              <td class="fp-gray" style="width:52%;">เอกสารที่จัดทำ</td>
+              <td class="fp-gray" style="width:48%;">เลขที่</td>
+            </tr>
+            ${docsMadeRowsHtml}
+          </table>
+
+          <div class="fp-farmer-box">
+            <div class="fp-farmer-space">${escapeHtml(fatState.farmer || '')}</div>
+            <div class="fp-farmer-lbl">เกษตรกร</div>
+          </div>
+        </div>
+
+        <div>
+          <table class="fp-tbl">
+            <tr>
+              <th class="fp-center" style="width:20%;">คอกที่</th>
+              <th class="fp-center" style="width:30%;">จ.น.ตัว</th>
+              <th class="fp-center" style="width:20%;">คอกที่</th>
+              <th class="fp-center" style="width:30%;">จ.น.ตัว</th>
+            </tr>
+            ${penRowsHtml}
+            <tr>
+              <td class="fp-gray">รวม</td>
+              <td class="fp-center fp-bold">${has1 ? sum1 : ''}</td>
+              <td class="fp-gray">รวม</td>
+              <td class="fp-center fp-bold">${has2 ? sum2 : ''}</td>
+            </tr>
+          </table>
+
+          <table class="fp-tbl">
+            <tr>
+              <td colspan="4" class="fp-gray">การตรวจนับอาหารคงเหลือ</td>
+            </tr>
+            <tr>
+              <td class="fp-gray" style="width:25%;">เบอร์</td>
+              <td class="fp-gray" style="width:25%;">บัญชี</td>
+              <td class="fp-gray" style="width:25%;">ตรวจนับ</td>
+              <td class="fp-gray" style="width:25%;">ผลต่าง</td>
+            </tr>
+            ${feedRowsHtml}
+            <tr>
+              <td colspan="4" class="fp-gray">สาเหตุผลต่างอาหาร</td>
+            </tr>
+          </table>
+          <table class="fp-tbl" style="margin-top:-4px;">
+            ${feedCauseRowsHtml}
+          </table>
+        </div>
+      </div>
+
+      <div style="border:1px solid #000; margin-top:4px; margin-bottom:4px; padding:3px 5px;">
+        <div class="fp-line-box"><span class="fp-bold">ข้อคิดเห็น</span> &nbsp; ${escapeHtml(commentLines[0] || '')}</div>
+        <div class="fp-line-box" style="border-bottom:none;">${escapeHtml(commentLines.slice(1).join(' '))}</div>
+      </div>
+
+      <table class="fp-tbl">
+        <tr>
+          <td class="fp-gray" style="width:28%;">เอกสาร CUT OFF</td>
+          <td class="fp-gray" style="width:72%;">เลขที่ / วัน เดือน ปี</td>
+        </tr>
+        ${cutoffRowsHtml}
+      </table>
+
+      <table class="fp-tbl" style="margin-top:-3px;">
+        <tr>
+          <th class="fp-center" style="width:10%;">ข้อมูล</th>
+          ${infraHeaders}
+        </tr>
+        <tr>
+          <td class="fp-center fp-bold">มี</td>
+          ${infraYes}
+        </tr>
+        <tr>
+          <td class="fp-center fp-bold">ไม่มี</td>
+          ${infraNo}
+        </tr>
+      </table>
+    `;
+  }
+
+  function initFatRender() {
+    renderFatHeader();
+    renderFatPigSummary();
+    renderFatFeedTable();
+    renderFatPairPenTable();
+    renderFatMobilePenList();
+    updateFatPenSums(false);
+    renderFatDocsAndInfra();
+    renderFatSavedReports();
+    renderFatLogs();
+    updateNetworkUI();
+  }
+
+  /* =====================================================================
+     INIT & SERVICE WORKER
+     ===================================================================== */
   window.addEventListener('online', updateNetworkUI);
   window.addEventListener('offline', updateNetworkUI);
 
-if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) {
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (!refreshing) {
@@ -2026,7 +3749,7 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
         .then((reg) => {
-          reg.update(); // สั่งเช็กอัปเดตทุกครั้งที่เปิดหน้าเว็บ
+          reg.update();
           console.log('PWA Offline Ready');
         })
         .catch(err => console.warn('SW register failed:', err));
@@ -2034,6 +3757,8 @@ if ('serviceWorker' in navigator) {
   }
 
   initRender();
+  initFatRender();
+  updateHomeMeta();
 </script>
 </body>
 </html>
