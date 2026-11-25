@@ -590,43 +590,60 @@
     table.grid-table input.pen-input:focus { background: #eff6ff; outline: 2px solid var(--primary); }
 
     /* ตารางคอก 1-30 แถวเดียว (หมูขุน) */
-    table.fat-single-table {
-      min-width: 0;
-      table-layout: auto;
-    }
-    table.fat-single-table th {
-      font-size: 0.84rem !important;
-      padding: 7px 6px !important;
-      background: #e2e8f0;
-    }
-    table.fat-single-table td.pen-no {
-      width: 85px;
+/* ตารางคอก 1-30 แถวเดียว (หมูขุน) */
+    table.fat-single-pen-table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 0.92rem;
-      padding: 6px;
     }
-    table.fat-single-table input.pen-input {
+    table.fat-single-pen-table th,
+    table.fat-single-pen-table td {
+      border: 1px solid #cbd5e1;
+      padding: 5px 8px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    table.fat-single-pen-table thead th {
+      background: #ccfbf1;
+      color: #0f766e;
+      font-weight: 800;
       padding: 8px 6px;
+      border-bottom: 2px solid #5eead4;
+    }
+    table.fat-single-pen-table tbody tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    table.fat-single-pen-table td.pen-no-col {
+      background: #f1f5f9 !important;
+      font-weight: 800;
+      color: #334155;
+      width: 30%;
+    }
+    table.fat-single-pen-table input.fat-single-input {
+      width: 100%;
+      padding: 7px 6px;
       font-size: 1rem;
+      font-weight: 800;
+      text-align: center;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      background: #fff;
     }
-    table.fat-single-table input.pen-input:focus {
-      background: #f0fdfa;
-      outline: 2px solid var(--fat-primary);
+    table.fat-single-pen-table input.fat-single-input:focus {
+      outline: none;
+      border-color: var(--fat-primary);
+      box-shadow: 0 0 0 2px #99f6e4;
+    }
+    table.fat-single-pen-table tfoot td {
+      background: #ccfbf1;
+      color: #115e59;
+      font-weight: 800;
+      font-size: 0.98rem;
+      border-top: 2px solid #5eead4;
+      padding: 8px;
     }
 
-    table.grid-table tr.total-foot td {
-      background: #dbeafe;
-      font-weight: 700;
-      font-size: 0.78rem;
-      padding: 5px 1px;
-      color: var(--primary);
-      line-height: 1.25;
-      border-top: 2px solid #94a3b8;
-    }
-    table.grid-table tr.total-foot td.sow-total-cell {
-      color: #9d174d;
-      background: #fce7f3;
-    }
-
+    
     @media screen and (max-width: 768px) {
       .card { padding: 10px; }
       table.grid-table { font-size: 0.74rem; }
@@ -1223,19 +1240,19 @@
           <span>รวมทั้งหมด: <strong id="fatTotalAll_banner" style="color:#0f766e; font-size:1.08rem;">0</strong> ตัว</span>
         </div>
 
-        <div id="fatSinglePenWrap">
-          <table class="grid-table fat-single-table">
+        <div class="fat-single-pen-wrap">
+          <table class="fat-single-pen-table">
             <thead>
               <tr>
-                <th style="width:90px;">คอกที่</th>
-                <th>จ.น.ตัว</th>
+                <th style="width:30%;">คอกที่</th>
+                <th style="width:70%;">จ.น.ตัว</th>
               </tr>
             </thead>
-            <tbody id="fatPenSingleBody"></tbody>
+            <tbody id="fatSinglePenBody"></tbody>
             <tfoot>
-              <tr class="total-foot">
-                <td style="background:#ccfbf1; color:#0f766e; font-size:0.86rem;">รวมทั้งหมด</td>
-                <td style="background:#ccfbf1; color:#0f766e; font-size:0.95rem;"><span id="fatTotalAll_foot">0</span> ตัว</td>
+              <tr>
+                <td>รวมทั้งหมด</td>
+                <td><span id="fatSingleSumAll">0</span> ตัว</td>
               </tr>
             </tfoot>
           </table>
@@ -1274,7 +1291,7 @@
       </details>
     </div>
 
-    <!-- Tab 2: นับอาหาร (ใส่เหตุผล รับเข้า / ใช้ไป แบบนับหมูพันธุ์) -->
+    <!-- Tab 2: นับอาหาร (แบบหมูพันธุ์) -->
     <div class="fat-tab-pane" id="fatTabFeed">
       <div class="card">
         <div class="section-title fat-section-title"><span>การตรวจนับอาหารคงเหลือ</span></div>
@@ -1283,8 +1300,8 @@
           <thead>
             <tr>
               <th rowspan="2" style="width:18%;">เบอร์</th>
-              <th rowspan="2" style="width:16%;">บัญชี</th>
-              <th rowspan="2" style="width:16%;">ตรวจนับ</th>
+              <th rowspan="2" style="width:16%;">รายงาน</th>
+              <th rowspan="2" style="width:16%;">นับได้</th>
               <th rowspan="2" style="width:14%;">ผลต่าง</th>
               <th colspan="2" style="width:36%;">สาเหตุผลต่าง</th>
             </tr>
@@ -1295,11 +1312,7 @@
           </thead>
           <tbody id="fatFeedTbody"></tbody>
         </table>
-
-        <div class="field" style="margin-top:10px;">
-          <label>หมายเหตุ / สาเหตุผลต่างอาหาร:</label>
-          <textarea class="field-textarea" id="fat_feedDiffCause" rows="3" placeholder="ระบุสาเหตุผลต่างอาหารเพิ่มเติม (ถ้ามี)..." onchange="fatUpdateField('feedDiffCause', this.value)"></textarea>
-        </div>
+        <input type="text" class="note-box" id="fat_feedDiffCause" placeholder="หมายเหตุ (อาหาร): ระบุเพิ่มเติม..." onchange="fatUpdateField('feedDiffCause', this.value)" />
       </div>
     </div>
 
@@ -2736,6 +2749,7 @@
       base.header.promoteFarm = getPromoteFarmDisplay(base.header);
     }
     base.pens = padArray(base.pens, FAT_PEN_COUNT, '');
+    // ใน normalizeFatState
     if (!Array.isArray(base.feeds) || base.feeds.length === 0) {
       base.feeds = createFatInitialState().feeds;
     } else {
@@ -2978,23 +2992,25 @@
     fatSaveState();
   }
 
+
   /* ตารางนับอาหารหมูขุน (มีเหตุผล รับเข้า / ใช้ไป เหมือนหมูพันธุ์) */
   function renderFatFeedTable() {
     const tbody = document.getElementById('fatFeedTbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
     fatState.feeds.forEach((f, idx) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td class="col-name" style="font-weight:700;">
-          <span class="no-print" style="font-size:0.78rem;color:#64748b;margin-right:6px;">รายการอาหาร #${idx+1} เบอร์:</span>
+          <span class="no-print" style="font-size:0.78rem;color:#64748b;margin-right:6px;">รายการอาหาร #${idx + 1} เบอร์:</span>
           <input type="text" class="cell-input" style="width:90px;display:inline-block;" value="${escapeHtml(f.code || '')}" placeholder="เบอร์"
             onchange="fatOnFeedText(${idx},'code',this.value)" />
         </td>
-        <td class="col-num" data-label="บัญชี">
+        <td class="col-num" data-label="รายงาน">
           <input type="text" inputmode="decimal" class="cell-input" id="fat_feed_${idx}_book" data-prev="${escapeHtml(f.book || '')}" value="${escapeHtml(f.book || '')}"
             oninput="fatOnFeedInput(${idx},'book',this)" onchange="fatOnFeedCommit(${idx},'book',this)" />
         </td>
-        <td class="col-num" data-label="ตรวจนับ">
+        <td class="col-num" data-label="นับได้">
           <input type="text" inputmode="decimal" class="cell-input" id="fat_feed_${idx}_counted" data-prev="${escapeHtml(f.counted || '')}" value="${escapeHtml(f.counted || '')}"
             oninput="fatOnFeedInput(${idx},'counted',this)" onchange="fatOnFeedCommit(${idx},'counted',this)" />
         </td>
@@ -3041,7 +3057,7 @@
   function fatOnFeedCommit(idx, field, el) {
     if (el.dataset.prev !== el.value && el.value !== '') {
       const code = fatState.feeds[idx].code || `แถว ${idx + 1}`;
-      fatAddLog(`อาหาร เบอร์ ${code} (${field === 'book' ? 'บัญชี' : 'ตรวจนับ'})`, el.value);
+      fatAddLog(`อาหาร เบอร์ ${code} (${field === 'book' ? 'รายงาน' : 'นับได้'})`, el.value);
     }
     el.dataset.prev = el.value;
     fatSaveState();
@@ -3056,9 +3072,10 @@
     fatSaveState();
   }
 
-  /* คอก 1-30 แถวเดียว (ไม่แยก 2 คอลัมน์) */
+  /* คอก 1-30 แถวเดียว + Sum ส่งไปช่องตามตรวจนับ */
   function renderFatSinglePenTable() {
     const tbody = document.getElementById('fatSinglePenBody');
+    if (!tbody) return;
     tbody.innerHTML = '';
     for (let i = 0; i < FAT_PEN_COUNT; i++) {
       const val = fatState.pens[i] || '';
@@ -3066,7 +3083,7 @@
       tr.innerHTML = `
         <td class="pen-no-col">คอกที่ ${i + 1}</td>
         <td>
-          <input type="text" inputmode="numeric" pattern="[0-9]*" class="fat-single-input" id="fat_spen_${i}" data-prev="${val}" value="${val}"
+          <input type="text" inputmode="numeric" pattern="[0-9]*" class="fat-single-input" id="fat_spen_${i}" data-prev="${escapeHtml(val)}" value="${escapeHtml(val)}"
             placeholder="ระบุ จ.น.ตัว"
             oninput="fatOnPenInput(${i}, this)"
             onchange="fatOnPenCommit(${i}, this)"
@@ -3087,10 +3104,14 @@
     }
     const total = sum1 + sum2;
 
-    document.getElementById('fatSum1_15_banner').textContent = sum1;
-    document.getElementById('fatSum16_30_banner').textContent = sum2;
-    document.getElementById('fatTotalAll_banner').textContent = total;
-    document.getElementById('fatSingleSumAll').textContent = total;
+    const el1 = document.getElementById('fatSum1_15_banner');
+    const el2 = document.getElementById('fatSum16_30_banner');
+    const elAll = document.getElementById('fatTotalAll_banner');
+    const elFoot = document.getElementById('fatSingleSumAll');
+    if (el1) el1.textContent = sum1;
+    if (el2) el2.textContent = sum2;
+    if (elAll) elAll.textContent = total;
+    if (elFoot) elFoot.textContent = total;
 
     if (hasAny || fromPenEdit) {
       const newVal = hasAny ? String(total) : '';
@@ -3203,13 +3224,13 @@
     fatSaveState();
   }
 
-  function fatSwitchTab(tab, btn) {
+function fatSwitchTab(tab, btn) {
     document.querySelectorAll('#fatApp .nav-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
     document.querySelectorAll('#fatApp .fat-tab-pane').forEach(p => p.classList.remove('active'));
-    if (tab === 'summary') document.getElementById('fatTabSummary').classList.add('active');
-    else if (tab === 'feed') document.getElementById('fatTabFeed').classList.add('active');
-    else if (tab === 'logs') document.getElementById('fatTabLogs').classList.add('active');
+    if (tab === 'summary') document.getElementById('fatTabSummary')?.classList.add('active');
+    else if (tab === 'feed') document.getElementById('fatTabFeed')?.classList.add('active');
+    else if (tab === 'logs') document.getElementById('fatTabLogs')?.classList.add('active');
   }
 
   /* Save, Sync, Saved Reports & Logs (หมูขุน) */
