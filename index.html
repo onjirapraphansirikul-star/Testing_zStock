@@ -915,7 +915,7 @@
 
   <div class="card" id="tabHeader">
     <div class="section-title screen-only-title">
-      <span>ข้อมูลทั่วไปของใบตรวจนับ (หมูพันธุ์)</span>
+      <span>รายงานการตรวจนับสินค้าระหว่างผลิตสุกรพันธุ์</span>
       <span id="editingBadge" style="font-size:0.78rem; color:#15803d;"></span>
     </div>
     <div class="header-grid">
@@ -1001,7 +1001,7 @@
       <div class="section-title"><span>แม่พันธุ์เล้าเตรียมทดแทน / ลูกเล้าคลอด</span></div>
 
       <div class="pen-summary-banner">
-        <span>📊 รวมทั้งหมด (A-D)</span>
+        <span>📊 รวมทั้งหมด </span>
         <span>
           รวมแม่: <strong id="totalAllSows" style="color:#be185d;">0</strong> ตัว &nbsp;|&nbsp;
           รวมลูก: <strong id="totalAllPiglets" style="color:#1d4ed8;">0</strong> ตัว
@@ -1026,7 +1026,7 @@
               <th>
                 แม่
                 <div class="no-print">
-                  <label class="sow-all-th" title="ติ๊กเลือกแม่ทั้งหมด แถว A">
+                  <label class="sow-all-th" title="เลือกทั้งหมด แถว A">
                     <input type="checkbox" class="sow-chk" id="fsow_all_A" onchange="toggleAllSows('A', this.checked)" /> All
                   </label>
                 </div>
@@ -1036,7 +1036,7 @@
               <th>
                 แม่
                 <div class="no-print">
-                  <label class="sow-all-th" title="ติ๊กเลือกแม่ทั้งหมด แถว B">
+                  <label class="sow-all-th" title="เลือกทั้งหมด แถว B">
                     <input type="checkbox" class="sow-chk" id="fsow_all_B" onchange="toggleAllSows('B', this.checked)" /> All
                   </label>
                 </div>
@@ -1046,7 +1046,7 @@
               <th>
                 แม่
                 <div class="no-print">
-                  <label class="sow-all-th" title="ติ๊กเลือกแม่ทั้งหมด แถว C">
+                  <label class="sow-all-th" title="เลือกทั้งหมด แถว C">
                     <input type="checkbox" class="sow-chk" id="fsow_all_C" onchange="toggleAllSows('C', this.checked)" /> All
                   </label>
                 </div>
@@ -1056,7 +1056,7 @@
               <th>
                 แม่
                 <div class="no-print">
-                  <label class="sow-all-th" title="ติ๊กเลือกแม่ทั้งหมด แถว D">
+                  <label class="sow-all-th" title="เลือกทั้งหมด แถว D">
                     <input type="checkbox" class="sow-chk" id="fsow_all_D" onchange="toggleAllSows('D', this.checked)" /> All
                   </label>
                 </div>
@@ -1160,7 +1160,7 @@
     <!-- Header ข้อมูลทั่วไป (หมูขุน) -->
     <div class="card">
       <div class="section-title fat-section-title">
-        <span>ข้อมูลทั่วไปของใบตรวจนับ (หมูขุน)</span>
+        <span>รายงานการตรวจนับสินค้าระหว่างผลิตสุกรขุน</span>
         <span id="fat_editingBadge" style="font-size:0.78rem; color:#0f766e;">🆕 ใบงานใหม่</span>
       </div>
       <div class="fat-header-grid">
@@ -1169,7 +1169,7 @@
           <input type="date" id="fat_hdr_date" onchange="fatUpdateHeader('date', this.value)" />
         </div>
         <div class="field">
-          <label>ส่งเสริม / ฟาร์ม:</label>
+          <label>โครงการส่งเสริม / ฟาร์ม:</label>
           <div class="combo-wrap" id="fatPromoteFarmCombo">
             <input type="text" id="fat_hdr_promoteFarm" autocomplete="off"
               placeholder="พิมพ์ค้นหา หรือกดเลือก ส่งเสริม / ฟาร์ม..."
@@ -1204,8 +1204,8 @@
           <thead>
             <tr>
               <th style="width:28%;">รายการ</th>
-              <th style="width:24%;">บัญชี</th>
-              <th style="width:24%;">ตามตรวจนับ (ซิงค์จากคอก)</th>
+              <th style="width:24%;">รายงาน PigPro</th>
+              <th style="width:24%;">ตรวจนับได้</th>
               <th style="width:24%;">ผลต่าง</th>
             </tr>
           </thead>
@@ -1236,7 +1236,7 @@
         <div class="section-title fat-section-title"><span>ตรวจนับจำนวนตัวรายคอก (คอก 1–30)</span></div>
 
         <div class="pen-summary-banner" style="background:linear-gradient(to right, #f8fafc, #f0fdfa); border-color:#99f6e4;">
-          <span>📊 รวมสุกรขุนทั้งหมด (คอก 1–30)</span>
+          <span>📊 รวมทั้งหมด </span>
           <span>รวมทั้งหมด: <strong id="fatTotalAll_banner" style="color:#0f766e; font-size:1.08rem;">0</strong> ตัว</span>
         </div>
 
@@ -1245,7 +1245,7 @@
             <thead>
               <tr>
                 <th style="width:30%;">คอกที่</th>
-                <th style="width:70%;">จ.น.ตัว</th>
+                <th style="width:70%;">จำนวนตัว</th>
               </tr>
             </thead>
             <tbody id="fatSinglePenBody"></tbody>
@@ -1484,9 +1484,6 @@
     { key: 'pigletSum', label: 'รวมลูกสุกร', isSum: 'piglet' },
 
     { key: 'boar', label: 'พ่อพันธุ์', causeFixed: '', docFixed: '', group: 'boar' },
-    { key: 'boar2', label: '', logLabel: '', causeFixed: '', docFixed: '', group: 'boar' },
-    { key: 'boar3', label: '', logLabel: '', causeFixed: '', docFixed: '', group: 'boar' },
-    { key: 'boar4', label: '', logLabel: '', causeFixed: '', docFixed: '', group: 'boar' },
     { key: 'boarSum', label: 'รวมพ่อพันธุ์', isSum: 'boar' },
 
     { key: 'sow1', label: 'แม่ซองยืน แถว 1', causeFixed: '', docFixed: '', group: 'sow' },
@@ -2204,7 +2201,7 @@
     allBar.innerHTML = `
       <label class="sow-check-label" id="msow_all_lbl" style="padding:6px 10px;">
         <input type="checkbox" id="msow_all_chk" onchange="toggleAllSows('${currentPenCol}', this.checked)" />
-        ติ๊กเลือกแม่ทั้งหมด แถว ${currentPenCol} (${PEN_COUNT} คอก)
+        เลือกแม่ทั้งหมด แถว ${currentPenCol} (${PEN_COUNT} คอก)
       </label>
       <span id="msow_all_count" style="font-size:0.82rem;color:#9d174d;font-weight:700;">0 / ${PEN_COUNT} ตัว</span>
     `;
