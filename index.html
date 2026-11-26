@@ -1229,12 +1229,13 @@
           </tbody>
         </table>
 
-        <div class="field" style="margin-top:10px;">
+      <div class="field" style="margin-top:10px;">
           <label>สาเหตุผลต่างพันธุ์สัตว์:</label>
           <textarea class="field-textarea" id="fat_pigDiffCause" rows="3" placeholder="ระบุสาเหตุผลต่างพันธุ์สัตว์ (ถ้ามี)..." onchange="fatUpdateField('pigDiffCause', this.value)"></textarea>
         </div>
-      </div>
-
+        <!-- เพิ่มบรรทัดนี้ -->
+          <input type="text" class="note-box" id="fat_pigNote" placeholder="หมายเหตุ (สุกร): ระบุเพิ่มเติม..." onchange="fatUpdateField('pigNote', this.value)" />
+        </div>
       <!-- คอกที่ 1-30 รวมเป็นแถวเดียว 30 แถว -->
       <div class="card">
         <div class="section-title fat-section-title"><span>ตรวจนับจำนวนตัวรายคอก</span></div>
@@ -2743,6 +2744,7 @@
         counted: ''
       },
       pigDiffCause: '',
+        pigNote: '', // <-- เพิ่มบรรทัดนี้
       pens: Array(FAT_PEN_COUNT).fill(''),
       feeds: Array.from({ length: FAT_FEED_ROW_COUNT }, () => ({
         code: '', book: '', counted: '', causeIn: '', causeOut: ''
@@ -2826,10 +2828,10 @@
     if (s.pigSummary.book !== '' || s.pigSummary.counted !== '') return true;
     if (s.pens.some(v => v !== '')) return true;
     if (s.feeds.some(f => f.code !== '' || f.book !== '' || f.counted !== '' || f.causeIn || f.causeOut)) return true;
-    if (s.pigDiffCause.trim() !== '' || s.feedDiffCause.trim() !== '' || s.farmer.trim() !== '' || s.comments.trim() !== '') return true;
     if (s.docsMade.some(d => d.docNo.trim() !== '' || (!d.fixed && d.label.trim() !== ''))) return true;
     if (s.docsCutoff.some(d => d.docInfo.trim() !== '')) return true;
     if (Object.values(s.infra).some(v => v !== '')) return true;
+    if (s.pigDiffCause.trim() !== '' || (s.pigNote || '').trim() !== '' || s.feedDiffCause.trim() !== '' || s.farmer.trim() !== '' || s.comments.trim() !== '') return true;
     return false;
   }
 
@@ -2967,6 +2969,7 @@
     document.getElementById('fat_hdr_cv').value = fatState.header.cv || '';
     document.getElementById('fat_hdr_houseNo').value = fatState.header.houseNo || '';
     document.getElementById('fat_pigDiffCause').value = fatState.pigDiffCause || '';
+    document.getElementById('fat_pigNote').value = fatState.pigNote || ''; // <-- เพิ่มบรรทัดนี้
     document.getElementById('fat_feedDiffCause').value = fatState.feedDiffCause || '';
     document.getElementById('fat_gsheetUrlInput').value = fatGetGSheetUrl();
     document.getElementById('fat_editingBadge').textContent = fatState.reportId ? `✏️ แก้ไขใบ: ${fatState.reportId}` : '🆕 ใบงานใหม่';
