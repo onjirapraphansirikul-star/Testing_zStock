@@ -1485,15 +1485,25 @@
     window.scrollTo(0, 0);
   }
 
+  let customFatPrintReport = null;
+
   function printMode(mode) {
     document.body.classList.remove('mode-breed', 'mode-fat');
     document.body.classList.add(mode === 'breed' ? 'mode-breed' : 'mode-fat');
-    if (mode === 'fat' && typeof renderFatPrintSheet === 'function') renderFatPrintSheet();
+    if (mode === 'fat' && typeof renderFatPrintSheet === 'function') {
+      renderFatPrintSheet(customFatPrintReport || fatState);
+    }
     window.print();
   }
 
   window.addEventListener('beforeprint', () => {
-    if (activeMode === 'fat' && typeof renderFatPrintSheet === 'function') renderFatPrintSheet();
+    if (activeMode === 'fat' && typeof renderFatPrintSheet === 'function') {
+      renderFatPrintSheet(customFatPrintReport || fatState);
+    }
+  });
+
+  window.addEventListener('afterprint', () => {
+    customFatPrintReport = null;
   });
 
   function updateHomeMeta() {
@@ -1928,6 +1938,23 @@
     initRender();
     saveState(`เปิดแก้ไข: ${state.header.barnName}`);
     switchTab('pigs', document.getElementById('navBtn_pigs'));
+  }
+
+  let prevBreedStateForPrint = null;
+  function printSavedReport(reportId) {
+    const target = savedReports.find(r => r.reportId === reportId);
+    if (!target) return;
+    prevBreedStateForPrint = state;
+    state = normalizeState(JSON.parse(JSON.stringify(target)));
+    initRender();
+    window.addEventListener('afterprint', () => {
+      if (prevBreedStateForPrint) {
+        state = prevBreedStateForPrint;
+        prevBreedStateForPrint = null;
+        initRender();
+      }
+    }, { once: true });
+    printMode('breed');
   }
 
   function deleteSavedReport(reportId) {
@@ -2434,6 +2461,7 @@
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
           ${!r.syncedToSheet ? `<button class="btn" style="background:#16a34a;color:#fff;" onclick="retrySyncReport('${r.reportId}')">☁️ ส่งเข้า Sheet</button>` : ''}
+          <button class="btn" style="background:#475569;color:#fff;" onclick="printSavedReport('${r.reportId}')">🖨️ พิมพ์</button>
           <button class="btn" style="background:#2563eb;color:#fff;" onclick="loadReportForEdit('${r.reportId}')">📂 เปิด/แก้ไข</button>
           <button class="btn" style="background:#fee2e2;color:#b91c1c;" onclick="deleteSavedReport('${r.reportId}')">🗑️</button>
         </div>
@@ -3387,6 +3415,13 @@
     fatSwitchTab('summary', document.getElementById('fatNav_summary'));
   }
 
+  function fatPrintSavedReport(reportId) {
+    const target = fatSavedReports.find(r => r.reportId === reportId);
+    if (!target) return;
+    customFatPrintReport = normalizeFatState(JSON.parse(JSON.stringify(target)));
+    printMode('fat');
+  }
+
   function fatDeleteSavedReport(reportId) {
     if (!confirm('ต้องการลบใบงานหมูขุนนี้ออกจากคลังใช่ไหม?')) return;
     fatSavedReports = fatSavedReports.filter(r => r.reportId !== reportId);
@@ -3452,6 +3487,7 @@
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
           ${!r.syncedToSheet ? `<button class="btn" style="background:#16a34a;color:#fff;" onclick="fatRetrySyncReport('${r.reportId}')">☁️ ส่งเข้า Sheet</button>` : ''}
+          <button class="btn" style="background:#475569;color:#fff;" onclick="fatPrintSavedReport('${r.reportId}')">🖨️ พิมพ์</button>
           <button class="btn" style="background:#2563eb;color:#fff;" onclick="fatLoadReportForEdit('${r.reportId}')">📂 เปิด/แก้ไข</button>
           <button class="btn" style="background:#fee2e2;color:#b91c1c;" onclick="fatDeleteSavedReport('${r.reportId}')">🗑️</button>
         </div>
@@ -3573,29 +3609,30 @@
   }
 
   /* Render Fattening A4 Print Sheet (ตรงตามภาพแบบฟอร์ม) */
-  function renderFatPrintSheet() {
-    const h = fatState.header;
+  function renderFatPrintSheet(reportData = fatState) {
+    const src = reportData || fatState;
+    const h = src.header || {};
     const pf = getPromoteFarmDisplay(h);
-    const bVal = fatState.pigSummary.book === '' ? '' : Number(fatState.pigSummary.book);
-    const cVal = fatState.pigSummary.counted === '' ? '' : Number(fatState.pigSummary.counted);
+    const bVal = src.pigSummary.book === '' ? '' : Number(src.pigSummary.book);
+    const cVal = src.pigSummary.counted === '' ? '' : Number(src.pigSummary.counted);
     const pDiff = (bVal !== '' || cVal !== '') ? ((Number(bVal) || 0) - (Number(cVal) || 0)) : '';
 
     let sum1 = 0, has1 = false, sum2 = 0, has2 = false;
     for (let i = 0; i < 15; i++) {
-      if (fatState.pens[i] !== '') { sum1 += Number(fatState.pens[i]) || 0; has1 = true; }
+      if (src.pens[i] !== '') { sum1 += Number(src.pens[i]) || 0; has1 = true; }
     }
     for (let i = 15; i < 30; i++) {
-      if (fatState.pens[i] !== '') { sum2 += Number(fatState.pens[i]) || 0; has2 = true; }
+      if (src.pens[i] !== '') { sum2 += Number(src.pens[i]) || 0; has2 = true; }
     }
 
-    const pigCauseLines = String(fatState.pigDiffCause || '').split('\n');
+    const pigCauseLines = String(src.pigDiffCause || '').split('\n');
     let pigCauseRowsHtml = '';
     for (let i = 0; i < 9; i++) {
       pigCauseRowsHtml += `<tr><td style="height:17px;">${escapeHtml(pigCauseLines[i] || '')}</td></tr>`;
     }
 
     let docsMadeRowsHtml = '';
-    fatState.docsMade.forEach(d => {
+    src.docsMade.forEach(d => {
       docsMadeRowsHtml += `
         <tr>
           <td class="fp-left" style="width:52%;height:18px;">${escapeHtml(d.label || '')}</td>
@@ -3605,8 +3642,8 @@
 
     let penRowsHtml = '';
     for (let i = 0; i < 15; i++) {
-      const v1 = fatState.pens[i] !== '' ? fatState.pens[i] : '';
-      const v2 = fatState.pens[i + 15] !== '' ? fatState.pens[i + 15] : '';
+      const v1 = src.pens[i] !== '' ? src.pens[i] : '';
+      const v2 = src.pens[i + 15] !== '' ? src.pens[i + 15] : '';
       penRowsHtml += `
         <tr>
           <td class="fp-center fp-bold">${i + 1}</td>
@@ -3616,11 +3653,11 @@
         </tr>`;
     }
 
-    const printFeedCount = (fatState.feeds[3] && (fatState.feeds[3].code || fatState.feeds[3].book !== '' || fatState.feeds[3].counted !== '')) ? 4 : 3;
+    const printFeedCount = (src.feeds[3] && (src.feeds[3].code || src.feeds[3].book !== '' || src.feeds[3].counted !== '')) ? 4 : 3;
     let feedRowsHtml = '';
     const autoFeedCauseLines = [];
     for (let i = 0; i < printFeedCount; i++) {
-      const f = fatState.feeds[i] || { code: '', book: '', counted: '', causeIn: '', causeOut: '' };
+      const f = src.feeds[i] || { code: '', book: '', counted: '', causeIn: '', causeOut: '' };
       const fb = f.book === '' ? '' : Number(f.book);
       const fc = f.counted === '' ? '' : Number(f.counted);
       const fDiff = (fb !== '' || fc !== '') ? Math.round(((Number(fb) || 0) - (Number(fc) || 0)) * 10000) / 10000 : '';
@@ -3639,8 +3676,8 @@
         autoFeedCauseLines.push(`${f.code ? 'เบอร์ ' + f.code : '#' + (i + 1)}: ${parts}`);
       }
     }
-    if (fatState.feedDiffCause && fatState.feedDiffCause.trim() !== '') {
-      autoFeedCauseLines.push(fatState.feedDiffCause.trim());
+    if (src.feedDiffCause && src.feedDiffCause.trim() !== '') {
+      autoFeedCauseLines.push(src.feedDiffCause.trim());
     }
 
     let feedCauseRowsHtml = '';
@@ -3649,7 +3686,7 @@
     }
 
     let cutoffRowsHtml = '';
-    fatState.docsCutoff.forEach(d => {
+    src.docsCutoff.forEach(d => {
       cutoffRowsHtml += `
         <tr>
           <td class="fp-left" style="width:28%;height:17px;">${escapeHtml(d.label)}</td>
@@ -3658,11 +3695,11 @@
     });
 
     const infraHeaders = FAT_INFRA_ITEMS.map(it => `<th class="fp-center" style="font-size:8.5px;">${escapeHtml(it.label)}</th>`).join('');
-    const infraYes = FAT_INFRA_ITEMS.map(it => `<td class="fp-center fp-bold">${fatState.infra[it.key] === 'มี' ? '✓' : ''}</td>`).join('');
-    const infraNo = FAT_INFRA_ITEMS.map(it => `<td class="fp-center fp-bold">${fatState.infra[it.key] === 'ไม่มี' ? '✓' : ''}</td>`).join('');
+    const infraYes = FAT_INFRA_ITEMS.map(it => `<td class="fp-center fp-bold">${src.infra[it.key] === 'มี' ? '✓' : ''}</td>`).join('');
+    const infraNo = FAT_INFRA_ITEMS.map(it => `<td class="fp-center fp-bold">${src.infra[it.key] === 'ไม่มี' ? '✓' : ''}</td>`).join('');
 
-    const commentLines = String(fatState.comments || '').split('\n');
-    const farmerDisplay = isFarmSelected(pf) ? '' : (h.farmerName || fatState.farmer || '');
+    const commentLines = String(src.comments || '').split('\n');
+    const farmerDisplay = isFarmSelected(pf) ? '' : (h.farmerName || src.farmer || '');
 
     document.getElementById('fatPrintSheet').innerHTML = `
       <div class="fp-top-meta">
