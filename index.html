@@ -3424,7 +3424,8 @@
     fatUpdateClearPFBtn();
     const fNameEl = document.getElementById('fat_hdr_farmerName');
     if (fNameEl) fNameEl.value = fatState.header.farmerName || '';
-    document.getElementById('fat_hdr_barnName').value = fatState.header.barnName || '';
+    const barnEl = document.getElementById('fat_hdr_barnName');
+    if (barnEl) barnEl.value = fatState.header.barnName || '';
     document.getElementById('fat_hdr_cv').value = fatState.header.cv || '';
     document.getElementById('fat_hdr_houseNo').value = fatState.header.houseNo || '';
     document.getElementById('fat_pigDiffCause').value = fatState.pigDiffCause || '';
