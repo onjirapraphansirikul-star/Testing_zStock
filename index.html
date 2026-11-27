@@ -761,50 +761,6 @@
     table.log-table th, table.log-table td { border-bottom: 1px solid var(--border); padding: 8px 6px; text-align: left; }
     table.log-table th { background: #f8fafc; position: sticky; top: 0; }
 
-    .nav-tabs.tabs-4 { grid-template-columns: repeat(4, 1fr); }
-    .nav-tabs.tabs-5 { grid-template-columns: repeat(5, 1fr); }
-    @media screen and (max-width: 480px) { .nav-tabs.tabs-5 .nav-tab { font-size: 0.7rem; padding: 9px 2px; } }
-    
-    .top-user-pill { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); color:#e2e8f0; padding:2px 8px; border-radius:999px; font-size:.72rem; font-weight:700; cursor:pointer; margin-left:6px; }
-    
-    .sign-cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(225px,1fr)); gap:10px; }
-    .sign-card { border:1px solid #cbd5e1; border-radius:12px; padding:10px; background:#f8fafc; display:flex; flex-direction:column; gap:7px; }
-    .sign-card.signed { border-color:#86efac; background:#f0fdf4; }
-    .sign-card-head { display:flex; justify-content:space-between; align-items:center; font-weight:800; font-size:.92rem; }
-    .sign-role-badge { font-size:.7rem; padding:2px 7px; border-radius:999px; background:#e2e8f0; color:#475569; font-weight:700; }
-    .sign-card.signed .sign-role-badge { background:#dcfce7; color:#166534; }
-    .sign-preview-box { height:76px; background:#fff; border:1px dashed #94a3b8; border-radius:9px; display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:pointer; padding:4px; }
-    .sign-preview-box img { max-height:68px; max-width:100%; object-fit:contain; }
-    .sign-preview-empty { font-size:.78rem; color:#94a3b8; text-align:center; }
-    .sign-meta-line { font-size:.78rem; color:#475569; }
-    .sign-card-actions { display:flex; gap:5px; margin-top:auto; }
-    .sign-card-actions .btn { flex:1; padding:7px 6px; font-size:.76rem; }
-    
-    .modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.62); z-index:200; display:none; align-items:center; justify-content:center; padding:12px; overflow-y:auto; }
-    .modal-backdrop.open { display:flex; }
-    .modal-box { background:#fff; border-radius:16px; width:100%; max-width:480px; box-shadow:0 20px 45px rgba(15,23,42,.35); overflow:hidden; }
-    .modal-head { background:#0f172a; color:#fff; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; font-weight:800; }
-    .modal-close { background:rgba(255,255,255,.16); border:none; color:#fff; border-radius:8px; padding:4px 10px; font-weight:800; cursor:pointer; }
-    .modal-body { padding:14px; max-height:75vh; overflow-y:auto; }
-    .modal-foot { padding:10px 14px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:8px; }
-    .login-quick-list { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
-    .login-chip { padding:5px 10px; border-radius:999px; border:1px solid #cbd5e1; background:#f8fafc; font-size:.78rem; font-weight:700; cursor:pointer; }
-    .sig-setting-box { border:1px solid #cbd5e1; border-radius:12px; padding:11px; margin-bottom:10px; background:#f8fafc; }
-    .sig-setting-box h4 { margin:0 0 8px; font-size:.92rem; }
-    .sig-upload-label { display:inline-flex; align-items:center; gap:4px; padding:7px 10px; border-radius:8px; background:#0369a1; color:#fff; font-size:.78rem; font-weight:700; cursor:pointer; }
-    .sig-canvas-wrap { border:2px solid #94a3b8; border-radius:12px; background:#fff; overflow:hidden; touch-action:none; }
-    #sigPadCanvas { display:block; width:100%; height:185px; cursor:crosshair; touch-action:none; }
-    
-    .print-sign-wrap { display:none; }
-    table.print-sign-tbl { width:100%; border-collapse:collapse; table-layout:fixed; margin-top:6px; }
-    table.print-sign-tbl td { border:1px solid #000 !important; width:20%; text-align:center; vertical-align:bottom; padding:3px 4px 4px; background:#fff !important; }
-    .ps-sig-area { height:34px; display:flex; align-items:flex-end; justify-content:center; overflow:hidden; }
-    .ps-sig-area img { max-height:32px; max-width:92%; object-fit:contain; }
-    .ps-line { border-top:1px solid #000; width:82%; margin:1px auto 2px; }
-    .ps-role { font-weight:700; font-size:9px; color:#000; }
-    .ps-name { font-size:8px; color:#000; min-height:10px; }
-    .ps-date { font-size:8.5px; margin-top:2px; color:#000; }
-    
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
     .fat-tab-pane { display: none; }
@@ -826,12 +782,9 @@
       body.mode-breed .nav-tabs,
       body.mode-breed .no-print,
       body.mode-breed #tabSaved,
-      body.mode-breed #tabSign,
       body.mode-breed #tabLogs,
       body.mode-breed #mobilePenContainer,
       body.mode-breed .pen-row-tabs { display: none !important; }
-      .modal-backdrop { display: none !important; }
-      body.mode-breed .print-sign-wrap { display: block !important; page-break-inside: avoid; }
       body.mode-breed .tab-pane { display: block !important; }
       body.mode-breed #fullPenTableWrap { display: block !important; border: none; overflow: visible; border-radius: 0; }
       body.mode-breed .card { border: none; box-shadow: none; padding: 0; margin: 0 0 6px 0; }
@@ -898,7 +851,7 @@
     <p>กรุณาเลือกประเภทแบบฟอร์มที่ต้องการบันทึกข้อมูล</p>
     <div class="home-net-pill" id="homeNetBadge">● กำลังตรวจสอบสถานะ...</div>
   </div>
-  
+
   <div class="home-grid">
     <!-- เมนู 1: หมูขุน -->
     <button type="button" class="mode-card fat" onclick="enterMode('fat')">
@@ -932,7 +885,6 @@
       </div>
       <span class="save-badge" id="saveStatus">● พร้อมใช้งาน</span>
       <span class="net-badge" id="netStatusBadge" onclick="switchTab('logs', document.getElementById('navBtn_logs'))">● กำลังตรวจสถานะเน็ต...</span>
-      <span class="top-user-pill" id="breedUserPill" onclick="openLoginModal()">👤 เข้าสู่ระบบ</span>
     </div>
     <div class="top-actions">
       <button class="btn btn-save-new" id="btnSaveNew" onclick="saveAndNewReport()">💾 บันทึก &amp; สร้างใบใหม่</button>
@@ -941,11 +893,10 @@
     </div>
   </div>
 
-  <div class="nav-tabs tabs-5 no-print">
+  <div class="nav-tabs no-print">
     <button class="nav-tab active" id="navBtn_pigs" onclick="switchTab('pigs', this)">🐷 สุกร</button>
     <button class="nav-tab" id="navBtn_pens" onclick="switchTab('pens', this)">🐷 แม่/ลูก</button>
     <button class="nav-tab" id="navBtn_feed" onclick="switchTab('feed', this)">🌾 อาหาร</button>
-    <button class="nav-tab" id="navBtn_sign" onclick="switchTab('sign', this)">✍️ ลายเซ็น</button>
     <button class="nav-tab" id="navBtn_logs" onclick="switchTab('logs', this)">📁 คลัง (<span id="savedCountBadge">0</span>)</button>
   </div>
 
@@ -1135,16 +1086,6 @@
     </div>
   </div>
 
-  <div class="print-sign-wrap" id="breedPrintSignWrap"></div>
-
-  <div class="card tab-pane" id="tabSign">
-    <div class="section-title">
-      <span>✍️ เซ็นลายเซ็นรับรู้ผลการตรวจนับ</span>
-      <button type="button" class="btn btn-settings" style="font-size:.76rem;padding:6px 10px;" onclick="openSigSettingsModal()">⚙️ ตั้งค่ารูปลายเซ็น</button>
-    </div>
-    <div class="sign-cards-grid" id="breedSignGrid"></div>
-  </div>
-
   <!-- Tab 4A: Google Sheet Connect, Saved Reports & CSV -->
   <div class="card tab-pane" id="tabSaved">
     <div class="gsheet-box">
@@ -1201,7 +1142,6 @@
         </div>
         <span class="save-badge" id="fat_saveStatus">● พร้อมใช้งาน</span>
         <span class="net-badge" id="fat_netStatusBadge" onclick="fatSwitchTab('logs', document.getElementById('fatNav_logs'))">● กำลังตรวจสถานะเน็ต...</span>
-        <span class="top-user-pill" id="fatUserPill" onclick="openLoginModal()">👤 เข้าสู่ระบบ</span>
       </div>
       <div class="top-actions">
         <button class="btn btn-save-new" id="fat_btnSaveNew" onclick="fatSaveAndNewReport()">💾 บันทึก &amp; สร้างใบใหม่</button>
@@ -1211,10 +1151,9 @@
     </div>
 
     <!-- เมนูหลักหมูขุน 3 เมนู: สรุป/คอก 1-30 | นับอาหาร | คลัง -->
-    <div class="nav-tabs fat-theme-tabs tabs-4 no-print">
+    <div class="nav-tabs fat-theme-tabs tabs-3 no-print">
       <button class="nav-tab active" id="fatNav_summary" onclick="fatSwitchTab('summary', this)">🐖 สรุป / คอก 1–30</button>
       <button class="nav-tab" id="fatNav_feed" onclick="fatSwitchTab('feed', this)">🌾 นับอาหาร</button>
-      <button class="nav-tab" id="fatNav_sign" onclick="fatSwitchTab('sign', this)">✍️ ลายเซ็น</button>
       <button class="nav-tab" id="fatNav_logs" onclick="fatSwitchTab('logs', this)">📁 คลัง (<span id="fatSavedCountBadge">0</span>)</button>
     </div>
 
@@ -1247,11 +1186,15 @@
           <input type="text" id="fat_hdr_farmerName" placeholder="ระบุชื่อเกษตรกร" onchange="fatUpdateHeader('farmerName', this.value)" />
         </div>
         <div class="field">
+          <label>ชื่อเล้า:</label>
+          <input type="text" id="fat_hdr_barnName" placeholder="ระบุชื่อเล้า" onchange="fatUpdateHeader('barnName', this.value)" />
+        </div>
+        <div class="field">
           <label>C.V.:</label>
           <input type="text" id="fat_hdr_cv" placeholder="ระบุ C.V." onchange="fatUpdateHeader('cv', this.value)" />
         </div>
         <div class="field">
-          <label>เล้าที่:</label>
+          <label>หลังที่:</label>
           <input type="text" id="fat_hdr_houseNo" placeholder="ระบุหลังที่" onchange="fatUpdateHeader('houseNo', this.value)" />
         </div>
       </div>
@@ -1347,16 +1290,6 @@
       </div>
     </div>
 
-    <div class="fat-tab-pane" id="fatTabSign">
-    <div class="card">
-      <div class="section-title fat-section-title">
-        <span>✍️ เซ็นลายเซ็นรับรู้ผลการตรวจนับ</span>
-        <button type="button" class="btn btn-settings" style="font-size:.76rem;padding:6px 10px;" onclick="openSigSettingsModal()">⚙️ ตั้งค่ารูปลายเซ็น</button>
-      </div>
-      <div class="sign-cards-grid" id="fatSignGrid"></div>
-    </div>
-  </div>
-
     <!-- Tab 3: คลัง & Google Sheet & Logs (หมูขุน) -->
     <div class="fat-tab-pane" id="fatTabLogs">
       <div class="card">
@@ -1405,82 +1338,7 @@
 
   <!-- หน้าพิมพ์ A4 สำหรับหมูขุน (ตรงตามแบบฟอร์มในภาพ) -->
   <div id="fatPrintSheet"></div>
-    </div>
-    
-      <div class="modal-backdrop no-print" id="loginModal">
-      <div class="modal-box">
-        <div class="modal-head"><span>🔐 เข้าสู่ระบบผู้ใช้งาน</span><button type="button" class="modal-close" onclick="closeModal('loginModal')">✕</button></div>
-        <div class="modal-body">
-          <div id="loginQuickWrap" style="display:none;">
-            <div style="font-size:.78rem;font-weight:700;color:#64748b;margin-bottom:5px;">บัญชีที่เคยใช้งานในเครื่องนี้:</div>
-            <div class="login-quick-list" id="loginQuickList"></div>
-          </div>
-          <div class="field" style="margin-bottom:10px;"><label>ชื่อ - นามสกุล / รหัสพนักงาน:</label><input type="text" id="login_username" placeholder="เช่น สมชาย ใจดี" /></div>
-          <div class="field" style="margin-bottom:10px;"><label>ตำแหน่งหน้าที่:</label>
-            <select id="login_role">
-              <option value="inspector">ผู้ตรวจนับ</option><option value="accountant">บัญชี</option>
-              <option value="vet">สัตวบาล</option><option value="manager">ผู้จัดการฟาร์ม</option>
-            </select></div>
-          <div class="field" style="margin-bottom:6px;"><label>รหัส PIN (ไม่บังคับ):</label><input type="text" inputmode="numeric" maxlength="6" id="login_pin" placeholder="ตัวเลข 4-6 หลัก" /></div>
-          <div id="login_error" style="color:#dc2626;font-size:.82rem;font-weight:700;min-height:18px;"></div>
-        </div>
-        <div class="modal-foot">
-          <button type="button" class="btn" style="background:#e2e8f0;color:#334155;" onclick="closeModal('loginModal')">ยกเลิก</button>
-          <button type="button" class="btn btn-save-new" style="flex:0 0 auto;padding:8px 18px;" onclick="submitLogin()">เข้าสู่ระบบ</button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="modal-backdrop no-print" id="sigSettingsModal">
-      <div class="modal-box" style="max-width:540px;">
-        <div class="modal-head" style="background:#0369a1;"><span>✍️ ตั้งค่ารูปลายเซ็น</span><button type="button" class="modal-close" onclick="closeModal('sigSettingsModal')">✕</button></div>
-        <div class="modal-body">
-          <div class="sig-setting-box">
-            <h4>1. ลายเซ็น "ผู้ตรวจนับ"</h4>
-            <div class="sign-preview-box" id="setSigPreview_inspector" onclick="openSignPadForSetting('inspector')"></div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
-              <label class="sig-upload-label">📁 อัปโหลดรูป<input type="file" accept="image/*" style="display:none;" onchange="handleSigImageUpload('inspector', this)" /></label>
-              <button type="button" class="btn" style="background:#1d4ed8;color:#fff;" onclick="openSignPadForSetting('inspector')">✍️ วาด</button>
-              <button type="button" class="btn" style="background:#fee2e2;color:#b91c1c;" onclick="clearSavedRoleSignature('inspector')">🗑️ ลบ</button>
-            </div>
-            <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.82rem;font-weight:700;cursor:pointer;"><input type="checkbox" id="setSigAuto_inspector" onchange="toggleAutoApplySig('inspector', this.checked)" /> ดึงลายเซ็นใส่ใบงานใหม่อัตโนมัติ</label>
-          </div>
-          <div class="sig-setting-box" style="margin-bottom:0;">
-            <h4>2. ลายเซ็น "บัญชี"</h4>
-            <div class="sign-preview-box" id="setSigPreview_accountant" onclick="openSignPadForSetting('accountant')"></div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
-              <label class="sig-upload-label">📁 อัปโหลดรูป<input type="file" accept="image/*" style="display:none;" onchange="handleSigImageUpload('accountant', this)" /></label>
-              <button type="button" class="btn" style="background:#1d4ed8;color:#fff;" onclick="openSignPadForSetting('accountant')">✍️ วาด</button>
-              <button type="button" class="btn" style="background:#fee2e2;color:#b91c1c;" onclick="clearSavedRoleSignature('accountant')">🗑️ ลบ</button>
-            </div>
-            <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.82rem;font-weight:700;cursor:pointer;"><input type="checkbox" id="setSigAuto_accountant" onchange="toggleAutoApplySig('accountant', this.checked)" /> ดึงลายเซ็นใส่ใบงานใหม่อัตโนมัติ</label>
-          </div>
-        </div>
-        <div class="modal-foot">
-          <button type="button" class="btn btn-save-new" style="flex:0 0 auto;padding:8px 18px;" onclick="applySigSettingsToCurrentAndClose()">เสร็จสิ้น</button></div>
-      </div>
-    </div>
-    
-    <div class="modal-backdrop no-print" id="signPadModal">
-      <div class="modal-box" style="max-width:500px;">
-        <div class="modal-head" style="background:#1e293b;"><span id="signPadTitle">✍️ เซ็นชื่อ</span><button type="button" class="modal-close" onclick="closeModal('signPadModal')">✕</button></div>
-        <div class="modal-body">
-          <div id="signPadMetaFields" style="display:grid;grid-template-columns:1fr 145px;gap:8px;margin-bottom:10px;">
-            <div class="field"><label>ชื่อผู้เซ็น (ไม่บังคับ):</label><input type="text" id="signPadSignerName" /></div>
-            <div class="field"><label>วันที่เซ็น:</label><input type="date" id="signPadDate" /></div>
-          </div>
-          <div style="font-size:.78rem;font-weight:700;color:#64748b;margin-bottom:4px;">ใช้นิ้วหรือเมาส์เซ็นในกรอบ:</div>
-          <div class="sig-canvas-wrap"><canvas id="sigPadCanvas"></canvas></div>
-        </div>
-        <div class="modal-foot" style="justify-content:space-between;">
-          <button type="button" class="btn" style="background:#f1f5f9;color:#334155;" onclick="clearSigPadCanvas()">🧹 ล้าง</button>
-          <div style="display:flex;gap:6px;">
-            <button type="button" class="btn" style="background:#e2e8f0;color:#334155;" onclick="closeModal('signPadModal')">ยกเลิก</button>
-            <button type="button" class="btn btn-save-new" style="flex:0 0 auto;padding:8px 16px;" onclick="saveSigPad()">💾 บันทึกลายเซ็น</button>
-          </div>
-        </div>
-      </div>
-    </div>
+</div>
 
 <script>
   const DEFAULT_GSHEET_URL = 'https://script.google.com/macros/s/AKfycbw49F7JoiQ6UXOdDXWcZ5kna4r_W2pBLbN8Vha5Rez4yuwRz7Ekgt7RbLrVf7Cs18QH/exec';
@@ -1496,261 +1354,6 @@
   const FAT_PEN_COUNT = 30;
 
   let activeMode = 'home'; // 'home' | 'breed' | 'fat'
-
-  const AUTH_USERS_KEY = 'cpf_pig_auth_users_v1';
-  const AUTH_SESSION_KEY = 'cpf_pig_auth_session_v1';
-  const SIG_SETTINGS_KEY = 'cpf_pig_sig_settings_v1';
-  const SIGN_ROLES = [
-    { key: 'farmer', label: 'เกษตรกร' }, { key: 'inspector', label: 'ผู้ตรวจนับ' },
-    { key: 'vet', label: 'สัตวบาล' }, { key: 'accountant', label: 'บัญชี' },
-    { key: 'manager', label: 'ผู้จัดการฟาร์ม' }
-  ];
-  const ROLE_LABELS = { farmer:'เกษตรกร', inspector:'ผู้ตรวจนับ', vet:'สัตวบาล', accountant:'บัญชี', manager:'ผู้จัดการฟาร์ม' };
-  
-  function safeSet(key, value) {
-    try { localStorage.setItem(key, value); return true; }
-    catch (e) { alert('⚠️ พื้นที่เก็บข้อมูลในเครื่องเต็ม กรุณาส่งเข้า Sheet แล้วล้างคลังเก่า'); return false; }
-  }
-  function loadAuthUsers() { try { return JSON.parse(localStorage.getItem(AUTH_USERS_KEY) || '[]'); } catch { return []; } }
-  function loadCurrentSession() { try { return JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || 'null'); } catch { return null; } }
-  function loadSigSettings() {
-    let p = {};
-    try { p = JSON.parse(localStorage.getItem(SIG_SETTINGS_KEY) || '{}'); } catch {}
-    return {
-      inspector: Object.assign({ img: '', autoApply: true }, p.inspector || {}),
-      accountant: Object.assign({ img: '', autoApply: true }, p.accountant || {})
-    };
-  }
-  function persistSigSettings() { safeSet(SIG_SETTINGS_KEY, JSON.stringify(sigSettings)); }
-  
-  let currentUser = loadCurrentSession();
-  let sigSettings = loadSigSettings();
-  
-  function createEmptySignatures() {
-    const o = {}; SIGN_ROLES.forEach(r => { o[r.key] = { img: '', name: '', date: '' }; }); return o;
-  }
-  function normalizeSignaturesObj(s) {
-    const base = createEmptySignatures();
-    if (s && typeof s === 'object') SIGN_ROLES.forEach(r => { base[r.key] = Object.assign({ img:'', name:'', date:'' }, s[r.key] || {}); });
-    return base;
-  }
-  function applyDefaultSignaturesToReport(rep) {
-    if (!rep) return;
-    rep.signatures = normalizeSignaturesObj(rep.signatures);
-    const d = (rep.header && rep.header.date) || new Date().toISOString().slice(0, 10);
-    ['inspector', 'accountant'].forEach(role => {
-      const s = rep.signatures[role], set = sigSettings[role];
-      if (!s.img && set && set.img && set.autoApply) { s.img = set.img; if (!s.date) s.date = d; }
-      if (currentUser && currentUser.role === role && !s.name) s.name = currentUser.name;
-    });
-  }
-  function formatDateSlash(iso) {
-    if (!iso) return '____/____/______';
-    const p = String(iso).split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : iso;
-  }
-  function buildPrintSignTableHtml(signatures, fallbackDate = '') {
-    const sigs = normalizeSignaturesObj(signatures);
-    const cells = SIGN_ROLES.map(r => {
-      const it = sigs[r.key];
-      const img = it.img ? `<img src="${it.img}" alt="" />` : '';
-      const ds = it.date ? formatDateSlash(it.date) : (it.img && fallbackDate ? formatDateSlash(fallbackDate) : '____/____/______');
-      const nm = it.name ? `<div class="ps-name">(${escapeHtml(it.name)})</div>` : '';
-      return `<td><div class="ps-sig-area">${img}</div><div class="ps-line"></div><div class="ps-role">${escapeHtml(r.label)}</div>${nm}<div class="ps-date">${escapeHtml(ds)}</div></td>`;
-    }).join('');
-    return `<table class="print-sign-tbl"><tr>${cells}</tr></table>`;
-  }
-  
-  /* ---------- Modal + Login ---------- */
-  function openModal(id) { document.getElementById(id).classList.add('open'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-  function saveActiveState() { saveState(); fatSaveState(); }
-  
-  function openLoginModal() {
-    const users = loadAuthUsers();
-    document.getElementById('loginQuickWrap').style.display = users.length ? 'block' : 'none';
-    document.getElementById('loginQuickList').innerHTML = users.map((u, i) =>
-      `<span class="login-chip" onclick="pickLoginUser(${i})">${escapeHtml(u.name)} · ${escapeHtml(ROLE_LABELS[u.role] || '')}</span>`).join('');
-    document.getElementById('login_error').textContent = '';
-    document.getElementById('login_pin').value = '';
-    document.getElementById('login_username').value = currentUser ? currentUser.name : '';
-    document.getElementById('login_role').value = currentUser ? currentUser.role : 'inspector';
-    openModal('loginModal');
-  }
-  function pickLoginUser(i) {
-    const u = loadAuthUsers()[i]; if (!u) return;
-    document.getElementById('login_username').value = u.name;
-    document.getElementById('login_role').value = u.role;
-    document.getElementById('login_pin').focus();
-  }
-  function submitLogin() {
-    const err = document.getElementById('login_error');
-    const name = document.getElementById('login_username').value.trim();
-    const role = document.getElementById('login_role').value;
-    const pin = document.getElementById('login_pin').value.trim();
-    if (!name) { err.textContent = 'กรุณาระบุชื่อ - นามสกุล'; return; }
-    if (pin && !/^\d{4,6}$/.test(pin)) { err.textContent = 'PIN ต้องเป็นตัวเลข 4-6 หลัก'; return; }
-    const users = loadAuthUsers();
-    let u = users.find(x => x.name === name);
-    if (u) {
-      if (u.pin && u.pin !== pin) { err.textContent = 'PIN ไม่ถูกต้อง'; return; }
-      u.role = role; if (pin && !u.pin) u.pin = pin;
-    } else { u = { name, role, pin }; users.push(u); }
-    safeSet(AUTH_USERS_KEY, JSON.stringify(users));
-    currentUser = { name: u.name, role: u.role };
-    safeSet(AUTH_SESSION_KEY, JSON.stringify(currentUser));
-    applyDefaultSignaturesToReport(state);
-    applyDefaultSignaturesToReport(fatState);
-    saveActiveState(); refreshSignGrids(); updateAuthUI();
-    closeModal('loginModal');
-  }
-  function logoutUser() {
-    if (!confirm('ต้องการออกจากระบบใช่ไหม?')) return;
-    currentUser = null; localStorage.removeItem(AUTH_SESSION_KEY); updateAuthUI();
-  }
-  function updateAuthUI() {
-    const pill = currentUser ? `👤 ${currentUser.name}` : '👤 เข้าสู่ระบบ';
-    const st = document.getElementById('homeAuthStatus'), sub = document.getElementById('homeAuthSub');
-    if (st) st.textContent = currentUser ? pill : '👤 ยังไม่ได้เข้าสู่ระบบ';
-    if (sub) sub.textContent = currentUser ? `ตำแหน่ง: ${ROLE_LABELS[currentUser.role] || '-'}` : 'เข้าสู่ระบบเพื่อระบุตัวตนผู้ตรวจนับและดึงลายเซ็นอัตโนมัติ';
-    const bl = document.getElementById('btnHomeLogin'), bo = document.getElementById('btnHomeLogout');
-    if (bl) bl.style.display = currentUser ? 'none' : '';
-    if (bo) bo.style.display = currentUser ? '' : 'none';
-    ['breedUserPill', 'fatUserPill'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = pill; });
-  }
-  
-  /* ---------- ตั้งค่าลายเซ็นถาวร ---------- */
-  function renderSigSettingsPreview() {
-    ['inspector', 'accountant'].forEach(role => {
-      const s = sigSettings[role];
-      document.getElementById('setSigPreview_' + role).innerHTML = s.img
-        ? `<img src="${s.img}" alt="" />`
-        : '<span class="sign-preview-empty">ยังไม่มีรูปลายเซ็น (อัปโหลดรูป หรือแตะเพื่อวาด)</span>';
-      document.getElementById('setSigAuto_' + role).checked = !!s.autoApply;
-    });
-  }
-  function openSigSettingsModal() { renderSigSettingsPreview(); openModal('sigSettingsModal'); }
-  function handleSigImageUpload(role, input) {
-    const file = input.files && input.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        const scale = Math.min(1, 500 / img.width);
-        const c = document.createElement('canvas');
-        c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        sigSettings[role].img = c.toDataURL('image/png');
-        persistSigSettings(); renderSigSettingsPreview(); input.value = '';
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-  function clearSavedRoleSignature(role) {
-    if (!confirm('ลบรูปลายเซ็นที่บันทึกไว้?')) return;
-    sigSettings[role].img = ''; persistSigSettings(); renderSigSettingsPreview();
-  }
-  function toggleAutoApplySig(role, checked) { sigSettings[role].autoApply = !!checked; persistSigSettings(); }
-
-  function applySigSettingsToCurrentAndClose() {
-    // บังคับดึงลายเซ็นปัจจุบันใส่ลงในใบงานทั้งหมูพันธุ์และหมูขุนที่กำลังเปิดอยู่
-    applyDefaultSignaturesToReport(state);
-    applyDefaultSignaturesToReport(fatState);
-    saveActiveState();
-    refreshSignGrids();
-    closeModal('sigSettingsModal');
-  }
-  
-  /* ---------- การ์ดลายเซ็นในแต่ละใบ ---------- */
-  function getSigReport(mode) { return mode === 'fat' ? fatState : state; }
-  function renderSignCardsInto(grid, mode, signatures) {
-    const sigs = normalizeSignaturesObj(signatures);
-    grid.innerHTML = SIGN_ROLES.map(r => {
-      const s = sigs[r.key], signed = !!s.img;
-      return `<div class="sign-card ${signed ? 'signed' : ''}">
-        <div class="sign-card-head"><span>${escapeHtml(r.label)}</span><span class="sign-role-badge">${signed ? '✅ เซ็นแล้ว' : 'ยังไม่เซ็น'}</span></div>
-        <div class="sign-preview-box" onclick="openSignPadForReport('${mode}','${r.key}')">${signed ? `<img src="${s.img}" alt="" />` : '<span class="sign-preview-empty">แตะเพื่อเซ็นชื่อ</span>'}</div>
-        <div class="sign-meta-line">${s.name ? escapeHtml(s.name) : '-'} · ${s.date ? formatDateSlash(s.date) : '-'}</div>
-        <div class="sign-card-actions">
-          <button type="button" class="btn" style="background:#1d4ed8;color:#fff;" onclick="openSignPadForReport('${mode}','${r.key}')">✍️ เซ็น</button>
-          <button type="button" class="btn" style="background:#fee2e2;color:#b91c1c;" onclick="clearReportSignature('${mode}','${r.key}')">ลบ</button>
-        </div></div>`;
-    }).join('');
-  }
-  function renderBreedPrintSignBox() {
-    const w = document.getElementById('breedPrintSignWrap');
-    if (w) w.innerHTML = buildPrintSignTableHtml(state.signatures, state.header.date);
-  }
-  function renderBreedSignGrid() {
-    const g = document.getElementById('breedSignGrid');
-    if (g) renderSignCardsInto(g, 'breed', state.signatures);
-    renderBreedPrintSignBox();
-  }
-  function renderFatSignGrid() {
-    const g = document.getElementById('fatSignGrid');
-    if (g) renderSignCardsInto(g, 'fat', fatState.signatures);
-  }
-  function refreshSignGrids() { renderBreedSignGrid(); renderFatSignGrid(); }
-  function clearReportSignature(mode, key) {
-    getSigReport(mode).signatures[key] = { img: '', name: '', date: '' };
-    saveActiveState(); refreshSignGrids();
-  }
-  
-  /* ---------- กระดานเซ็น (Canvas) ---------- */
-  let sigPadCtx = null, sigPadDrawing = false, sigPadHasInk = false, sigPadTarget = null;
-  function initSigPadCanvas() {
-    const cv = document.getElementById('sigPadCanvas'), ratio = window.devicePixelRatio || 1;
-    const rect = cv.getBoundingClientRect();
-    cv.width = Math.round(rect.width * ratio); cv.height = Math.round(rect.height * ratio);
-    sigPadCtx = cv.getContext('2d'); sigPadCtx.scale(ratio, ratio);
-    sigPadCtx.lineWidth = 2.4; sigPadCtx.lineCap = 'round'; sigPadCtx.lineJoin = 'round'; sigPadCtx.strokeStyle = '#0f172a';
-    sigPadHasInk = false;
-  }
-  function sigPos(e) { const r = document.getElementById('sigPadCanvas').getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
-  (function bindSigPad() {
-    const cv = document.getElementById('sigPadCanvas');
-    cv.addEventListener('pointerdown', e => {
-      e.preventDefault(); cv.setPointerCapture(e.pointerId); sigPadDrawing = true;
-      const p = sigPos(e); sigPadCtx.beginPath(); sigPadCtx.moveTo(p.x, p.y); sigPadCtx.lineTo(p.x + .1, p.y + .1); sigPadCtx.stroke(); sigPadHasInk = true;
-    });
-    cv.addEventListener('pointermove', e => {
-      if (!sigPadDrawing) return; e.preventDefault();
-      const p = sigPos(e); sigPadCtx.lineTo(p.x, p.y); sigPadCtx.stroke();
-    });
-    ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => cv.addEventListener(ev, () => { sigPadDrawing = false; }));
-  })();
-  function clearSigPadCanvas() { initSigPadCanvas(); }
-  function openSignPadForSetting(role) {
-    sigPadTarget = { type: 'setting', role };
-    document.getElementById('signPadTitle').textContent = `✍️ วาดลายเซ็น "${ROLE_LABELS[role]}"`;
-    document.getElementById('signPadMetaFields').style.display = 'none';
-    openModal('signPadModal'); initSigPadCanvas();
-  }
-  function openSignPadForReport(mode, role) {
-    sigPadTarget = { type: 'report', mode, role };
-    const rep = getSigReport(mode), cur = rep.signatures[role] || {};
-    document.getElementById('signPadTitle').textContent = `✍️ เซ็นชื่อ: ${ROLE_LABELS[role]}`;
-    document.getElementById('signPadMetaFields').style.display = 'grid';
-    document.getElementById('signPadSignerName').value = cur.name || (currentUser && currentUser.role === role ? currentUser.name : '');
-    document.getElementById('signPadDate').value = cur.date || rep.header.date || new Date().toISOString().slice(0, 10);
-    openModal('signPadModal'); initSigPadCanvas();
-  }
-  function saveSigPad() {
-    if (!sigPadTarget) return;
-    if (!sigPadHasInk) { alert('กรุณาเซ็นชื่อในกรอบก่อนครับ'); return; }
-    const url = document.getElementById('sigPadCanvas').toDataURL('image/png');
-    if (sigPadTarget.type === 'setting') {
-      sigSettings[sigPadTarget.role].img = url; persistSigSettings(); renderSigSettingsPreview();
-    } else {
-      getSigReport(sigPadTarget.mode).signatures[sigPadTarget.role] = {
-        img: url,
-        name: document.getElementById('signPadSignerName').value.trim(),
-        date: document.getElementById('signPadDate').value
-      };
-      saveActiveState(); refreshSignGrids();
-    }
-    closeModal('signPadModal');
-  }
 
   const PROMOTE_FARM_LIST = [
     'สส.FAT-พิบูลมังสาหาร',
@@ -1890,16 +1493,14 @@
     if (mode === 'fat' && typeof renderFatPrintSheet === 'function') {
       renderFatPrintSheet(customFatPrintReport || fatState);
     }
-    if (mode === 'breed') renderBreedPrintSignBox();
     window.print();
   }
 
-    window.addEventListener('beforeprint', () => {
-      if (activeMode === 'breed') renderBreedPrintSignBox();
-      if (activeMode === 'fat' && typeof renderFatPrintSheet === 'function') {
-        renderFatPrintSheet(customFatPrintReport || fatState);
-      }
-    });
+  window.addEventListener('beforeprint', () => {
+    if (activeMode === 'fat' && typeof renderFatPrintSheet === 'function') {
+      renderFatPrintSheet(customFatPrintReport || fatState);
+    }
+  });
 
   window.addEventListener('afterprint', () => {
     customFatPrintReport = null;
@@ -2035,7 +1636,6 @@
         code: '', report: '', counted: '', causeIn: '', causeOut: '', causeType: '', docName: '', docNo: '', docDate: ''
       }, f || {}));
     }
-    base.signatures = normalizeSignaturesObj(base.signatures);
     return base;
   }
 
@@ -2059,21 +1659,11 @@
   function loadCurrent() {
     try {
       const raw = localStorage.getItem(CURRENT_KEY);
-      let fresh;
-      if (!raw) {
-        fresh = createInitialState();
-      } else {
-        fresh = normalizeState(JSON.parse(raw));
-      }
-      applyDefaultSignaturesToReport(fresh); // สั่งดึงลายเซ็นตั้งค่า
-      return fresh;
-    } catch { 
-      const fresh = createInitialState();
-      applyDefaultSignaturesToReport(fresh);
-      return fresh; 
-    }
+      if (!raw) return createInitialState();
+      return normalizeState(JSON.parse(raw));
+    } catch { return createInitialState(); }
   }
-  
+
   function loadSavedReports() {
     try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'); } catch { return []; }
   }
@@ -2144,9 +1734,6 @@
 
     const syncNonce = String(Date.now()) + '_' + Math.random().toString(36).slice(2, 6);
     reportObj.syncNonce = syncNonce;
-    
-    const payload = JSON.parse(JSON.stringify(reportObj));
-    if (payload.signatures) Object.keys(payload.signatures).forEach(k => { if (payload.signatures[k]) delete payload.signatures[k].img; });
 
     try {
       const res = await fetch(url, {
@@ -3005,12 +2592,6 @@
       document.getElementById('tabPens').classList.add('active');
     } else if (tab === 'feed') {
       document.getElementById('tabFeed').classList.add('active');
-    } else if (tab === 'sign') {
-      document.getElementById('tabSign').classList.add('active');
-      renderBreedSignGrid();
-    } else if (tab === 'sign') {
-      document.getElementById('tabSign').classList.add('active');
-      renderBreedSignGrid();
     } else if (tab === 'logs') {
       document.getElementById('tabSaved').classList.add('active');
       document.getElementById('tabLogs').classList.add('active');
@@ -3130,7 +2711,6 @@
     renderSavedReports();
     renderLogs();
     updateNetworkUI();
-    renderBreedSignGrid(); updateAuthUI();   // ใน initRender
   }
 
   /* =====================================================================
@@ -3228,7 +2808,6 @@
     }
     base.infra = Object.assign(createFatInitialState().infra, base.infra || {});
     if (!Array.isArray(base.logs)) base.logs = [];
-    base.signatures = normalizeSignaturesObj(base.signatures);
     return base;
   }
 
@@ -3240,19 +2819,9 @@
   function loadFatCurrent() {
     try {
       const raw = localStorage.getItem(FAT_CURRENT_KEY);
-      let fresh;
-      if (!raw) {
-        fresh = createFatInitialState();
-      } else {
-        fresh = normalizeFatState(JSON.parse(raw));
-      }
-      applyDefaultSignaturesToReport(fresh); // สั่งดึงลายเซ็นตั้งค่า
-      return fresh;
-    } catch { 
-      const fresh = createFatInitialState();
-      applyDefaultSignaturesToReport(fresh);
-      return fresh; 
-    }
+      if (!raw) return createFatInitialState();
+      return normalizeFatState(JSON.parse(raw));
+    } catch { return createFatInitialState(); }
   }
 
   function loadFatSavedReports() {
@@ -3713,7 +3282,6 @@
     document.querySelectorAll('#fatApp .fat-tab-pane').forEach(p => p.classList.remove('active'));
     if (tab === 'summary') document.getElementById('fatTabSummary')?.classList.add('active');
     else if (tab === 'feed') document.getElementById('fatTabFeed')?.classList.add('active');
-    else if (tab === 'sign') { document.getElementById('fatTabSign')?.classList.add('active'); renderFatSignGrid(); }
     else if (tab === 'logs') document.getElementById('fatTabLogs')?.classList.add('active');
   }
 
@@ -4251,7 +3819,6 @@
           ${infraNo}
         </tr>
       </table>
-           <div style="margin-top:6px;">${buildPrintSignTableHtml(src.signatures, h.date)}</div>
     `;
   }
 
@@ -4259,13 +3826,11 @@
     renderFatHeader();
     renderFatPigSummary();
     renderFatSinglePenTable();
-    renderFatFeedTable();       // <--- เพิ่มบรรทัดนี้เข้าไปเพื่อให้ตารางนับอาหารหมูขุนแสดงผล
+    renderFatFeedTable();
     updateFatPenSums(false);
     renderFatSavedReports();
     renderFatLogs();
     updateNetworkUI();
-    renderFatSignGrid();  
-    updateAuthUI();
   }
 
   /* =====================================================================
