@@ -932,6 +932,7 @@
       </div>
       <span class="save-badge" id="saveStatus">● พร้อมใช้งาน</span>
       <span class="net-badge" id="netStatusBadge" onclick="switchTab('logs', document.getElementById('navBtn_logs'))">● กำลังตรวจสถานะเน็ต...</span>
+      <span class="top-user-pill" id="breedUserPill" onclick="openLoginModal()">👤 เข้าสู่ระบบ</span>
     </div>
     <div class="top-actions">
       <button class="btn btn-save-new" id="btnSaveNew" onclick="saveAndNewReport()">💾 บันทึก &amp; สร้างใบใหม่</button>
@@ -1200,6 +1201,7 @@
         </div>
         <span class="save-badge" id="fat_saveStatus">● พร้อมใช้งาน</span>
         <span class="net-badge" id="fat_netStatusBadge" onclick="fatSwitchTab('logs', document.getElementById('fatNav_logs'))">● กำลังตรวจสถานะเน็ต...</span>
+        <span class="top-user-pill" id="fatUserPill" onclick="openLoginModal()">👤 เข้าสู่ระบบ</span>
       </div>
       <div class="top-actions">
         <button class="btn btn-save-new" id="fat_btnSaveNew" onclick="fatSaveAndNewReport()">💾 บันทึก &amp; สร้างใบใหม่</button>
@@ -1604,6 +1606,16 @@
   function logoutUser() {
     if (!confirm('ต้องการออกจากระบบใช่ไหม?')) return;
     currentUser = null; localStorage.removeItem(AUTH_SESSION_KEY); updateAuthUI();
+  }
+  function updateAuthUI() {
+    const pill = currentUser ? `👤 ${currentUser.name}` : '👤 เข้าสู่ระบบ';
+    const st = document.getElementById('homeAuthStatus'), sub = document.getElementById('homeAuthSub');
+    if (st) st.textContent = currentUser ? pill : '👤 ยังไม่ได้เข้าสู่ระบบ';
+    if (sub) sub.textContent = currentUser ? `ตำแหน่ง: ${ROLE_LABELS[currentUser.role] || '-'}` : 'เข้าสู่ระบบเพื่อระบุตัวตนผู้ตรวจนับและดึงลายเซ็นอัตโนมัติ';
+    const bl = document.getElementById('btnHomeLogin'), bo = document.getElementById('btnHomeLogout');
+    if (bl) bl.style.display = currentUser ? 'none' : '';
+    if (bo) bo.style.display = currentUser ? '' : 'none';
+    ['breedUserPill', 'fatUserPill'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = pill; });
   }
   
   /* ---------- ตั้งค่าลายเซ็นถาวร ---------- */
