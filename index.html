@@ -765,6 +765,14 @@
     .nav-tabs.tabs-5 { grid-template-columns: repeat(5, 1fr); }
     @media screen and (max-width: 480px) { .nav-tabs.tabs-5 .nav-tab { font-size: 0.7rem; padding: 9px 2px; } }
     
+    .home-auth-bar { background:#fff; border:1px solid #cbd5e1; border-radius:14px; padding:12px 14px; margin-bottom:14px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; }
+    .auth-user-info { display:flex; flex-direction:column; gap:2px; }
+    .auth-user-title { font-weight:800; font-size:.95rem; }
+    .auth-user-sub { font-size:.78rem; color:#64748b; }
+    .auth-actions { display:flex; flex-wrap:wrap; gap:6px; }
+    .btn-auth { background:#1e293b; color:#fff; }
+    .btn-settings { background:#0369a1; color:#fff; }
+    .btn-logout { background:#fee2e2; color:#b91c1c; }
     .top-user-pill { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); color:#e2e8f0; padding:2px 8px; border-radius:999px; font-size:.72rem; font-weight:700; cursor:pointer; margin-left:6px; }
     
     .sign-cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(225px,1fr)); gap:10px; }
@@ -897,6 +905,18 @@
     <h1>🐷 PigCount &amp; FeedCount</h1>
     <p>กรุณาเลือกประเภทแบบฟอร์มที่ต้องการบันทึกข้อมูล</p>
     <div class="home-net-pill" id="homeNetBadge">● กำลังตรวจสอบสถานะ...</div>
+  </div>
+
+  <div class="home-auth-bar">
+    <div class="auth-user-info">
+      <div class="auth-user-title" id="homeAuthStatus">👤 ยังไม่ได้เข้าสู่ระบบ</div>
+      <div class="auth-user-sub" id="homeAuthSub">เข้าสู่ระบบเพื่อระบุตัวตนผู้ตรวจนับและดึงลายเซ็นอัตโนมัติ</div>
+    </div>
+    <div class="auth-actions">
+      <button type="button" class="btn btn-auth" id="btnHomeLogin" onclick="openLoginModal()">🔐 เข้าสู่ระบบ</button>
+      <button type="button" class="btn btn-settings" onclick="openSigSettingsModal()">✍️ ตั้งค่าลายเซ็น</button>
+      <button type="button" class="btn btn-logout" id="btnHomeLogout" style="display:none;" onclick="logoutUser()">ออกจากระบบ</button>
+    </div>
   </div>
   
   <div class="home-grid">
@@ -4259,13 +4279,12 @@
     renderFatHeader();
     renderFatPigSummary();
     renderFatSinglePenTable();
-    renderFatFeedTable();       // <--- เพิ่มบรรทัดนี้เข้าไปเพื่อให้ตารางนับอาหารหมูขุนแสดงผล
+    renderFatFeedTable();
     updateFatPenSums(false);
     renderFatSavedReports();
     renderFatLogs();
     updateNetworkUI();
-    renderFatSignGrid();  
-    updateAuthUI();
+    renderFatSignGrid();  updateAuthUI();
   }
 
   /* =====================================================================
